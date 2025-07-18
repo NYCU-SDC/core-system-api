@@ -703,7 +703,6 @@ components:
       required:
         - id
         - formId
-        - submittedBy
         - createdAt
         - updatedAt
       properties:
@@ -715,10 +714,6 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form that this response belongs to.
-        submittedBy:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who submitted this response.
         createdAt:
           type: string
           format: date-time
