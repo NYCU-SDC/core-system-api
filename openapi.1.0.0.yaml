@@ -6,6 +6,7 @@ tags:
   - name: Healthz
   - name: Auth
   - name: User
+  - name: Unit
   - name: Forms
   - name: Responses
 paths:
@@ -412,6 +413,374 @@ paths:
           description: The server cannot find the requested resource.
       tags:
         - Healthz
+  /api/orgs:
+    get:
+      operationId: Unit_getAllOrganizations
+      description: Get all organizations
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+    post:
+      operationId: Unit_createOrg
+      description: Create a new unit or organization
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.CreateOrgRequest'
+  /api/orgs/relations:
+    post:
+      operationId: Unit_addParentChild
+      description: Create a new parent-child relationship between units by linking them
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.ParentChild'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.ParentChildRequest'
+  /api/orgs/relations/parent-id/{parent_id}/child-id/{child_id}:
+    delete:
+      operationId: Unit_removeParentChild
+      description: Remove a parent-child relationship between units by unlinking them
+      parameters:
+        - name: parent_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: child_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}:
+    get:
+      operationId: Unit_getOrgById
+      description: Get a specific unit with the slug of its organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+    put:
+      operationId: Unit_updateOrg
+      description: Update an existing unit or organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.UpdateOrgRequest'
+    delete:
+      operationId: Unit_deleteOrg
+      description: Delete a specific organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}/unit-ids:
+    get:
+      operationId: Unit_listOrgSubUnitIds
+      description: List all unit IDs, optionally filtered by parent organization ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/uuid'
+      tags:
+        - Unit
+  /api/orgs/{slug}/units:
+    get:
+      operationId: Unit_listOrgSubUnits
+      description: List all units, optionally filtered by parent organization ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+    post:
+      operationId: Unit_createUnit
+      description: Create a new unit or organization
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.CreateUnitRequest'
+  /api/orgs/{slug}/units/{id}:
+    get:
+      operationId: Unit_getUnitById
+      description: Get a specific unit with the slug of its organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+    put:
+      operationId: Unit_updateUnit
+      description: Update an existing unit or organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.UpdateUnitRequest'
+    delete:
+      operationId: Unit_deleteUnit
+      description: Delete a specific unit of an organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}/units/{id}/subunit-ids:
+    get:
+      operationId: Unit_listUnitSubUnitIds
+      description: List all unit IDs, optionally filtered by parent unit ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/uuid'
+      tags:
+        - Unit
+  /api/orgs/{slug}/units/{id}/subunits:
+    get:
+      operationId: Unit_listUnitSubUnits
+      description: List all units, optionally filtered by parent unit ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
   /api/users/me:
     get:
       operationId: User_getMe
@@ -756,6 +1125,293 @@ components:
             - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
         detail:
           type: string
+    Unit.Base:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - metadata
+        - type
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit's unique identifier.
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Unit.UnitType'
+          description: The type of the unit, either 'unit' or 'organization'
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the unit or organization
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the unit or organization
+      description: Base model, containing common fields for both units and organizations.
+    Unit.BaseRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+      description: Base Request model, containing common fields for updating units and organizations.
+    Unit.CreateOrgRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+        - type
+        - slug
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        type:
+          type: number
+          enum:
+            - 1
+        slug:
+          type: string
+    Unit.CreateUnitRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+        - type
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        type:
+          type: number
+          enum:
+            - 0
+    Unit.OrgMember:
+      type: object
+      required:
+        - orgId
+        - memberId
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the organization
+        memberId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the member
+      description: Model representing a member of an organization, linking organization and member by their unique identifiers
+    Unit.Organization:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - metadata
+        - type
+        - createdAt
+        - updatedAt
+        - slug
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit's unique identifier.
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Unit.UnitType'
+          description: The type of the unit, either 'unit' or 'organization'
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the unit or organization
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the unit or organization
+        slug:
+          type: string
+          description: Unique slug for the organization, used for URL routing and identification
+    Unit.ParentChild:
+      type: object
+      required:
+        - parentId
+        - childId
+      properties:
+        parentId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the parent unit
+        childId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the child unit
+      description: Model representing a parent-child relationship between units, allowing for hierarchical structures
+    Unit.ParentChildRequest:
+      type: object
+      required:
+        - parentId
+        - childId
+      properties:
+        parentId:
+          $ref: '#/components/schemas/uuid'
+        childId:
+          $ref: '#/components/schemas/uuid'
+    Unit.Unit:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - metadata
+        - type
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit's unique identifier.
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Unit.UnitType'
+          description: The type of the unit, either 'unit' or 'organization'
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the unit or organization
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the unit or organization
+    Unit.UnitMember:
+      type: object
+      required:
+        - unitId
+        - memberId
+      properties:
+        unitId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the unit
+        memberId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the member
+      description: Model representing a member of a unit, linking unit and member by their unique identifiers
+    Unit.UnitType:
+      type: number
+      enum:
+        - 0
+        - 1
+      description: 'Currently, there are 2 types of units: `unit` and `organization`.'
+    Unit.UpdateOrgRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+        - slug
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        slug:
+          type: string
+    Unit.UpdateUnitRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
     User.Role:
       type: string
       enum:
