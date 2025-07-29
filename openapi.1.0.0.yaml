@@ -63,25 +63,6 @@ paths:
       tags:
         - Auth
   /api/forms:
-    post:
-      operationId: Forms_createForm
-      description: Create a new form.
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Form'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Forms.FormRequest'
     get:
       operationId: Forms_listForms
       description: List all existing forms.
@@ -781,6 +762,61 @@ paths:
                   $ref: '#/components/schemas/Unit.Unit'
       tags:
         - Unit
+  /api/orgs/{slug}/units/{unitId}/forms:
+    post:
+      operationId: Unit_createUnitForm
+      description: Create a new form under a unit.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.FormRequest'
+    get:
+      operationId: Unit_listFormsByUnit
+      description: List forms under a specific unit.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Unit
   /api/users/me:
     get:
       operationId: User_getMe
@@ -829,7 +865,8 @@ components:
         - id
         - title
         - description
-        - lastEdit
+        - unitId
+        - lastEditor
         - createdAt
         - updatedAt
       properties:
@@ -843,7 +880,11 @@ components:
         description:
           type: string
           description: The description written in the form to show user info.
-        lastEdit:
+        unitId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit this form belongs to.
+        lastEditor:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The user who last editted the form.
