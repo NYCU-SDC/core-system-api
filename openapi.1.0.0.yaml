@@ -910,7 +910,7 @@ components:
         - formId
         - required
         - type
-        - label
+        - title
         - description
         - order
         - createdAt
@@ -931,7 +931,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.QuestionTypes'
           description: The type of the question.
-        label:
+        title:
           type: string
           description: What is the question.
         description:
