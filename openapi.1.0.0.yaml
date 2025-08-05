@@ -192,14 +192,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  answers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Responses.Answer'
-                required:
-                  - answers
+                type: array
+                items:
+                  $ref: '#/components/schemas/Responses.AnswersForQuestionResponse'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -209,9 +204,9 @@ paths:
       tags:
         - Responses
   /api/forms/{formId}/responses:
-    get:
-      operationId: Responses_listFormResponses
-      description: List all responses for a specific form.
+    post:
+      operationId: Responses_submitFormResponse
+      description: Submit a new response to a form.
       parameters:
         - name: formId
           in: path
@@ -224,33 +219,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Responses.Response'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Responses
-    post:
-      operationId: Responses_submitFormResponse
-      description: Submit a new response to a form.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Responses.Response'
+                $ref: '#/components/schemas/Responses.SubmitResponse'
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
@@ -270,7 +239,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Responses.SubmitFormResponseRequest'
+              $ref: '#/components/schemas/Responses.SubmitRequest'
+    get:
+      operationId: Responses_listFormResponses
+      description: List all responses for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ListResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
   /api/forms/{formId}/responses/{responseId}:
     get:
       operationId: Responses_getFormResponse
@@ -292,7 +285,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses.FormResponse'
+                $ref: '#/components/schemas/Responses.GetResponse'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -316,8 +309,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
+        '200':
+          description: The request has succeeded.
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -1030,13 +1023,12 @@ components:
           type: string
           description: The problem's detail.
       description: Problem represents a problem detail as defined in RFC 7807
-    Responses.Answer:
+    Responses.AnswerForQuestionResponse:
       type: object
       required:
         - id
         - responseId
-        - questionId
-        - type
+        - submittedBy
         - value
         - createdAt
         - updatedAt
@@ -1049,17 +1041,13 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The response this answer belongs to.
-        questionId:
+        submittedBy:
           allOf:
             - $ref: '#/components/schemas/uuid'
-          description: The question this answer is for.
-        type:
-          allOf:
-            - $ref: '#/components/schemas/Responses.AnswerType'
-          description: The type of answer, determines how to parse value.
+          description: The user who submitted this answer.
         value:
           type: string
-          description: The answer value stored as string, parsed based on type.
+          description: The answer value.
         createdAt:
           type: string
           format: date-time
@@ -1068,7 +1056,7 @@ components:
           type: string
           format: date-time
           description: The last updated timestamp of the answer.
-      description: An individual answer
+      description: Response model for a single answer in question answers view
     Responses.AnswerRequest:
       type: object
       required:
@@ -1083,32 +1071,125 @@ components:
           type: string
           description: The answer value (format depends on questionType from questionId).
       description: Request model for submitting an individual answer
-    Responses.AnswerType:
-      type: string
-      enum:
-        - short_text
-        - long_text
-        - single_choice
-        - multiple_choice
-        - date
-      description: The available answer types
-    Responses.FormResponse:
+    Responses.AnswersForQuestionResponse:
       type: object
       required:
-        - response
+        - question
         - answers
       properties:
-        response:
+        question:
           allOf:
-            - $ref: '#/components/schemas/Responses.Response'
-          description: The response metadata.
+            - $ref: '#/components/schemas/Forms.Question'
+          description: The question details.
         answers:
           type: array
           items:
-            $ref: '#/components/schemas/Responses.Answer'
-          description: All answers for this response.
-      description: Complete response with all related data
-    Responses.Response:
+            $ref: '#/components/schemas/Responses.AnswerForQuestionResponse'
+          description: All answers for this question.
+      description: Response model for getting all answers for a specific question
+    Responses.GetResponse:
+      type: object
+      required:
+        - id
+        - formId
+        - submittedBy
+        - questionAnswerPairs
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form that this response belongs to.
+        submittedBy:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who submitted this response.
+        questionAnswerPairs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.QuestionAnswerForGetResponse'
+          description: All questions with their answers for this response.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the response.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the response.
+      description: Response model for getting a specific form response
+    Responses.ListResponse:
+      type: object
+      required:
+        - formId
+        - responses
+      properties:
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form ID.
+        responses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ResponseJSON'
+          description: All responses for this form.
+      description: Response model for listing all responses of a form
+    Responses.QuestionAnswerForGetResponse:
+      type: object
+      required:
+        - questionId
+        - answer
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question details.
+        answer:
+          type: string
+          description: The answer value.
+      description: Response model for a question with its answer
+    Responses.ResponseJSON:
+      type: object
+      required:
+        - id
+        - submittedBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        submittedBy:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who submitted this response.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the response.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the response.
+      description: Response model for a single response in list view
+    Responses.SubmitRequest:
+      type: object
+      required:
+        - answers
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.AnswerRequest'
+          description: All answers for this form submission.
+      description: Request model for submitting a complete form response
+    Responses.SubmitResponse:
       type: object
       required:
         - id
@@ -1132,18 +1213,7 @@ components:
           type: string
           format: date-time
           description: The last updated timestamp of the response.
-      description: A form response submission
-    Responses.SubmitFormResponseRequest:
-      type: object
-      required:
-        - answers
-      properties:
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.AnswerRequest'
-          description: All answers for this form submission.
-      description: Request model for submitting a complete form response
+      description: Response model for a submitted form response
     Unauthorized:
       type: object
       required:
