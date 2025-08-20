@@ -79,6 +79,26 @@ paths:
                   $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
+  /api/forms/recipients/preview:
+    post:
+      operationId: Forms_previewRecipients
+      description: Preview recipients by orgIds/unitIds (no duplicated).
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.RecipientSelectionResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.RecipientSelectionRequest'
   /api/forms/{formId}/questions:
     post:
       operationId: Forms_createQuestion
@@ -377,6 +397,27 @@ paths:
                 $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
+  /api/forms/{id}/publish:
+    post:
+      operationId: Forms_publishForm
+      description: Publish a form. Set status to 'published', compute recipients, update inbox threads.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.RecipientSelectionRequest'
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
@@ -1143,6 +1184,7 @@ components:
         - id
         - title
         - description
+        - status
         - unitId
         - lastEditor
         - createdAt
@@ -1158,6 +1200,10 @@ components:
         description:
           type: string
           description: The description written in the form to show user info.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormStatus'
+          description: The status of this form.
         unitId:
           allOf:
             - $ref: '#/components/schemas/uuid'
@@ -1188,6 +1234,12 @@ components:
           type: string
           description: The description of the form.
       description: The request body for creating/updating a form.
+    Forms.FormStatus:
+      type: string
+      enum:
+        - draft
+        - published
+      description: 'The current status of form '
     Forms.Question:
       type: object
       required:
@@ -1265,6 +1317,45 @@ components:
         - multiple_choice
         - date
       description: The current types of question
+    Forms.RecipientSelectionRequest:
+      type: object
+      properties:
+        orgIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: Target organization IDs to collect users from.
+        unitIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: Target unit IDs to collect users from.
+      description: Select recipients by organizations and/or units.(remove duplicates).
+    Forms.RecipientSelectionResponse:
+      type: object
+      required:
+        - recipients
+      properties:
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.RecipientUser'
+      description: The result of recipients selection (no duplicated).
+    Forms.RecipientUser:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid'
+        name:
+          type: string
+        organizationId:
+          $ref: '#/components/schemas/uuid'
+        unitId:
+          $ref: '#/components/schemas/uuid'
+      description: The basic info of a user that can receive the form.
     Inbox.InboxMessage:
       type: object
       required:
