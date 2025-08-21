@@ -56,6 +56,21 @@ namespace CoreSystem.Forms {
     date: "date",
   }
 
+  @doc("A choice option for creating/updating choice-based questions.")
+  model ChoiceOption {
+    @doc("The name/text of the choice option.")
+    name: string;
+  }
+
+  @doc("A choice with ID and name for choice-based questions.")
+  model Choice {
+    @doc("The unique identifier of the choice.")
+    id: uuid;
+
+    @doc("The name/text of the choice.")
+    name: string;
+  }
+
   @doc("The structure of a question.")
   model Question {
     @doc("The question's unique identifier.")
@@ -79,6 +94,9 @@ namespace CoreSystem.Forms {
     @doc("What is the number of this question in the form.")
     order: int32;
 
+    @doc("Available choices for single_choice and multiple_choice questions.")
+    choices?: Choice[];
+
     @doc("The creation timestamp of the question.")
     createdAt: utcDateTime;
 
@@ -88,11 +106,23 @@ namespace CoreSystem.Forms {
 
   @doc("The request body for creating/updating a question.")
   model QuestionRequest {
+    @doc("Whether the question is required to answer or not.")
     required: boolean;
+
+    @doc("The type of the question.")
     type: QuestionTypes;
+
+    @doc("What is the question.")
     title: string;
+
+    @doc("More details of this question.")
     description: string;
+
+    @doc("What is the number of this question in the form.")
     order: int32;
+
+    @doc("Available choice options for single_choice and multiple_choice questions.")
+    choices?: ChoiceOption[];
   }
 
   // form recipientUser
