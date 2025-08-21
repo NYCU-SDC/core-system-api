@@ -1292,7 +1292,7 @@ components:
       required:
         - required
         - type
-        - label
+        - title
         - description
         - order
       properties:
@@ -1300,7 +1300,7 @@ components:
           type: boolean
         type:
           $ref: '#/components/schemas/Forms.QuestionTypes'
-        label:
+        title:
           type: string
         description:
           type: string
