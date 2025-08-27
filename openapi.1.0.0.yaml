@@ -1178,6 +1178,29 @@ components:
         refreshToken:
           type: string
           description: The new refresh token.
+    Forms.Choice:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the choice.
+        name:
+          type: string
+          description: The name/text of the choice.
+      description: A choice with ID and name for choice-based questions.
+    Forms.ChoiceOption:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name/text of the choice option.
+      description: A choice option for creating/updating choice-based questions.
     Forms.Form:
       type: object
       required:
@@ -1278,6 +1301,11 @@ components:
           type: integer
           format: int32
           description: What is the number of this question in the form.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.Choice'
+          description: Available choices for single_choice and multiple_choice questions.
         createdAt:
           type: string
           format: date-time
@@ -1298,15 +1326,26 @@ components:
       properties:
         required:
           type: boolean
+          description: Whether the question is required to answer or not.
         type:
-          $ref: '#/components/schemas/Forms.QuestionTypes'
+          allOf:
+            - $ref: '#/components/schemas/Forms.QuestionTypes'
+          description: The type of the question.
         title:
           type: string
+          description: What is the question.
         description:
           type: string
+          description: More details of this question.
         order:
           type: integer
           format: int32
+          description: What is the number of this question in the form.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.ChoiceOption'
+          description: Available choice options for single_choice and multiple_choice questions.
       description: The request body for creating/updating a question.
     Forms.QuestionTypes:
       type: string
