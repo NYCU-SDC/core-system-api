@@ -519,6 +519,36 @@ paths:
       tags:
         - Inbox
   /api/inbox/{id}:
+    get:
+      operationId: Inbox_getInboxMessage
+      description: Get the user inbox message by its unique identifier.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox.UserInboxMessageDetail'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Inbox
     put:
       operationId: Inbox_updateInboxMessageFlag
       description: Update flags for the user inbox message.
@@ -1457,7 +1487,31 @@ components:
           allOf:
             - $ref: '#/components/schemas/Inbox.UserInboxMessageFilters'
           description: The type of the user inbox message.
-      description: The structure of a user inbox message with customized flag.
+      description: The structure of a user inbox message.
+    Inbox.UserInboxMessageDetail:
+      type: object
+      required:
+        - id
+        - message
+        - type
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The id of this UserInboxMessage.
+        message:
+          allOf:
+            - $ref: '#/components/schemas/Inbox.InboxMessage'
+          description: The inbox message this user inbox message refers to.
+        content:
+          allOf:
+            - $ref: '#/components/schemas/Forms.Form'
+          description: The full content of inbox_message.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Inbox.UserInboxMessageFilters'
+          description: The type of the user inbox message.
+      description: The deatil structure of a user inbox message with content.
     Inbox.UserInboxMessageFilters:
       type: object
       required:
