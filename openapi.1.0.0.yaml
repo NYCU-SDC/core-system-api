@@ -1389,11 +1389,10 @@ components:
     Forms.RecipientSelectionRequest:
       type: object
       properties:
-        orgIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/uuid'
-          description: Target organization IDs to collect users from.
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Target organization ID to collect users from.
         unitIds:
           type: array
           items:
@@ -1420,10 +1419,6 @@ components:
           $ref: '#/components/schemas/uuid'
         name:
           type: string
-        organizationId:
-          $ref: '#/components/schemas/uuid'
-        unitId:
-          $ref: '#/components/schemas/uuid'
       description: The basic info of a user that can receive the form.
     Inbox.InboxMessage:
       type: object
