@@ -110,8 +110,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -235,8 +235,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -330,8 +330,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '200':
-          description: The request has succeeded.
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -408,8 +408,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
+        '200':
+          description: The request has succeeded.
       tags:
         - Forms
       requestBody:
@@ -613,11 +613,11 @@ paths:
         - Unit
     post:
       operationId: Unit_createOrg
-      description: Create a new unit or organization
+      description: Create a new organization
       parameters: []
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -636,8 +636,8 @@ paths:
       description: Create a new parent-child relationship between units by linking them
       parameters: []
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -745,8 +745,8 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -861,7 +861,7 @@ paths:
         - Unit
     post:
       operationId: Unit_createUnit
-      description: Create a new unit or organization
+      description: Create a new unit
       parameters:
         - name: slug
           in: path
@@ -869,8 +869,8 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -977,8 +977,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
@@ -1127,8 +1127,8 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
