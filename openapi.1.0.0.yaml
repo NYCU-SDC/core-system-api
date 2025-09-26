@@ -1265,6 +1265,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The user who last editted the form.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion. If not specified, returns null.
         createdAt:
           type: string
           format: date-time
@@ -1286,6 +1290,10 @@ components:
         description:
           type: string
           description: The description of the form.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion.
       description: The request body for creating/updating a form.
     Forms.FormStatus:
       type: string
