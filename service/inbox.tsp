@@ -14,8 +14,14 @@ namespace CoreSystem.Inbox {
     @doc("The inbox message this user inbox message refers to.")
     message: InboxMessage;
 
-    @doc("The type of the user inbox message.")
-    type: UserInboxMessageFilters;
+    @doc("Indicates whether the user has read the inbox message.")
+    isRead: boolean = false;
+
+    @doc("User can mark the inbox message as starred.")
+    isStarred: boolean = false;
+
+    @doc("User can archive the inbox message and hide it from the inbox view.")
+    isArchived: boolean = false;
   }
 
   @doc("The deatil structure of a user inbox message with content.")
@@ -29,12 +35,6 @@ namespace CoreSystem.Inbox {
     @doc("The full content of inbox_message.")
     content?: Form;
 
-    @doc("The type of the user inbox message.")
-    type: UserInboxMessageFilters;
-  }
-
-  @doc("The filters that can be applied by the user for their inbox messages.")
-  model UserInboxMessageFilters {
     @doc("Indicates whether the user has read the inbox message.")
     isRead: boolean = false;
 
