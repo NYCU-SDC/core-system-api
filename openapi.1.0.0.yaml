@@ -1237,6 +1237,7 @@ components:
         - id
         - title
         - description
+        - previewMessage
         - status
         - unitId
         - lastEditor
@@ -1253,6 +1254,9 @@ components:
         description:
           type: string
           description: The description written in the form to show user info.
+        previewMessage:
+          type: string
+          description: Preview text. If not provided, fallback to first 25 characters of description.
         status:
           allOf:
             - $ref: '#/components/schemas/Forms.FormStatus'
@@ -1290,6 +1294,9 @@ components:
         description:
           type: string
           description: The description of the form.
+        previewMessage:
+          type: string
+          description: (Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.
         deadline:
           type: string
           format: date-time
@@ -1435,6 +1442,7 @@ components:
         - postedBy
         - title
         - type
+        - previewMessage
         - createdAt
         - updatedAt
       properties:
@@ -1458,6 +1466,9 @@ components:
             - text
             - form
           description: The type of the content.
+        previewMessage:
+          type: string
+          description: 'Preview text. For forms: uses form.previewMessage if set, otherwise first 25 chars of form.description. For text: uses provided preview message if set, otherwise first 25 chars of content.'
         contentId:
           allOf:
             - $ref: '#/components/schemas/uuid'
