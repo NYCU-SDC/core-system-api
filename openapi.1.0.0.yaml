@@ -1487,7 +1487,9 @@ components:
       required:
         - id
         - message
-        - type
+        - isRead
+        - isStarred
+        - isArchived
       properties:
         id:
           allOf:
@@ -1497,17 +1499,27 @@ components:
           allOf:
             - $ref: '#/components/schemas/Inbox.InboxMessage'
           description: The inbox message this user inbox message refers to.
-        type:
-          allOf:
-            - $ref: '#/components/schemas/Inbox.UserInboxMessageFilters'
-          description: The type of the user inbox message.
+        isRead:
+          type: boolean
+          description: Indicates whether the user has read the inbox message.
+          default: false
+        isStarred:
+          type: boolean
+          description: User can mark the inbox message as starred.
+          default: false
+        isArchived:
+          type: boolean
+          description: User can archive the inbox message and hide it from the inbox view.
+          default: false
       description: The structure of a user inbox message.
     Inbox.UserInboxMessageDetail:
       type: object
       required:
         - id
         - message
-        - type
+        - isRead
+        - isStarred
+        - isArchived
       properties:
         id:
           allOf:
@@ -1521,10 +1533,18 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.Form'
           description: The full content of inbox_message.
-        type:
-          allOf:
-            - $ref: '#/components/schemas/Inbox.UserInboxMessageFilters'
-          description: The type of the user inbox message.
+        isRead:
+          type: boolean
+          description: Indicates whether the user has read the inbox message.
+          default: false
+        isStarred:
+          type: boolean
+          description: User can mark the inbox message as starred.
+          default: false
+        isArchived:
+          type: boolean
+          description: User can archive the inbox message and hide it from the inbox view.
+          default: false
       description: The deatil structure of a user inbox message with content.
     Inbox.UserInboxMessageFilters:
       type: object
