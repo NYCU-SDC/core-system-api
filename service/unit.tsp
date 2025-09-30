@@ -105,11 +105,11 @@ namespace CoreSystem.Unit {
   }
 
   model OrgMemberRequest {
-    memberId: uuid;
+    email: string;
   }
 
   model UnitMemberRequest {
-    memberId: uuid;
+    email: string;
   }
 
   // --- CRUD Operations for Orgs and Units ---

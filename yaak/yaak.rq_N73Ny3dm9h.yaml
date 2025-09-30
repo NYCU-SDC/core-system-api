@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_N73Ny3dm9h
 createdAt: 2025-08-13T03:27:23.839238
-updatedAt: 2025-08-18T17:43:58.023913797
+updatedAt: 2025-09-30T06:37:46.218772500
 workspaceId: wk_YSMg2nYXEU
 folderId: fl_s8gaMkc3hy
 authentication: {}
@@ -10,7 +10,7 @@ authenticationType: null
 body:
   text: |-
     {
-      "member_id": "150ecfe1-a9f9-4df7-9113-54ea08724618"
+      "email": "123@gmail.com"
     }
 bodyType: application/json
 description: ''
