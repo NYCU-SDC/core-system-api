@@ -2,7 +2,7 @@ type: folder
 model: folder
 id: fl_bDu65C6NLB
 createdAt: 2025-09-14T15:06:01.365896636
-updatedAt: 2025-09-14T15:06:18.970395654
+updatedAt: 2025-09-29T12:24:02.453581
 workspaceId: wk_YSMg2nYXEU
 folderId: null
 authentication: {}
@@ -10,4 +10,4 @@ authenticationType: null
 description: ''
 headers: []
 name: Publish
-sortPriority: 1000.0
+sortPriority: 2000.0

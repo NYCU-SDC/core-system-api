@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_9DxZWRjT9T
 createdAt: 2025-07-12T06:27:07.292762
-updatedAt: 2025-08-18T15:03:48.664194765
+updatedAt: 2025-09-29T12:27:32.037565
 workspaceId: wk_YSMg2nYXEU
 folderId: fl_T9fwtbfqi4
 authentication: {}
@@ -25,9 +25,9 @@ url: ${[ BASE_URL ]}/api/orgs/:slug
 urlParameters:
 - enabled: true
   name: :slug
-  value: nycu-sdc
+  value: nycu-sdc1
   id: SWUGJUvK37
 - enabled: true
   name: ''
   value: ''
-  id: 3IT6P7Gi5Z
+  id: jbHSXHtmYY

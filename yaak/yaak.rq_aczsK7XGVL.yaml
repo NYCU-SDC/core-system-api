@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_aczsK7XGVL
+createdAt: 2025-09-29T12:24:25.366392
+updatedAt: 2025-09-29T12:30:29.166737
+workspaceId: wk_YSMg2nYXEU
+folderId: fl_LbJWTJLqRS
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: ''
+sortPriority: -0.0001
+url: ${[ BASE_URL ]}/api/orgs/:slug/history
+urlParameters:
+- enabled: true
+  name: :slug
+  value: nycu-sdc1
+  id: dZEr79Wwtb
+- enabled: true
+  name: ''
+  value: ''
+  id: fQFbazVG7d
