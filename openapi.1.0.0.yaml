@@ -455,6 +455,20 @@ paths:
             type: boolean
             default: false
           explode: false
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: unitIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/uuid'
+          explode: false
         - name: page
           in: query
           required: false
