@@ -1946,10 +1946,10 @@ components:
     Unit.OrgMemberRequest:
       type: object
       required:
-        - memberId
+        - email
       properties:
-        memberId:
-          $ref: '#/components/schemas/uuid'
+        email:
+          type: string
     Unit.Organization:
       type: object
       required:
@@ -2069,10 +2069,10 @@ components:
     Unit.UnitMemberRequest:
       type: object
       required:
-        - memberId
+        - email
       properties:
-        memberId:
-          $ref: '#/components/schemas/uuid'
+        email:
+          type: string
     Unit.UpdateOrgRequest:
       type: object
       required:
