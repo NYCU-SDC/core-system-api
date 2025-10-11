@@ -7,6 +7,7 @@ import "./service/unit.tsp";
 import "./service/forms.tsp";
 import "./service/responses.tsp";
 import "./service/inbox.tsp";
+import "./service/slug.tsp";
 
 using Http;
 using Versioning;
