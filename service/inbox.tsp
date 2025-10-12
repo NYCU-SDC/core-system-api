@@ -12,7 +12,7 @@ namespace CoreSystem.Inbox {
     id: uuid;
 
     @doc("The inbox message this user inbox message refers to.")
-    message: InboxMessage;
+    message: InboxFormMessage;
 
     ...UserInboxMessageFilters;
   }
@@ -23,7 +23,7 @@ namespace CoreSystem.Inbox {
     id: uuid;
 
     @doc("The inbox message this user inbox message refers to.")
-    message: InboxMessage;
+    message: InboxFormMessage;
 
     @doc("The full content of inbox_message.")
     content?: Form;
@@ -46,7 +46,7 @@ namespace CoreSystem.Inbox {
   alias contentType = "text" | "form";
 
   @doc("The structure of a full inbox message.")
-  model InboxMessage {
+  model InboxFormMessage {
     @doc("The unique identifier of an inbox message.")
     id: uuid;
 
@@ -56,8 +56,11 @@ namespace CoreSystem.Inbox {
     @doc("The title of the inbox message.")
     title: string;
 
-    @doc("The subtitle of the inbox message.")
-    subtitle?: string;
+    @doc("The organization display name of the sender.")
+    org: string;
+
+    @doc("The unit display name of the sender.")
+    unit: string;
 
     @doc("The type of the content.")
     type: contentType;
@@ -65,8 +68,8 @@ namespace CoreSystem.Inbox {
     @doc("Preview text. For forms: uses form.previewMessage if set, otherwise first 25 chars of form.description. For text: uses provided preview message if set, otherwise first 25 chars of content.")
     previewMessage: string;
 
-    @doc("(Optional) The identifier of the content referenced by the contentType.")
-    contentId?: uuid;
+    @doc("The identifier of the content referenced by the contentType.")
+    contentId: uuid;
 
     @doc("The create timestamp of the inbox message.")
     createdAt: utcDateTime;
@@ -104,7 +107,7 @@ namespace CoreSystem.Inbox {
   @get
   op getInboxMessage(@path id: uuid): {
     @statusCode statusCode: 200;
-    @body message: UserInboxMessageDetail;
+    @body body: UserInboxMessageDetail;
   } | errorResponse;
 
   @doc("Update flags for the user inbox message.")
@@ -119,7 +122,7 @@ namespace CoreSystem.Inbox {
     },
   ): {
     @statusCode statusCode: 200;
-    @body message: UserInboxMessage;
+    @body body: UserInboxMessage;
   } | errorResponse;
 
   alias errorResponse = {
