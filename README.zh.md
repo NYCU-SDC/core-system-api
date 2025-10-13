@@ -29,6 +29,10 @@ pnpm i
 pnpm build
 ```
 
+<details>
+
+<summary>進階指令</summary>
+
 ### 格式檢查
 
 ```bash
@@ -57,13 +61,12 @@ pnpm yaak
 pnpm clean
 ```
 
+</details>
+
 ## 輸出文件
 
 輸出的文件會在 `tsp-output/schema/openapi.yaml`。你可以使用以下方式進行預覽：
 
 -   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - 直接打開底下的 [swagger-ui.html](swagger-ui.html) 檔案即可。
 -   [Prism](https://prismjs.com/) - 用於 API 文件的預覽和測試。執行 `pnpm start` 後，打開 <http://localhost:4010> 即可。
-
-## Yaak 在幹嘛？
-
-目前 Yaak 不會從 TypeSpec 抓資料，請單獨編輯維護。
+- [Yaak](https://yaak.app/) - 匯入資料夾 `yaak`

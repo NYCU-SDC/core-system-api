@@ -10,7 +10,7 @@
         "build": "pnpm run format && pnpm run compile && pnpm run yaak",
         "format": "tsp format **/*.tsp",
         "compile": "tsp compile .",
-        "clean": "rm -rf tsp-output",
+        "clean": "rm -rf tsp-output yaak",
         "start": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0",
         "yaak": "node scripts/generate-yaak.js"
     },

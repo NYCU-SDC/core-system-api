@@ -29,6 +29,10 @@ You need to compile after editing to preview.
 pnpm build
 ```
 
+<details>
+
+<summary>Other Commands</summary>
+
 ### Format Check
 
 ```bash
@@ -57,13 +61,12 @@ pnpm yaak
 pnpm clean
 ```
 
+</details>
+
 ## Output Files
 
 The output files will be in `tsp-output/schema/openapi.yaml`. You can preview using:
 
 -   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - Just open the [swagger-ui.html](swagger-ui.html) file below.
 -   [Prism](https://prismjs.com/) - For API documentation preview and testing. Run `pnpm start` and open <http://localhost:4010>.
-
-## What is Yaak doing?
-
-Currently Yaak does not fetch data from TypeSpec, please maintain it separately.
+-   [pYaak](https://yaak.app/) - Import the `yaak` folder.
