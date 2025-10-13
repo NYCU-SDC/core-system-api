@@ -1,6 +1,6 @@
 type: folder
 model: folder
-id: fl_vq5QnaWlTo
+id: fl_y7oDEoqnrd
 createdAt: 2025-10-13T08:00:00
 updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
@@ -9,5 +9,5 @@ authentication: {}
 authenticationType: null
 description: ''
 headers: []
-name: Auth
-sortPriority: 100.0
+name: Slug
+sortPriority: 700.0

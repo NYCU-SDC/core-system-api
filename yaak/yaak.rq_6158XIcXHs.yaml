@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_6158XIcXHs
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.219
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E8ZQR5x7hs
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Get a specific response by ID.
 headers: []
 method: GET
@@ -19,8 +19,8 @@ urlParameters:
 - enabled: true
   name: :formId
   value: ''
-  id: P_8JI3aQ9P8e
+  id: P_b72GUJW1Xb
 - enabled: true
   name: :responseId
   value: ''
-  id: P_cqOex3tGm0
+  id: P_6N4HFBvvSj

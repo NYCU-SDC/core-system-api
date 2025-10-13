@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_Qd8W41BJ8-
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.218
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_vq5QnaWlTo
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: ''
 headers: []
 method: GET
@@ -19,4 +19,12 @@ urlParameters:
 - enabled: true
   name: :provider
   value: ''
-  id: P_llja9qxZr9
+  id: P_CcYu4WULxs
+- enabled: true
+  name: c
+  value: ''
+  id: P_C9i2wD60us
+- enabled: true
+  name: r
+  value: ''
+  id: P_Vk-sYX-RK8

@@ -2,21 +2,25 @@ type: http_request
 model: http_request
 id: rq_l8FbbZPUzg
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.222
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: List all units, optionally filtered by parent organization ID
 headers: []
 method: GET
 name: listOrgSubUnits
-sortPriority: -3200.0
+sortPriority: -3400.0
 url: ${[ BASE_URL ]}/api/orgs/:slug/units
 urlParameters:
 - enabled: true
   name: :slug
   value: ''
-  id: P_byQfIn09Wf
+  id: P_olYq5WDoB4
+- enabled: true
+  name: parentId
+  value: ''
+  id: P_9dUcf0saej

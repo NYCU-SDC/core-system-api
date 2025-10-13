@@ -2,25 +2,25 @@ type: http_request
 model: http_request
 id: rq_7E2-kNoPgl
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.222
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Get a specific unit with the slug of its organization by its unique identifier
 headers: []
 method: GET
 name: getUnitById
-sortPriority: -3400.0
+sortPriority: -3600.0
 url: ${[ BASE_URL ]}/api/orgs/:slug/units/:id
 urlParameters:
 - enabled: true
   name: :slug
   value: ''
-  id: P_OzZthCuvXD
+  id: P_Sgn5wW2bzo
 - enabled: true
   name: :id
   value: ''
-  id: P_dODk_Q7l20
+  id: P_2lpLt3oKh9

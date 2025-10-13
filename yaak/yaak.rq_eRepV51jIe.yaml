@@ -2,29 +2,29 @@ type: http_request
 model: http_request
 id: rq_eRepV51jIe
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.223
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Remove an unit-member relationship
 headers: []
 method: DELETE
 name: removeUnitMember
-sortPriority: -3900.0
+sortPriority: -4100.0
 url: ${[ BASE_URL ]}/api/orgs/:slug/units/:id/members/:member_id
 urlParameters:
 - enabled: true
   name: :slug
   value: ''
-  id: P_EkiwAJTvWO
+  id: P_ZKnPTeN8Ec
 - enabled: true
   name: :id
   value: ''
-  id: P_cIF82Mv9g6
+  id: P_J6A75Se5Dl
 - enabled: true
   name: :member_id
   value: ''
-  id: P_KS4f2fLXjY
+  id: P_KaD67ZQx7d

@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_gVNwDSOO8Z
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.219
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E8ZQR5x7hs
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Submit a new response to a form.
 headers: []
 method: POST
@@ -19,4 +19,4 @@ urlParameters:
 - enabled: true
   name: :formId
   value: ''
-  id: P_ZRz7i_GN5v
+  id: P_KiGI3qCv8f

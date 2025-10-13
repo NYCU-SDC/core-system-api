@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_zWwslPA4Us
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.219
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E8ZQR5x7hs
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Delete a response and all its associated data.
 headers: []
 method: DELETE
@@ -19,8 +19,8 @@ urlParameters:
 - enabled: true
   name: :formId
   value: ''
-  id: P_YK3ljK9Uyc
+  id: P_GE8WGTunLJ
 - enabled: true
   name: :responseId
   value: ''
-  id: P_OgY2huH-xy
+  id: P_yr__hcQvJI

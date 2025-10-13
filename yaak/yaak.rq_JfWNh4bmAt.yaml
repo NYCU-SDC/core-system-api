@@ -2,25 +2,25 @@ type: http_request
 model: http_request
 id: rq_JfWNh4bmAt
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.221
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Remove an organization-member relationship
 headers: []
 method: DELETE
 name: removeOrgMember
-sortPriority: -3000.0
+sortPriority: -3100.0
 url: ${[ BASE_URL ]}/api/orgs/:slug/members/:member_id
 urlParameters:
 - enabled: true
   name: :slug
   value: ''
-  id: P_8MO-bZHbxt
+  id: P_laCk7cdTXq
 - enabled: true
   name: :member_id
   value: ''
-  id: P_4v7giDjfA7
+  id: P_SmqzmPSfCS

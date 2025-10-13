@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_jyY5lHaytU
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.221
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_BmbtxK2Sca
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Update flags for the user inbox message.
 headers: []
 method: PUT
@@ -19,4 +19,4 @@ urlParameters:
 - enabled: true
   name: :id
   value: ''
-  id: P_ZS0l7NTelo
+  id: P_fQWPkXaXie

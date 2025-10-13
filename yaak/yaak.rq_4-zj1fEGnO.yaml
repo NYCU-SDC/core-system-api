@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_4-zj1fEGnO
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.218
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_vq5QnaWlTo
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: ''
 headers: []
 method: POST
@@ -19,4 +19,4 @@ urlParameters:
 - enabled: true
   name: :refreshToken
   value: ''
-  id: P_Kk87hnx0bo
+  id: P_ZaLvkwNmzU

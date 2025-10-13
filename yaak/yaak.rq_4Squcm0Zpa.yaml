@@ -2,21 +2,21 @@ type: http_request
 model: http_request
 id: rq_4Squcm0Zpa
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.222
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Create a new unit
 headers: []
 method: POST
 name: createUnit
-sortPriority: -3300.0
+sortPriority: -3500.0
 url: ${[ BASE_URL ]}/api/orgs/:slug/units
 urlParameters:
 - enabled: true
   name: :slug
   value: ''
-  id: P_VB5reIiqNG
+  id: P_aCP3YVqeyT

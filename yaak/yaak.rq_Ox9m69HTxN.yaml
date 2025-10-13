@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_Ox9m69HTxN
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.221
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Create a new organization
 headers: []
 method: POST

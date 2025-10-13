@@ -2,17 +2,45 @@ type: http_request
 model: http_request
 id: rq_lJ9GWzBIWe
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.220
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_BmbtxK2Sca
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Get all the preview of the inbox messages with pagination.
 headers: []
 method: GET
 name: getInboxMessages
 sortPriority: -1800.0
 url: ${[ BASE_URL ]}/api/inbox
-urlParameters: []
+urlParameters:
+- enabled: true
+  name: isRead
+  value: 'false'
+  id: P_vnxbME32uc
+- enabled: true
+  name: isStarred
+  value: 'false'
+  id: P_wiqM7Iwxzl
+- enabled: true
+  name: isArchived
+  value: 'false'
+  id: P_VJoHgiObJG
+- enabled: true
+  name: search
+  value: ''
+  id: P_NM9Q41IsGj
+- enabled: true
+  name: unitIds
+  value: ''
+  id: P_DtTP3dQK0Q
+- enabled: true
+  name: page
+  value: '1'
+  id: P_FOLmrpnnvm
+- enabled: true
+  name: size
+  value: '10'
+  id: P_jV4utYWnj8

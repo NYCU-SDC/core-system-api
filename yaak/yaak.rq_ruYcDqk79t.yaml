@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_ruYcDqk79t
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T21:49:10.219
+updatedAt: 2025-10-13T22:59:00
 workspaceId: wk_0VW8famAue
 folderId: fl_2LfwgUrXTR
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: none
+bodyType: application/json
 description: Update an existing question by its unique identifier.
 headers: []
 method: PUT
@@ -19,8 +19,8 @@ urlParameters:
 - enabled: true
   name: :formId
   value: ''
-  id: P_24ZlVk-sC_
+  id: P_KinUZjM72d
 - enabled: true
   name: :questionId
   value: ''
-  id: P_T8A5AbvYum
+  id: P_u91kKrBVtk
