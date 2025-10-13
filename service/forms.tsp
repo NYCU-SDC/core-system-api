@@ -2,10 +2,15 @@ import "@typespec/http";
 import "@typespec/openapi3";
 
 using Http;
+using OpenAPI;
 
 @tag("Forms")
 namespace CoreSystem.Forms {
   @doc("The request body for creating/updating a form.")
+  @example(#{
+    title: "Enter SDC Form",
+    description: "If you want to join us, just fill in this form!",
+  })
   model FormRequest {
     @doc("The title of the form.")
     title: string;
@@ -117,6 +122,25 @@ namespace CoreSystem.Forms {
   }
 
   @doc("The request body for creating/updating a question.")
+  @example(#{
+    required: true,
+    type: QuestionTypes.shortText,
+    title: "What's your name?",
+    description: "Please enter your name",
+    order: 2,
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.multipleChoice,
+    title: "Which team you want to join???",
+    description: "Pick one of your favorite!!!",
+    order: 2,
+    choices: #[
+      #{ name: "Core System Team" },
+      #{ name: "Clustron Team" },
+      #{ name: "HPC Team" }
+    ],
+  })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
     required: boolean;
@@ -145,6 +169,7 @@ namespace CoreSystem.Forms {
   }
 
   @doc("Select recipients by organizations and/or units.(remove duplicates).")
+  @example(#{ unitIds: #["9a843aa0-8451-4e3b-b6a0-8c0e994e9040"] })
   model RecipientSelectionRequest {
     @doc("Target organization ID to collect users from.")
     orgId?: uuid;
