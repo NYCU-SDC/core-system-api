@@ -11,7 +11,8 @@
         "format": "tsp format **/*.tsp",
         "compile": "tsp compile .",
         "clean": "rm -rf tsp-output",
-        "start": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0"
+        "start": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0",
+        "yaak": "node scripts/generate-yaak.js"
     },
     "devDependencies": {
         "@stoplight/prism-cli": "^5.14.2",
@@ -20,5 +21,8 @@
         "@typespec/openapi3": "^1.4.0",
         "@typespec/rest": "^0.74.0",
         "@typespec/versioning": "^0.74.0"
+    },
+    "dependencies": {
+        "js-yaml": "^4.1.0"
     }
 }
