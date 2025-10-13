@@ -2,15 +2,25 @@ type: http_request
 model: http_request
 id: rq_9CYNinSGU6
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T22:59:00
+updatedAt: 2025-10-13T23:23:15
 workspaceId: wk_0VW8famAue
 folderId: fl_2LfwgUrXTR
 authentication: {}
 authenticationType: null
-body: {}
+body:
+  text: |-
+    {
+      "unitIds": [
+        "9a843aa0-8451-4e3b-b6a0-8c0e994e9040"
+      ]
+    }
 bodyType: application/json
 description: Publish a form. Set status to 'published', compute recipients, update inbox threads.
-headers: []
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: H_MoezahueO8
 method: POST
 name: publishForm
 sortPriority: -1600.0

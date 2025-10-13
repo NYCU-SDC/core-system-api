@@ -2,15 +2,28 @@ type: http_request
 model: http_request
 id: rq_4Squcm0Zpa
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T22:59:00
+updatedAt: 2025-10-13T23:23:15
 workspaceId: wk_0VW8famAue
 folderId: fl_E9I7ok0DRx
 authentication: {}
 authenticationType: null
-body: {}
+body:
+  text: |-
+    {
+      "name": "2025 Backend",
+      "description": "Backend course",
+      "metadata": {
+        "year": "2025",
+        "type": "education program"
+      }
+    }
 bodyType: application/json
 description: Create a new unit
-headers: []
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: H_N7xaiHoQVu
 method: POST
 name: createUnit
 sortPriority: -3500.0

@@ -2,15 +2,32 @@ type: http_request
 model: http_request
 id: rq_gVNwDSOO8Z
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T22:59:00
+updatedAt: 2025-10-13T23:23:15
 workspaceId: wk_0VW8famAue
 folderId: fl_E8ZQR5x7hs
 authentication: {}
 authenticationType: null
-body: {}
+body:
+  text: |-
+    {
+      "answers": [
+        {
+          "questionId": "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
+          "value": "John Doe"
+        },
+        {
+          "questionId": "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+          "value": "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f"
+        }
+      ]
+    }
 bodyType: application/json
 description: Submit a new response to a form.
-headers: []
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: H_pF2wySavYG
 method: POST
 name: submitFormResponse
 sortPriority: -900.0

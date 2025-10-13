@@ -1,8 +1,3 @@
-#!/usr/bin/env node
-/**
- * Generate Yaak workspace, folders, and requests from OpenAPI 3.1 spec
- */
-
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
@@ -23,6 +18,44 @@ const id = (pfx, seed) => {
     const hash = crypto.createHash("sha256").update(seed).digest("base64url");
     return `${pfx}_${hash.slice(0, 10)}`;
 };
+
+// Resolve $ref in schema
+const resolveRef = (ref, spec) => {
+    if (!ref || !ref.startsWith("#/")) return null;
+    const path = ref.substring(2).split("/");
+    let result = spec;
+    for (const part of path) {
+        result = result[part];
+        if (!result) return null;
+    }
+    return result;
+};
+
+// Extract example from schema
+const getSchemaExample = (schema, spec) => {
+    if (!schema) return null;
+
+    // Check if schema has $ref
+    if (schema.$ref) {
+        const resolved = resolveRef(schema.$ref, spec);
+        if (resolved) {
+            return getSchemaExample(resolved, spec);
+        }
+    }
+
+    // Check for examples array
+    if (schema.examples && Array.isArray(schema.examples) && schema.examples.length > 0) {
+        return schema.examples[0];
+    }
+
+    // Check for single example
+    if (schema.example !== undefined) {
+        return schema.example;
+    }
+
+    return null;
+};
+
 const write = (fname, data) => {
     const yamlStr = yaml.dump(data, {
         noRefs: true,
@@ -37,9 +70,6 @@ const write = (fname, data) => {
         },
     });
 
-    // Post-process to ensure proper formatting:
-    // 1. Remove quotes from date strings and empty strings in specific contexts
-    // 2. Ensure sortPriority has .0 suffix
     let formatted = yamlStr
         .replace(/createdAt: '(.+?)'/g, "createdAt: $1")
         .replace(/updatedAt: '(.+?)'/g, "updatedAt: $1")
@@ -88,6 +118,8 @@ for (const tag of spec.tags || []) {
     const fid = id("fl", `folder:${tag.name}`);
     tagFolders[tag.name] = fid;
 
+    let sortPriority = (spec.tags || []).indexOf(tag) * -100.0;
+
     const folder = {
         type: "folder",
         model: "folder",
@@ -101,7 +133,7 @@ for (const tag of spec.tags || []) {
         description: tag.description || "",
         headers: [],
         name: tag.name,
-        sortPriority: (spec.tags || []).indexOf(tag) * 100.0,
+        sortPriority: sortPriority == -0.0 ? 0.0 : sortPriority,
     };
     write(`yaak.${fid}.yaml`, folder);
 }
@@ -119,7 +151,6 @@ for (const [url, methods] of Object.entries(spec.paths)) {
         if (Array.isArray(op.parameters)) {
             for (const p of op.parameters) {
                 if (p.in === "path") {
-                    // Extract example value from schema if available
                     let exampleValue = "";
                     if (p.schema) {
                         if (p.schema.examples && p.schema.examples.length > 0) {
@@ -138,7 +169,6 @@ for (const [url, methods] of Object.entries(spec.paths)) {
                         id: id("P", `${method}:${url}:path:${p.name}`),
                     });
                 } else if (p.in === "query") {
-                    // Extract example value from schema if available
                     let exampleValue = "";
                     if (p.schema) {
                         if (p.schema.examples && p.schema.examples.length > 0) {
@@ -160,6 +190,34 @@ for (const [url, methods] of Object.entries(spec.paths)) {
             }
         }
 
+        // Extract body example from requestBody
+        let bodyContent = {};
+        let bodyType = "none";
+
+        if (op.requestBody && op.requestBody.content) {
+            const jsonContent = op.requestBody.content["application/json"];
+            if (jsonContent && jsonContent.schema) {
+                const example = getSchemaExample(jsonContent.schema, spec);
+                if (example) {
+                    bodyContent = { text: JSON.stringify(example, null, 2) };
+                    bodyType = "application/json";
+                }
+            }
+        }
+
+        // Add Content-Type header for requests with JSON body
+        const headers = [];
+        if (bodyType === "application/json") {
+            headers.push({
+                enabled: true,
+                name: "Content-Type",
+                value: "application/json",
+                id: id("H", `${method}:${url}:Content-Type`),
+            });
+        }
+
+        let sortPriority = requestIndex * -100.0;
+
         const rq = {
             type: "http_request",
             model: "http_request",
@@ -170,13 +228,13 @@ for (const [url, methods] of Object.entries(spec.paths)) {
             folderId,
             authentication: {},
             authenticationType: null,
-            body: {},
-            bodyType: "application/json",
+            body: bodyContent,
+            bodyType: bodyType,
             description: op.description || "",
-            headers: [],
+            headers: headers,
             method: method.toUpperCase(),
             name: op.operationId ? op.operationId.split("_")[1] : `${method.toUpperCase()} ${url}`,
-            sortPriority: requestIndex * -100.0,
+            sortPriority: sortPriority === -0.0 ? 0.0 : sortPriority,
             url: yaakUrl,
             urlParameters: urlParams,
         };

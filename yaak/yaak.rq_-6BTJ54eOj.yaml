@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_-6BTJ54eOj
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T22:59:00
+updatedAt: 2025-10-13T23:23:15
 workspaceId: wk_0VW8famAue
 folderId: fl_RFIy7WS47t
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: application/json
+bodyType: none
 description: ''
 headers: []
 method: GET

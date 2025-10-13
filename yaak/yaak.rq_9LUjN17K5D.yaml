@@ -2,15 +2,38 @@ type: http_request
 model: http_request
 id: rq_9LUjN17K5D
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T22:59:00
+updatedAt: 2025-10-13T23:23:15
 workspaceId: wk_0VW8famAue
 folderId: fl_2LfwgUrXTR
 authentication: {}
 authenticationType: null
-body: {}
+body:
+  text: |-
+    {
+      "required": true,
+      "type": "multiple_choice",
+      "title": "Which team you want to join???",
+      "description": "Pick one of your favorite!!!",
+      "order": 2,
+      "choices": [
+        {
+          "name": "Core System Team"
+        },
+        {
+          "name": "Clustron Team"
+        },
+        {
+          "name": "HPC Team"
+        }
+      ]
+    }
 bodyType: application/json
 description: Create a new question for a specific form.
-headers: []
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: H_R1kOLVMYHy
 method: POST
 name: createQuestion
 sortPriority: -400.0

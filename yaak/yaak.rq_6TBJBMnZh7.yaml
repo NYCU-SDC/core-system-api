@@ -2,13 +2,13 @@ type: http_request
 model: http_request
 id: rq_6TBJBMnZh7
 createdAt: 2025-10-13T08:00:00
-updatedAt: 2025-10-13T22:59:00
+updatedAt: 2025-10-13T23:23:15
 workspaceId: wk_0VW8famAue
 folderId: fl_2LfwgUrXTR
 authentication: {}
 authenticationType: null
 body: {}
-bodyType: application/json
+bodyType: none
 description: List all the questions of a specific form.
 headers: []
 method: GET
