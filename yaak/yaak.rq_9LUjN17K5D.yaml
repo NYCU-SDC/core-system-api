@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_9LUjN17K5D
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.218
+workspaceId: wk_0VW8famAue
+folderId: fl_2LfwgUrXTR
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: Create a new question for a specific form.
+headers: []
+method: POST
+name: createQuestion
+sortPriority: -400.0
+url: ${[ BASE_URL ]}/api/forms/:formId/questions
+urlParameters:
+- enabled: true
+  name: :formId
+  value: ''
+  id: P_ccX_J37-zH

@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_DSY9fQHS9Q
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.221
+workspaceId: wk_0VW8famAue
+folderId: fl_E9I7ok0DRx
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: Add a member to an organization
+headers: []
+method: POST
+name: addOrgMember
+sortPriority: -2800.0
+url: ${[ BASE_URL ]}/api/orgs/:slug/members
+urlParameters:
+- enabled: true
+  name: :slug
+  value: ''
+  id: P_5145qYt7vu

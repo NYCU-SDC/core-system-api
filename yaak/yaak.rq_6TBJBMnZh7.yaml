@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_6TBJBMnZh7
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.218
+workspaceId: wk_0VW8famAue
+folderId: fl_2LfwgUrXTR
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: List all the questions of a specific form.
+headers: []
+method: GET
+name: listQuestions
+sortPriority: -500.0
+url: ${[ BASE_URL ]}/api/forms/:formId/questions
+urlParameters:
+- enabled: true
+  name: :formId
+  value: ''
+  id: P_xGb_otJmKS

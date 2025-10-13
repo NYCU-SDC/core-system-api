@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_bPqxpar5Zh
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.221
+workspaceId: wk_0VW8famAue
+folderId: fl_E9I7ok0DRx
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: Create a new parent-child relationship between units by linking them
+headers: []
+method: POST
+name: addParentChild
+sortPriority: -2300.0
+url: ${[ BASE_URL ]}/api/orgs/relations
+urlParameters: []

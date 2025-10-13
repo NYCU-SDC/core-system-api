@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_zWwslPA4Us
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.219
+workspaceId: wk_0VW8famAue
+folderId: fl_E8ZQR5x7hs
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: Delete a response and all its associated data.
+headers: []
+method: DELETE
+name: deleteFormResponse
+sortPriority: -1200.0
+url: ${[ BASE_URL ]}/api/forms/:formId/responses/:responseId
+urlParameters:
+- enabled: true
+  name: :formId
+  value: ''
+  id: P_YK3ljK9Uyc
+- enabled: true
+  name: :responseId
+  value: ''
+  id: P_OgY2huH-xy

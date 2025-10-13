@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_jyY5lHaytU
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.221
+workspaceId: wk_0VW8famAue
+folderId: fl_BmbtxK2Sca
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: Update flags for the user inbox message.
+headers: []
+method: PUT
+name: updateInboxMessageFlag
+sortPriority: -2000.0
+url: ${[ BASE_URL ]}/api/inbox/:id
+urlParameters:
+- enabled: true
+  name: :id
+  value: ''
+  id: P_ZS0l7NTelo

@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_Qd8W41BJ8-
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.218
+workspaceId: wk_0VW8famAue
+folderId: fl_vq5QnaWlTo
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: ''
+headers: []
+method: GET
+name: loginGoogle
+sortPriority: 0.0
+url: ${[ BASE_URL ]}/api/auth/login/oauth/:provider
+urlParameters:
+- enabled: true
+  name: :provider
+  value: ''
+  id: P_llja9qxZr9

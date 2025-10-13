@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_Ox9m69HTxN
+createdAt: 2025-10-13T08:00:00
+updatedAt: 2025-10-13T21:49:10.221
+workspaceId: wk_0VW8famAue
+folderId: fl_E9I7ok0DRx
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: none
+description: Create a new organization
+headers: []
+method: POST
+name: createOrg
+sortPriority: -2200.0
+url: ${[ BASE_URL ]}/api/orgs
+urlParameters: []
