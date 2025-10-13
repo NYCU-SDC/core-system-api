@@ -37,9 +37,19 @@ pnpm format
 
 ### 編譯
 
+#### OpenAPI
+
 ```bash
 pnpm compile
 ```
+
+#### Yaak
+
+```bash
+pnpm yaak
+```
+
+> 編譯 Yaak 前需要先編譯 OpenAPI
 
 ### 清理已編譯文件
 

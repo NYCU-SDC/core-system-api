@@ -78,7 +78,6 @@ for (const tag of spec.tags || []) {
         sortPriority: (spec.tags || []).indexOf(tag) * 100,
     };
     write(`yaak.${fid}.yaml`, folder);
-    console.log(`📁 Folder: ${tag.name} (${fid})`);
 }
 
 // ----------  3️⃣ requests ----------
@@ -125,7 +124,6 @@ for (const [url, methods] of Object.entries(spec.paths)) {
             urlParameters: urlParams,
         };
         write(`yaak.${rid}.yaml`, rq);
-        console.log(`🧾 Request: ${rq.name} (${method.toUpperCase()} ${url})`);
         requestIndex++;
     }
 }
