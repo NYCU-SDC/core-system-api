@@ -10,6 +10,7 @@ tags:
   - name: Forms
   - name: Responses
   - name: Inbox
+  - name: Slug
 paths:
   /api/auth/login/oauth/{provider}:
     get:
@@ -748,6 +749,41 @@ paths:
                 type: string
       tags:
         - Unit
+  /api/orgs/{slug}/history:
+    get:
+      operationId: Slug_getSlugHistory
+      description: List the complete usage history of a given slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current:
+                    $ref: '#/components/schemas/Slug.Status'
+                  history:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Slug.History'
+                required:
+                  - current
+                  - history
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Slug
   /api/orgs/{slug}/members:
     post:
       operationId: Unit_addOrgMember
@@ -817,6 +853,31 @@ paths:
                 type: string
       tags:
         - Unit
+  /api/orgs/{slug}/status:
+    get:
+      operationId: Slug_getSlugStatus
+      description: Get the availability of the slug.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slug.Status'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Slug
   /api/orgs/{slug}/unit-ids:
     get:
       operationId: Unit_listOrgSubUnitIds
@@ -1316,6 +1377,9 @@ components:
           format: date-time
           description: (Optional) Deadline for form completion.
       description: The request body for creating/updating a form.
+      examples:
+        - title: Enter SDC Form
+          description: If you want to join us, just fill in this form!
     Forms.FormStatus:
       type: string
       enum:
@@ -1406,6 +1470,21 @@ components:
             $ref: '#/components/schemas/Forms.ChoiceOption'
           description: Available choice options for single_choice and multiple_choice questions.
       description: The request body for creating/updating a question.
+      examples:
+        - required: true
+          type: multiple_choice
+          title: Which team you want to join???
+          description: Pick one of your favorite!!!
+          order: 2
+          choices:
+            - name: Core System Team
+            - name: Clustron Team
+            - name: HPC Team
+        - required: true
+          type: short_text
+          title: What's your name?
+          description: Please enter your name
+          order: 2
     Forms.QuestionTypes:
       type: string
       enum:
@@ -1428,6 +1507,9 @@ components:
             $ref: '#/components/schemas/uuid'
           description: Target unit IDs to collect users from.
       description: Select recipients by organizations and/or units.(remove duplicates).
+      examples:
+        - unitIds:
+            - 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
     Forms.RecipientSelectionResponse:
       type: object
       required:
@@ -1449,14 +1531,17 @@ components:
         name:
           type: string
       description: The basic info of a user that can receive the form.
-    Inbox.InboxMessage:
+    Inbox.InboxFormMessage:
       type: object
       required:
         - id
         - postedBy
         - title
+        - org
+        - unit
         - type
         - previewMessage
+        - contentId
         - createdAt
         - updatedAt
       properties:
@@ -1471,9 +1556,12 @@ components:
         title:
           type: string
           description: The title of the inbox message.
-        subtitle:
+        org:
           type: string
-          description: The subtitle of the inbox message.
+          description: The organization display name of the sender.
+        unit:
+          type: string
+          description: The unit display name of the sender.
         type:
           type: string
           enum:
@@ -1486,7 +1574,7 @@ components:
         contentId:
           allOf:
             - $ref: '#/components/schemas/uuid'
-          description: (Optional) The identifier of the content referenced by the contentType.
+          description: The identifier of the content referenced by the contentType.
         createdAt:
           type: string
           format: date-time
@@ -1511,7 +1599,7 @@ components:
           description: The id of this UserInboxMessage.
         message:
           allOf:
-            - $ref: '#/components/schemas/Inbox.InboxMessage'
+            - $ref: '#/components/schemas/Inbox.InboxFormMessage'
           description: The inbox message this user inbox message refers to.
         isRead:
           type: boolean
@@ -1541,7 +1629,7 @@ components:
           description: The id of this UserInboxMessage.
         message:
           allOf:
-            - $ref: '#/components/schemas/Inbox.InboxMessage'
+            - $ref: '#/components/schemas/Inbox.InboxFormMessage'
           description: The inbox message this user inbox message refers to.
         content:
           allOf:
@@ -1671,6 +1759,11 @@ components:
           type: string
           description: The answer value (format depends on questionType from questionId).
       description: Request model for submitting an individual answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          value: John Doe
     Responses.AnswersForQuestionResponse:
       type: object
       required:
@@ -1789,6 +1882,12 @@ components:
             $ref: '#/components/schemas/Responses.AnswerRequest'
           description: All answers for this form submission.
       description: Request model for submitting a complete form response
+      examples:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              value: John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
     Responses.SubmitResponse:
       type: object
       required:
@@ -1814,6 +1913,47 @@ components:
           format: date-time
           description: The last updated timestamp of the response.
       description: Response model for a submitted form response
+    Slug.History:
+      type: object
+      required:
+        - orgId
+        - orgName
+        - startedAt
+        - endedAt
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the organization that used the slug.
+        orgName:
+          type: string
+          description: The name of the organization that used the slug.
+        startedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the organization started using the slug.
+        endedAt:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          description: The timestamp when the organization stopped using the slug, if applicable.
+      description: The usage history of the slug.
+    Slug.Status:
+      type: object
+      required:
+        - available
+        - orgId
+      properties:
+        available:
+          type: boolean
+          description: Indicates whether the slug is available.
+        orgId:
+          anyOf:
+            - $ref: '#/components/schemas/uuid'
+            - type: 'null'
+          description: The organization currently using the slug, if any.
+      description: The current state of the slug.
     Unauthorized:
       type: object
       required:
@@ -1889,6 +2029,12 @@ components:
             type: string
           description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
       description: Base Request model, containing common fields for updating units and organizations.
+      examples:
+        - name: 2025 Backend
+          description: Backend course - Updated
+          metadata:
+            year: '2025'
+            type: education program
     Unit.CreateOrgRequest:
       type: object
       required:
@@ -1910,6 +2056,12 @@ components:
           description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
         slug:
           type: string
+      examples:
+        - name: NYCU SDC2
+          description: 陽明交大軟體開發社
+          slug: nycu-sdc1
+          metadata:
+            type: club
     Unit.CreateUnitRequest:
       type: object
       required:
@@ -1928,6 +2080,12 @@ components:
           unevaluatedProperties:
             type: string
           description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+      examples:
+        - name: 2025 Backend
+          description: Backend course
+          metadata:
+            year: '2025'
+            type: education program
     Unit.OrgMember:
       type: object
       required:
@@ -1950,6 +2108,8 @@ components:
       properties:
         email:
           type: string
+      examples:
+        - email: 123@gmail.com
     Unit.Organization:
       type: object
       required:
@@ -2018,6 +2178,10 @@ components:
           $ref: '#/components/schemas/uuid'
         orgId:
           $ref: '#/components/schemas/uuid'
+      examples:
+        - parentId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          childId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
     Unit.Unit:
       type: object
       required:
@@ -2073,6 +2237,8 @@ components:
       properties:
         email:
           type: string
+      examples:
+        - email: 123@gmail.com
     Unit.UpdateOrgRequest:
       type: object
       required:
