@@ -2,6 +2,7 @@ import "@typespec/http";
 import "@typespec/openapi3";
 
 using Http;
+using OpenAPI;
 using CoreSystem.Forms;
 
 @tag("Inbox")
@@ -115,7 +116,10 @@ namespace CoreSystem.Inbox {
   @put
   op updateInboxMessageFlag(
     @path id: uuid,
-    @body body: {
+
+    @example(#{ isRead: false, isStarred: true, isArchived: false })
+    @body
+    body: {
       isRead?: boolean = false;
       isStarred?: boolean = false;
       isArchived?: boolean = false;

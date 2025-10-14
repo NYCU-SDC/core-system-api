@@ -1,33 +1,37 @@
 # Core System API
 
-This repository contains the TypeSpec API definitions for Core System.
+Core System API documentation.
 
-> [Chinese Version](README.md)
+> [Chinese Version](README.zh.md)
 
-## Prerequisites
+## Dependencies
 
 Please install [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) first.
 
-> pnpm Installation:
->
-> ```bash
-> npm install --global corepack@latest
-> corepack enable pnpm
-> ```
+pnpm installation:
 
-## Installation
+```bash
+npm install --global corepack@latest
+corepack enable pnpm
+```
+
+## Install Packages
 
 ```bash
 pnpm i
 ```
 
-## Build Commands
+## Build
 
-Compile the TypeSpec files after editing.
+You need to compile after editing to preview.
 
 ```bash
 pnpm build
 ```
+
+<details>
+
+<summary>Other Commands</summary>
 
 ### Format Check
 
@@ -37,23 +41,32 @@ pnpm format
 
 ### Compilation
 
+#### OpenAPI
+
 ```bash
 pnpm compile
 ```
 
-### Cleanup
+#### Yaak
+
+```bash
+pnpm yaak
+```
+
+> You need to compile OpenAPI before compiling Yaak
+
+### Clean Compiled Files
 
 ```bash
 pnpm clean
 ```
 
-## Output
+</details>
 
-The compilation process generates OpenAPI specification in the `tsp-output/schema/openapi.yaml` file. You can preview it using:
+## Output Files
+
+The output files will be in `tsp-output/schema/openapi.yaml`. You can preview using:
 
 -   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - Just open the [swagger-ui.html](swagger-ui.html) file below.
 -   [Prism](https://prismjs.com/) - For API documentation preview and testing. Run `pnpm start` and open <http://localhost:4010>.
-
-## What is Yaak doing?
-
-Currently Yaak does not fetch data from TypeSpec, please maintain it separately.
+-   [Yaak](https://yaak.app/) - Import the `yaak` folder.

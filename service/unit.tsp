@@ -1,7 +1,9 @@
 import "@typespec/http";
+import "@typespec/openapi3";
 import "./forms.tsp";
 
 using Http;
+using OpenAPI;
 using CoreSystem.Forms;
 
 @tag("Unit")
@@ -28,6 +30,11 @@ namespace CoreSystem.Unit {
   }
 
   @doc("Base Request model, containing common fields for updating units and organizations.")
+  @example(#{
+    name: "2025 Backend",
+    description: "Backend course - Updated",
+    metadata: #{ year: "2025", type: "education program" },
+  })
   model BaseRequest {
     @doc("The name of the unit or organization")
     name: string;
@@ -80,13 +87,24 @@ namespace CoreSystem.Unit {
     orgId: uuid;
   }
 
-  model CreateUnitRequest {
-    ...BaseRequest;
-  }
-
+  @example(#{
+    name: "NYCU SDC2",
+    description: "陽明交大軟體開發社",
+    slug: "nycu-sdc1",
+    metadata: #{ type: "club" },
+  })
   model CreateOrgRequest {
     ...BaseRequest;
     slug: string; // Slug is required for organizations
+  }
+
+  @example(#{
+    name: "2025 Backend",
+    description: "Backend course",
+    metadata: #{ year: "2025", type: "education program" },
+  })
+  model CreateUnitRequest {
+    ...BaseRequest;
   }
 
   model UpdateOrgRequest {
@@ -98,16 +116,23 @@ namespace CoreSystem.Unit {
     ...BaseRequest;
   }
 
+  @example(#{
+    parentId: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+    childId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
+    orgId: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+  })
   model ParentChildRequest {
     parentId?: uuid; // Optional, if not provided, the child will be added to the root of the organization
     childId: uuid;
     orgId: uuid;
   }
 
+  @example(#{ email: "123@gmail.com" })
   model OrgMemberRequest {
     email: string;
   }
 
+  @example(#{ email: "123@gmail.com" })
   model UnitMemberRequest {
     email: string;
   }
