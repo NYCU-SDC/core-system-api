@@ -11,10 +11,13 @@ jobs:
         name: Deploy API docs
         runs-on: ubuntu-latest
         permissions:
-          contents: write
+            contents: write
+
         steps:
             - name: Checkout repo
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
@@ -28,8 +31,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build
-              run: |
-                  pnpm build
+              run: pnpm build
 
             - name: Generate Redocly and Swagger UI
               run: |
@@ -49,3 +51,22 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_dir: ./publish
+
+            - name: Push OpenAPI spec to spec-versions branch
+              run: |
+                  SPEC_FILE="tsp-output/schema/openapi.1.0.0.yaml"
+                  TARGET_BRANCH="spec"
+                  FILE_NAME="openapi.1.0.0.yaml"
+
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+                  git fetch origin $TARGET_BRANCH || true
+                  git checkout -B $TARGET_BRANCH origin/$TARGET_BRANCH || git checkout -b $TARGET_BRANCH
+
+                  mkdir -p tsp-output/schema
+                  cp $SPEC_FILE $FILE_NAME
+
+                  git add $FILE_NAME
+                  git commit -m "chore(spec): update OpenAPI spec from main @$(git rev-parse --short HEAD)" || echo "No changes to commit"
+                  git push origin $TARGET_BRANCH
