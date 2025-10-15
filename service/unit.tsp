@@ -1,10 +1,12 @@
 import "@typespec/http";
 import "@typespec/openapi3";
 import "./forms.tsp";
+import "./user.tsp";
 
 using Http;
 using OpenAPI;
 using CoreSystem.Forms;
+using CoreSystem.User;
 
 @tag("Unit")
 namespace CoreSystem.Unit {
@@ -73,6 +75,24 @@ namespace CoreSystem.Unit {
 
     @doc("The unique identifier of the member")
     memberId: uuid;
+  }
+
+  @doc("Response model for organization member with full user details")
+  model OrgMemberResponse {
+    @doc("The unique identifier of the organization")
+    orgId: uuid;
+
+    @doc("Full user details including emails")
+    member: CoreSystem.User.User;
+  }
+
+  @doc("Response model for unit member with full user details")
+  model UnitMemberResponse {
+    @doc("The unique identifier of the unit")
+    unitId: uuid;
+
+    @doc("Full user details including emails")
+    member: CoreSystem.User.User;
   }
 
   @doc("Model representing a parent-child relationship between units, allowing for hierarchical structures")
@@ -277,13 +297,13 @@ namespace CoreSystem.Unit {
   @doc("Add a member to an organization")
   op addOrgMember(@path slug: string, @body Request: OrgMemberRequest): {
     @statusCode statusCode: 201;
-    @body orgMember: OrgMember;
+    @body orgMember: OrgMemberResponse;
   };
 
   @get
   @route("/orgs/{slug}/members")
   @doc("List all members of an organization")
-  op listOrgMembers(@path slug: string): User[];
+  op listOrgMembers(@path slug: string): CoreSystem.User.User[];
 
   @delete
   @route("/orgs/{slug}/members/{member_id}")
@@ -304,13 +324,16 @@ namespace CoreSystem.Unit {
     @body Request: UnitMemberRequest,
   ): {
     @statusCode statusCode: 201;
-    @body unitMember: UnitMember;
+    @body unitMember: UnitMemberResponse;
   };
 
   @get
   @route("/orgs/{slug}/units/{id}/members")
   @doc("List all members of a specific unit")
-  op listUnitMembers(@path slug: string, @path id: uuid): User[];
+  op listUnitMembers(
+    @path slug: string,
+    @path id: uuid,
+  ): CoreSystem.User.User[];
 
   @delete
   @route("/orgs/{slug}/units/{id}/members/{member_id}")
