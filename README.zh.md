@@ -67,6 +67,7 @@ pnpm clean
 
 輸出的文件會在 `tsp-output/schema/openapi.yaml`。你可以使用以下方式進行預覽：
 
--   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - 直接打開底下的 [swagger-ui.html](swagger-ui.html) 檔案即可。
+- [Scalar](https://scalar.dev/api-reference/) - 直接打開底下的 [index.html](index.html) 檔案即可。
+-   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - 直接打開底下的 [swagger.html](swagger.html) 檔案即可。
 -   [Prism](https://prismjs.com/) - 用於 API 文件的預覽和測試。執行 `pnpm start` 後，打開 <http://localhost:4010> 即可。
 - [Yaak](https://yaak.app/) - 匯入資料夾 `yaak`

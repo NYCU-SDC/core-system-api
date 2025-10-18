@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Core System API Reference</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            body {
+                background-color: #0f0f0f;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+        <script>
+            Scalar.createApiReference("#app", {
+                url: "tsp-output/schema/openapi.1.0.0.yaml",
+                // Avoid CORS issues
+                // proxyUrl: 'https://proxy.scalar.com',
+            });
+        </script>
+    </body>
+</html>
