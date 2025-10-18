@@ -67,6 +67,7 @@ pnpm clean
 
 The output files will be in `tsp-output/schema/openapi.yaml`. You can preview using:
 
--   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - Just open the [swagger-ui.html](swagger-ui.html) file below.
+- [Scalar](https://scalar.dev/api-reference/) - Just open the [index.html](index.html) file below.
+-   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - Just open the [swagger.html](swagger.html) file below.
 -   [Prism](https://prismjs.com/) - For API documentation preview and testing. Run `pnpm start` and open <http://localhost:4010>.
 -   [Yaak](https://yaak.app/) - Import the `yaak` folder.

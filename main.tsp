@@ -13,7 +13,7 @@ using Http;
 using Versioning;
 
 @service(#{ title: "Core System API" })
-@server("https://example.com", "Single server endpoint")
+@server("https://dev.core-system.sdc.nycu.club", "Core System server endpoint")
 @versioned(Versions)
 @route("/api")
 namespace CoreSystem;

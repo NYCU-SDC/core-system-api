@@ -40,7 +40,8 @@ jobs:
               run: |
                   mkdir -p publish/tsp-output/schema
                   mv tsp-output/schema/openapi.1.0.0.yaml publish/tsp-output/schema/openapi.1.0.0.yaml
-                  mv swagger-ui.html publish/index.html
+                  mv index.html publish/index.html
+                  mv swagger.html publish/swagger.html
                   mkdir -p publish/redocly
                   mv redocly.html publish/redocly/index.html
 
