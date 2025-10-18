@@ -143,6 +143,10 @@ namespace CoreSystem.Unit {
   @doc("List all units, optionally filtered by parent organization ID")
   op listOrgSubUnits(
     @path slug: string,
+
+    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
+    @query
+    parentId?: uuid,
   ): Unit[];
 
   @get
@@ -151,6 +155,10 @@ namespace CoreSystem.Unit {
   op listUnitSubUnits(
     @path slug: string,
     @path id: uuid,
+
+    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
+    @query
+    parentId?: uuid,
   ): Unit[];
 
   @get
@@ -158,6 +166,10 @@ namespace CoreSystem.Unit {
   @doc("List all unit IDs, optionally filtered by parent organization ID")
   op listOrgSubUnitIds(
     @path slug: string,
+
+    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
+    @query
+    parentId?: uuid,
   ): uuid[];
 
   @get
@@ -166,6 +178,10 @@ namespace CoreSystem.Unit {
   op listUnitSubUnitIds(
     @path slug: string,
     @path id: uuid,
+
+    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
+    @query
+    parentId?: uuid,
   ): uuid[];
 
   @get
