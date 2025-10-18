@@ -2317,6 +2317,6 @@ components:
       type: string
       format: uuid
 servers:
-  - url: https://example.com
-    description: Single server endpoint
+  - url: https://dev.core-system.sdc.nycu.club
+    description: Core System server endpoint
     variables: {}
