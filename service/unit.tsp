@@ -191,9 +191,9 @@ namespace CoreSystem.Unit {
 
 
   @get
-  @route("/orgs/{member_id}")
-  @doc("List all organizations of a specific member")
-  op listOrgsByMember(@path member_id: uuid): Organization[];
+  @route("/orgs/me")
+  @doc("List all organizations of current user")
+  op listOrganizationsOfCurrentUser(): Organization[];
 
   @get
   @route("/orgs/{slug}")
