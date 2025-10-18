@@ -173,6 +173,12 @@ namespace CoreSystem.Unit {
   @doc("Get all organizations")
   op getAllOrganizations(): Organization[];
 
+
+  @get
+  @route("/orgs/{member_id}")
+  @doc("List all organizations of a specific member")
+  op listOrgsByMember(@path member_id: uuid): Organization[];
+
   @get
   @route("/orgs/{slug}")
   @doc("Get a specific unit with the slug of its organization by its unique identifier")
