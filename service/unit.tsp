@@ -303,7 +303,7 @@ namespace CoreSystem.Unit {
   @get
   @route("/orgs/{slug}/members")
   @doc("List all members of an organization")
-  op listOrgMembers(@path slug: string): CoreSystem.User.User[];
+  op listOrgMembers(@path slug: string): User[];
 
   @delete
   @route("/orgs/{slug}/members/{member_id}")
