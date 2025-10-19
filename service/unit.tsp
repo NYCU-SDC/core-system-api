@@ -6,7 +6,6 @@ import "./user.tsp";
 using Http;
 using OpenAPI;
 using CoreSystem.Forms;
-using CoreSystem.User;
 
 @tag("Unit")
 namespace CoreSystem.Unit {
@@ -330,10 +329,7 @@ namespace CoreSystem.Unit {
   @get
   @route("/orgs/{slug}/units/{id}/members")
   @doc("List all members of a specific unit")
-  op listUnitMembers(
-    @path slug: string,
-    @path id: uuid,
-  ): CoreSystem.User.User[];
+  op listUnitMembers(@path slug: string, @path id: uuid): User[];
 
   @delete
   @route("/orgs/{slug}/units/{id}/members/{member_id}")
