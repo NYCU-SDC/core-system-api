@@ -21,6 +21,9 @@ namespace CoreSystem.User {
     @doc("Avatar URL of the user.")
     avatarUrl: string;
 
+    @doc("Email addresses associated with the user.")
+    emails: string[];
+
     @doc("Global role of the user.")
     roles: Role[];
   }
