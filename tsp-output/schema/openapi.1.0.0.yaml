@@ -800,7 +800,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Unit.OrgMember'
+                $ref: '#/components/schemas/Unit.OrgMemberResponse'
       tags:
         - Unit
       requestBody:
@@ -1057,7 +1057,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Unit.UnitMember'
+                $ref: '#/components/schemas/Unit.UnitMemberResponse'
       tags:
         - Unit
       requestBody:
@@ -2110,6 +2110,21 @@ components:
           type: string
       examples:
         - email: 123@gmail.com
+    Unit.OrgMemberResponse:
+      type: object
+      required:
+        - orgId
+        - member
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the organization
+        member:
+          allOf:
+            - $ref: '#/components/schemas/User.User'
+          description: Full user details including emails
+      description: Response model for organization member with full user details
     Unit.Organization:
       type: object
       required:
@@ -2239,6 +2254,21 @@ components:
           type: string
       examples:
         - email: 123@gmail.com
+    Unit.UnitMemberResponse:
+      type: object
+      required:
+        - unitId
+        - member
+      properties:
+        unitId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the unit
+        member:
+          allOf:
+            - $ref: '#/components/schemas/User.User'
+          description: Full user details including emails
+      description: Response model for unit member with full user details
     Unit.UpdateOrgRequest:
       type: object
       required:
@@ -2289,6 +2319,7 @@ components:
         - username
         - name
         - avatarUrl
+        - emails
         - roles
       properties:
         id:
@@ -2304,6 +2335,11 @@ components:
         avatarUrl:
           type: string
           description: Avatar URL of the user.
+        emails:
+          type: array
+          items:
+            type: string
+          description: Email addresses associated with the user.
         roles:
           type: array
           items:
