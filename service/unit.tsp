@@ -208,6 +208,12 @@ namespace CoreSystem.Unit {
   @doc("Get all organizations")
   op getAllOrganizations(): Organization[];
 
+
+  @get
+  @route("/orgs/me")
+  @doc("List all organizations of current user")
+  op listOrganizationsOfCurrentUser(): Organization[];
+
   @get
   @route("/orgs/{slug}")
   @doc("Get a specific unit with the slug of its organization by its unique identifier")
