@@ -6,10 +6,21 @@ using OpenAPI;
 
 @tag("Forms")
 namespace CoreSystem.Forms {
+  @doc("The request body for uploading a cover image.")
+  model FormCoverUploadRequest {
+    @doc("The actual image file.")
+    image: HttpPart<bytes>;
+  }
+  @doc("Response after uploading a cover image.")
+  model FormCoverUploadResponse {
+    @doc("The temporary full URL of the uploaded image.")
+    imageUrl: string;
+  }
   @doc("The request body for creating/updating a form.")
   @example(#{
     title: "Enter SDC Form",
     description: "If you want to join us, just fill in this form!",
+    messageAfterSubmission: "Thank you for your submission!",
   })
   model FormRequest {
     @doc("The title of the form.")
@@ -23,6 +34,21 @@ namespace CoreSystem.Forms {
 
     @doc("(Optional) Deadline for form completion.")
     deadline?: utcDateTime;
+
+    @doc("When the form is available to be filled.")
+    publishTime?: utcDateTime;
+
+    @doc("The message to show after user's submission.")
+    messageAfterSubmission: string;
+
+    @doc("The dressing of the form.")
+    dressing?: Record<string>;
+
+    @doc("The image path returned by the upload API.")
+    coverImage?: string;
+
+    @doc("The google sheet url this from's responses will be sent to.")
+    googleSheetUrl?: string;
   }
 
   @doc("The structure of a form.")
@@ -50,6 +76,21 @@ namespace CoreSystem.Forms {
 
     @doc("(Optional) Deadline for form completion. If not specified, returns null.")
     deadline?: utcDateTime;
+
+    @doc("When the form is available to be filled.")
+    publishTime?: utcDateTime;
+
+    @doc("The message to show after user's submission.")
+    messageAfterSubmission: string;
+
+    @doc("The dressing of the form.")
+    dressing?: Record<string>;
+
+    @doc("The full URL to access the cover image.")
+    coverImage?: string;
+
+    @doc("The google sheet url this from's responses will be sent to.")
+    googleSheetUrl?: string;
 
     @doc("The creation timestamp of the form.")
     createdAt: utcDateTime;
@@ -233,6 +274,22 @@ namespace CoreSystem.Forms {
   @route("/forms/{formId}/questions")
   @get
   op listQuestions(@path formId: uuid): Question[];
+
+  @doc("Upload a cover image for a form.")
+  @route("/forms/upload-cover")
+  @post
+  op uploadFormCoverImage(
+    @header("content-type") contentType: "multipart/form-data",
+    @multipartBody body: FormCoverUploadRequest,
+  ): FormCoverUploadResponse;
+
+  @doc("Get the cover image binary data.")
+  @route("/forms/{id}/cover")
+  @get
+  op getFormCoverImage(@path id: uuid): {
+    @header("content-type") contentType: "image/jpeg";
+    @body body: bytes;
+  };
 
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")
