@@ -94,6 +94,27 @@ namespace CoreSystem.Unit {
     member: CoreSystem.User.User;
   }
 
+  @doc("The completion status of the form for the user")
+  enum UserFormStatus {
+    in_progress: "in_progress",
+    completed: "completed",
+  }
+
+  @doc("Response model for listing user forms with status")
+  model UserForm {
+    @doc("The unique identifier of the form")
+    id: uuid;
+
+    @doc("The title of the form")
+    title: string;
+
+    @doc("The deadline of the form")
+    deadline: utcDateTime;
+
+    @doc("The completion status of the form for the current user")
+    status: UserFormStatus;
+  }
+
   @doc("Model representing a parent-child relationship between units, allowing for hierarchical structures")
   model ParentChild {
     @doc("The unique identifier of the parent unit, which can be left null if the child is root unit of the organization.")
@@ -368,4 +389,10 @@ namespace CoreSystem.Unit {
   @route("/orgs/{slug}/units/{unitId}/forms")
   @get
   op listFormsByUnit(@path slug: string, @path unitId: uuid): Form[];
+
+  // --- Current User Forms ---
+  @doc("List all forms of current user")
+  @route("/forms/me")
+  @get
+  op listFormsOfCurrentUser(): UserForm[];
 }
