@@ -52,9 +52,6 @@ namespace CoreSystem.Responses {
     @doc("The current section ID.")
     sectionId: uuid;
 
-    @doc("The answering flow.")
-    workflow: [];
-
     @doc("The creation timestamp of the response.")
     createdAt: utcDateTime;
 
