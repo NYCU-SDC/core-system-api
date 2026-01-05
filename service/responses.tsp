@@ -124,13 +124,13 @@ namespace CoreSystem.Responses {
 
   @doc("The current progress of the response.")
   enum ResponseProgress {
-    @doc("User has not started this form yet.")
+    @doc("User has not started answering yet.")
     pending: "pending",      
 
     @doc("User has started but not finished (partially filled).")
     in_progress: "in_progress",
 
-    @doc("User has completed/passed this section.")
+    @doc("User has completed/passed this response.")
     completed: "completed"
   }
 
