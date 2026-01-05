@@ -41,13 +41,19 @@ namespace CoreSystem.Responses {
     answers: AnswerRequest[];
   }
 
-  @doc("Response model for a submitted form response")
+  @doc("Response model for creating or updating a form response")
   model SubmitResponse {
     @doc("The response's unique identifier.")
     id: uuid;
 
     @doc("The form that this response belongs to.")
     formId: uuid;
+
+    @doc("The current section ID.")
+    sectionId: uuid;
+
+    @doc("The answering flow.")
+    workflow: [];
 
     @doc("The creation timestamp of the response.")
     createdAt: utcDateTime;
@@ -94,8 +100,14 @@ namespace CoreSystem.Responses {
     @doc("The response's unique identifier.")
     id: uuid;
 
+    @doc("The current answering progress of the response.")
+    status: ResponseProgress;
+
     @doc("The form that this response belongs to.")
     formId: uuid;
+
+    @doc("The current section ID.")
+    sectionId: uuid;
 
     @doc("The user who submitted this response.")
     submittedBy: uuid;
@@ -108,6 +120,18 @@ namespace CoreSystem.Responses {
 
     @doc("The last updated timestamp of the response.")
     updatedAt: utcDateTime;
+  }
+
+  @doc("The current progress of the response.")
+  enum ResponseProgress {
+    @doc("User has not started this form yet.")
+    pending: "pending",      
+
+    @doc("User has started but not finished (partially filled).")
+    in_progress: "in_progress",
+
+    @doc("User has completed/passed this section.")
+    completed: "completed"
   }
 
   @doc("Response model for a single answer in question answers view")
@@ -142,10 +166,10 @@ namespace CoreSystem.Responses {
 
   // API Endpoints
 
-  @doc("Submit a new response to a form.")
+  @doc("Create a new response of a form.")
   @route("/forms/{formId}/responses")
   @post
-  op submitFormResponse(@path formId: uuid, @body request: SubmitRequest): {
+  op createFormResponse(@path formId: uuid, @body request: SubmitRequest): {
     @statusCode statusCode: 201;
     @body response: SubmitResponse;
   } | {
@@ -154,6 +178,18 @@ namespace CoreSystem.Responses {
   } | {
     @statusCode statusCode: 400;
     @body error: ProblemDetail;
+  };
+
+  @doc("Update answers for a response.")
+  @route("/forms/{formId}/responses/{responseId}")
+  @patch(#{implicitOptionality: true})
+  op updateResponse(
+    @path formId: uuid, 
+    @path responseId: uuid, 
+    @body req: SubmitRequest
+  ): {
+    @statusCode statusCode: 200;
+    @body response: SubmitResponse;
   };
 
   @doc("List all responses for a specific form.")
