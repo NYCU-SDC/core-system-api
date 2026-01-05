@@ -8,8 +8,8 @@ using OpenAPI;
 namespace CoreSystem.Forms {
   @doc("The request body for uploading a cover image.")
   model FormCoverUploadRequest {
-    @doc("The actual image file.")
-    image: HttpPart<bytes>;
+    @doc("The cover image file in JPEG format.")
+    coverImage: HttpPart<bytes>;
   }
   @doc("Response after uploading a cover image.")
   model FormCoverUploadResponse {
@@ -283,7 +283,7 @@ namespace CoreSystem.Forms {
     @multipartBody body: FormCoverUploadRequest,
   ): FormCoverUploadResponse;
 
-  @doc("Get the cover image binary data.")
+  @doc("Get the cover image binary data. Returns the image in JPEG format.")
   @route("/forms/{id}/cover")
   @get
   op getFormCoverImage(@path id: uuid): {
