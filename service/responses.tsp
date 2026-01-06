@@ -36,21 +36,15 @@ namespace CoreSystem.Responses {
       }
     ],
   })
-  model SubmitRequest {
-    @doc("All answers for this form submission.")
+  model CreateRequest {
+    @doc("The first answers for this form submission.")
     answers: AnswerRequest[];
   }
 
-  @doc("Response model for creating or updating a form response")
-  model SubmitResponse {
+  @doc("Response model for creating a form response")
+  model CreateResponse {
     @doc("The response's unique identifier.")
     id: uuid;
-
-    @doc("The form that this response belongs to.")
-    formId: uuid;
-
-    @doc("The current section ID.")
-    sectionId: uuid;
 
     @doc("The creation timestamp of the response.")
     createdAt: utcDateTime;
@@ -58,6 +52,28 @@ namespace CoreSystem.Responses {
     @doc("The last updated timestamp of the response.")
     updatedAt: utcDateTime;
   }
+
+  @doc("Request model for updating a form response, with uuid(questionId) as keys")
+  @example(#{
+    answers:#{
+        questionId1: "John Doe",
+        questionId2: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
+      }
+  })
+  model UpdateRequest {
+    @doc("The answers for this form submission.")
+    answers: Record<string | null>;
+  }
+
+  @doc("Response model for updating a form response")
+  model UpdateResponse {
+    @doc("The response's unique identifier.")
+    id: uuid;
+
+    @doc("The last updated timestamp of the response.")
+    updatedAt: utcDateTime;
+  }
+
 
   @doc("Response model for a single response in list view")
   model ResponseJSON {
@@ -166,9 +182,9 @@ namespace CoreSystem.Responses {
   @doc("Create a new response of a form.")
   @route("/forms/{formId}/responses")
   @post
-  op createFormResponse(@path formId: uuid, @body request: SubmitRequest): {
+  op createFormResponse(@path formId: uuid, @body request: CreateRequest): {
     @statusCode statusCode: 201;
-    @body response: SubmitResponse;
+    @body response: CreateResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
@@ -177,16 +193,16 @@ namespace CoreSystem.Responses {
     @body error: ProblemDetail;
   };
 
-  @doc("Update answers for a response.")
+  @doc("Update answers for the response.")
   @route("/forms/{formId}/responses/{responseId}")
   @patch(#{implicitOptionality: true})
-  op updateResponse(
+  op updateFormResponse(
     @path formId: uuid, 
     @path responseId: uuid, 
-    @body req: SubmitRequest
+    @body req: UpdateRequest
   ): {
     @statusCode statusCode: 200;
-    @body response: SubmitResponse;
+    @body response: UpdateResponse;
   };
 
   @doc("List all responses for a specific form.")
