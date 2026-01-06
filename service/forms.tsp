@@ -78,14 +78,11 @@ namespace CoreSystem.Forms {
 
   @doc("The current progress of a section")
   enum SectionProgress {
-    @doc("User has not started this section yet.")
-    pending: "pending",      
+    @doc("User hasn't started or not finished.")
+    DRAFT: "draft",
 
-    @doc("User has started but not finished (partially filled).")
-    in_progress: "in_progress",
-
-    @doc("User has completed/passed this section.")
-    completed: "completed"
+    @doc("User has completed/passed this response.")
+    SUBMITTED: "submitted"
   }
 
   @doc("The current status of form ")
@@ -258,34 +255,33 @@ namespace CoreSystem.Forms {
   op listForms(): Form[];
 
   @doc("Create a new question for a specific form.")
-  @route("/forms/{formId}/sections/{sectionId}/questions")
+  @route("/sections/{sectionId}/questions")
   @post
-  op createQuestion(@path formId: uuid, @path sectionId: uuid, @body q: QuestionRequest): {
+  op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
     @body question: Question;
   };
 
   @doc("Update an existing question by its unique identifier.")
-  @route("/forms/{formId}/sections/{sectionId}/questions/{questionId}")
+  @route("/sections/{sectionId}/questions/{questionId}")
   @put
   op updateQuestion(
-    @path formId: uuid,
     @path sectionId: uuid,
     @path questionId: uuid,
     @body q: QuestionRequest,
   ): Question;
 
   @doc("Delete an existing question by its unique identifier.")
-  @route("/forms/{formId}/sections/{sectionId}/questions/{questionId}")
+  @route("/sections/{sectionId}/questions/{questionId}")
   @delete
-  op deleteQuestion(@path formId: uuid, @path sectionId: uuid, @path questionId: uuid): {
+  op deleteQuestion(@path sectionId: uuid, @path questionId: uuid): {
     @statusCode statusCode: 204;
   };
 
   @doc("List all the questions of a specific form.")
-  @route("/forms/{formId}/questions")
+  @route("/sections/{sectionId}/questions")
   @get
-  op listQuestions(@path formId: uuid): Question[];
+  op listQuestions(@path sectionId: uuid): Question[];
 
   @doc("Submit current section and get next section content.")
   @route("/forms/{formId}/sections/{sectionId}")

@@ -45,12 +45,6 @@ namespace CoreSystem.Responses {
   model CreateResponse {
     @doc("The response's unique identifier.")
     id: uuid;
-
-    @doc("The creation timestamp of the response.")
-    createdAt: utcDateTime;
-
-    @doc("The last updated timestamp of the response.")
-    updatedAt: utcDateTime;
   }
 
   @doc("Request model for updating a form response, with uuid(questionId) as keys")
@@ -63,15 +57,6 @@ namespace CoreSystem.Responses {
   model UpdateRequest {
     @doc("The answers for this form submission.")
     answers: Record<string | null>;
-  }
-
-  @doc("Response model for updating a form response")
-  model UpdateResponse {
-    @doc("The response's unique identifier.")
-    id: uuid;
-
-    @doc("The last updated timestamp of the response.")
-    updatedAt: utcDateTime;
   }
 
 
@@ -137,14 +122,11 @@ namespace CoreSystem.Responses {
 
   @doc("The current progress of the response.")
   enum ResponseProgress {
-    @doc("User has not started answering yet.")
-    pending: "pending",      
-
-    @doc("User has started but not finished (partially filled).")
-    in_progress: "in_progress",
+    @doc("User hasn't started or not finished.")
+    DRAFT: "draft",
 
     @doc("User has completed/passed this response.")
-    completed: "completed"
+    SUBMITTED: "submitted"
   }
 
   @doc("Response model for a single answer in question answers view")
@@ -177,6 +159,14 @@ namespace CoreSystem.Responses {
     answers: AnswerForQuestionResponse[];
   }
 
+  model ResponseSections {
+    @doc("Unique identifier.")
+    id: uuid;
+
+    @doc("Section title (e.g., 'Group Info').")
+    title: string;
+  }
+
   // API Endpoints
 
   @doc("Create a new response of a form.")
@@ -194,15 +184,13 @@ namespace CoreSystem.Responses {
   };
 
   @doc("Update answers for the response.")
-  @route("/forms/{formId}/responses/{responseId}")
+  @route("/responses/{responseId}/answers")
   @patch(#{implicitOptionality: true})
   op updateFormResponse(
-    @path formId: uuid, 
     @path responseId: uuid, 
     @body req: UpdateRequest
   ): {
     @statusCode statusCode: 200;
-    @body response: UpdateResponse;
   };
 
   @doc("List all responses for a specific form.")
@@ -243,6 +231,17 @@ namespace CoreSystem.Responses {
   op getQuestionAnswers(@path formId: uuid, @path questionId: uuid): {
     @statusCode statusCode: 200;
     @body response: AnswersForQuestionResponse[];
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  };
+
+  @doc("List the form structure of the response.")
+  @route("/responses/{responseId}/sections")
+  @get
+  op listResponseSections(@path responseId: uuid): {
+    @statusCode statusCode: 200;
+    @body response: ResponseSections[];
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
