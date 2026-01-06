@@ -99,7 +99,7 @@ namespace CoreSystem.Responses {
     id: uuid;
 
     @doc("The current answering progress of the response.")
-    status: ResponseProgress;
+    progress: ResponseProgress;
 
     @doc("The form that this response belongs to.")
     formId: uuid;

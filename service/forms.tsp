@@ -70,7 +70,7 @@ namespace CoreSystem.Forms {
     title: string;
 
     @doc("The progress of this section.")
-    status: SectionProgress;
+    progress: SectionProgress;
 
     @doc("Section description.")
     description?: string;
