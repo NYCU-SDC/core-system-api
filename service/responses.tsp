@@ -23,7 +23,7 @@ namespace CoreSystem.Responses {
     value: string;
   }
 
-  @doc("Request model for submitting a complete form response")
+  @doc("Request model for updating the form response")
   @example(#{
     answers: #[
       #{
@@ -36,8 +36,8 @@ namespace CoreSystem.Responses {
       }
     ],
   })
-  model CreateRequest {
-    @doc("The first answers for this form submission.")
+  model UpdateRequest {
+    @doc("Only the answers that are new or have been modified.")
     answers: AnswerRequest[];
   }
 
@@ -46,19 +46,6 @@ namespace CoreSystem.Responses {
     @doc("The response's unique identifier.")
     id: uuid;
   }
-
-  @doc("Request model for updating a form response, with uuid(questionId) as keys")
-  @example(#{
-    answers:#{
-        questionId1: "John Doe",
-        questionId2: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
-      }
-  })
-  model UpdateRequest {
-    @doc("The answers for this form submission.")
-    answers: Record<string | null>;
-  }
-
 
   @doc("Response model for a single response in list view")
   model ResponseJSON {
@@ -172,7 +159,7 @@ namespace CoreSystem.Responses {
   @doc("Create a new response of a form.")
   @route("/forms/{formId}/responses")
   @post
-  op createFormResponse(@path formId: uuid, @body request: CreateRequest): {
+  op createFormResponse(@path formId: uuid): {
     @statusCode statusCode: 201;
     @body response: CreateResponse;
   } | {
