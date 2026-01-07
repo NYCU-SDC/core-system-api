@@ -34,17 +34,20 @@ namespace CoreSystem.FormWorkflow {
 
   @doc("Condition rule for condition nodes")
   model ConditionRule {
-    @doc("Source of data for the condition (jwt or answer)")
+    @doc("Source of data for the condition")
     source: ConditionSource;
 
-    @doc("Key to check in the source data")
+    @doc("The question ID to check against")
     key: string;
 
-    @doc("Regex pattern to match against")
-    pattern: string;
+    @doc("Regex pattern to match against (required for NON_CHOICE source)")
+    pattern?: string;
 
-    @doc("Regex flags (e.g., 'i' for case-insensitive)")
+    @doc("Regex flags (e.g., 'i' for case-insensitive, only for NON_CHOICE source)")
     flags?: string;
+
+    @doc("Array of choice option IDs to match against (required for CHOICE source)")
+    choiceOptionIds?: uuid[];
   }
 
   @doc("Next node connection with optional condition result")
@@ -95,7 +98,16 @@ namespace CoreSystem.FormWorkflow {
           #{
             source: ConditionSource.choice,
             key: "question_id",
-            pattern: "8888-content-uuid",
+            choiceOptionIds: #[
+              "f421cfc2-2b84-4da9-9629-011af609935a",
+              "2ca86a6d-7735-4f17-8676-29b4724b524f"
+            ],
+          },
+          #{
+            source: ConditionSource.nonChoice,
+            key: "name_question_id",
+            pattern: "^[A-Z]",
+            flags: "i",
           }
         ],
         nextNodes: #[
