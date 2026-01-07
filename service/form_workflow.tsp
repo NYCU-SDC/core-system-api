@@ -188,20 +188,6 @@ namespace CoreSystem.FormWorkflow {
 
   // API Endpoints
 
-  @doc("Preview workflow - get initial workflow state and first section")
-  @route("/forms/{id}/workflow/preview")
-  @post
-  op previewWorkflow(@path id: uuid): {
-    @statusCode statusCode: 200;
-    @body response: WorkflowPreviewResponse;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: NotFound;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
-  };
-
   @doc("Create a new workflow for a form (backend/admin)")
   @route("/forms/{id}/workflow")
   @post
