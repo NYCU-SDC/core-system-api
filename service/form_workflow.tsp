@@ -71,7 +71,16 @@ namespace CoreSystem.FormWorkflow {
     rules: ConditionRule[];
   }
 
-  @doc("Workflow node structure")
+  @doc("Next node connection with optional condition result")
+  model NextNode {
+    @doc("The ID of the next node")
+    nodeId: string;
+
+    @doc("When condition evaluates to this value, go to this node (for condition nodes only)")
+    when?: boolean;
+  }
+
+  @doc("Workflow node structure with linked list connections")
   model Node {
     @doc("Unique identifier for the node")
     id: string;
@@ -84,27 +93,15 @@ namespace CoreSystem.FormWorkflow {
 
     @doc("Frontend payload stored in JSONB")
     frontend_payload: unknown;
-  }
 
-  @doc("Workflow edge structure (connection between nodes)")
-  model Edge {
-    @doc("Source node ID")
-    source: string;
-
-    @doc("Target node ID")
-    target: string;
-
-    @doc("Source handle for conditional edges (true/false for condition nodes)")
-    sourceHandle?: "true" | "false";
+    @doc("Array of next nodes with their logic conditions (for sequential nodes, use single item without logic; for condition nodes, use items with logic true/false)")
+    nextNodes?: NextNode[];
   }
 
   @doc("Complete workflow structure stored as JSONB")
   model WorkflowStructure {
-    @doc("Array of workflow nodes")
+    @doc("Array of workflow nodes (connections are stored within each node)")
     nodes: Node[];
-
-    @doc("Array of workflow edges (connections)")
-    edges: Edge[];
   }
 
   @doc("Request body for creating/updating workflow")
@@ -117,49 +114,47 @@ namespace CoreSystem.FormWorkflow {
           callback_url: "https://core-system.sdc.nycu.club/register-form",
         },
         frontend_payload: #{},
+        nextNodes: #[#{ nodeId: "uuid_choose_team" }],
       },
       #{
         id: "uuid_choose_team",
         type: NodeType.section,
         data: #{ section_ref_id: "8888-content-uuid" },
         frontend_payload: #{},
+        nextNodes: #[
+          #{ nodeId: "uuid_full_stack_intro", when: true },
+          #{ nodeId: "uuid_choose_full_stack_advanced", when: false }
+        ],
       },
       #{
-        id: "uuid_check_role",
-        type: NodeType.condition,
+        id: "uuid_full_stack_intro",
+        type: NodeType.section,
+        data: #{ section_ref_id: "full-stack-intro-uuid" },
+        frontend_payload: #{},
+        nextNodes: #[#{ nodeId: "uuid_end" }],
+      },
+      #{
+        id: "uuid_choose_full_stack_advanced",
+        type: NodeType.section,
+        data: #{ section_ref_id: "full-stack-advanced-uuid" },
+        frontend_payload: #{},
+        nextNodes: #[#{ nodeId: "uuid_end" }],
+      },
+      #{
+        id: "uuid_end",
+        type: NodeType.end,
         data: #{
-          rules: #[
-            #{
-              source: ConditionSource.jwt,
-              key: "role",
-              pattern: "admin",
-              flags: "i",
-            }
-          ],
+          title: "Thank you!",
+          content: "Your form has been submitted successfully.",
+          redirect_url: "https://example.com",
         },
         frontend_payload: #{},
       }
     ],
-    edges: #[
-      #{ source: "uuid_node_start", target: "uuid_choose_team" },
-      #{
-        source: "uuid_choose_full_stack_intro",
-        target: "uuid_full_stack_intro",
-        sourceHandle: "true",
-      },
-      #{
-        source: "uuid_choose_full_stack_intro",
-        target: "uuid_choose_full_stack_advanced",
-        sourceHandle: "false",
-      }
-    ],
   })
   model WorkflowRequest {
-    @doc("Workflow structure with nodes and edges")
+    @doc("Workflow structure with nodes (linked list connections stored in each node)")
     nodes: Node[];
-
-    @doc("Workflow edges connecting nodes")
-    edges: Edge[];
   }
 
   @doc("Workflow response model")
