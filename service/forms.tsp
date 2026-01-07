@@ -149,19 +149,15 @@ namespace CoreSystem.Forms {
   @doc("The request body for creating/updating a question.")
   @example(#{
     required: true,
-    onChange: false,
     type: QuestionTypes.shortText,
     title: "What's your name?",
     description: "Please enter your name",
-    order: 2,
   })
   @example(#{
     required: true,
-    onChange: true,
     type: QuestionTypes.multipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
-    order: 2,
     choices: #[
       #{ name: "Core System Team" },
       #{ name: "Clustron Team" },
@@ -172,9 +168,6 @@ namespace CoreSystem.Forms {
     @doc("Whether the question is required to answer or not.")
     required: boolean;
 
-    @doc("Whether the question requires immediate server interaction.")
-    onChange: boolean;
-
     @doc("The type of the question.")
     type: QuestionTypes;
 
@@ -183,9 +176,6 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
-
-    @doc("What is the number of this question in the form.")
-    order: int32;
 
     @doc("Available choice options for single_choice and multiple_choice questions.")
     choices?: ChoiceOption[];
