@@ -124,9 +124,6 @@ namespace CoreSystem.Forms {
     @doc("The section's id that the question belongs to.")
     sectionId: uuid;
 
-    @doc("Whether the question requires immediate server interaction.")
-    onChange: boolean;
-
     @doc("Whether the question is required to answer or not.")
     required: boolean;
 
@@ -138,9 +135,6 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
-
-    @doc("What is the number of this question in the form.")
-    order: int32;
 
     @doc("Available choices for single_choice and multiple_choice questions.")
     choices?: Choice[];
@@ -197,19 +191,6 @@ namespace CoreSystem.Forms {
     choices?: ChoiceOption[];
   }
 
-
-  @doc("The response for next section after completing current section.")
-  model NextSectionResponse {
-    @doc("The ID of the next section to navigate to.")
-    nextSectionId?: uuid;
-
-    @doc("If false, there is no next section, ready to submit.")
-    hasNext: boolean; 
-
-    @doc("The questions in the next section.")
-    questions?: Question[];
-  }
-
   // form recipientUser
   @doc("The basic info of a user that can receive the form.")
   model RecipientUser {
@@ -254,7 +235,7 @@ namespace CoreSystem.Forms {
   @get
   op listForms(): Form[];
 
-  @doc("Create a new question for a specific form.")
+  @doc("Create a new question for a specific section.")
   @route("/sections/{sectionId}/questions")
   @post
   op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
@@ -278,25 +259,10 @@ namespace CoreSystem.Forms {
     @statusCode statusCode: 204;
   };
 
-  @doc("List all the questions of a specific form.")
+  @doc("List all the questions of a specific section.")
   @route("/sections/{sectionId}/questions")
   @get
   op listQuestions(@path sectionId: uuid): Question[];
-
-  @doc("Submit current section and get next section content.")
-  @route("/forms/{formId}/sections/{sectionId}")
-  @post
-  op submitSection(
-    @path formId: uuid,
-    @path responseId: uuid,
-    @path sectionId: uuid
-  ): {
-    @statusCode statusCode: 200;
-    @body response: NextSectionResponse;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
-  };
 
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")

@@ -23,7 +23,7 @@ namespace CoreSystem.Responses {
     value: string;
   }
 
-  @doc("Request model for updating the form response")
+  @doc("Request model for updating the form response, may contain 1~all answers.")
   @example(#{
     answers: #[
       #{
@@ -36,8 +36,8 @@ namespace CoreSystem.Responses {
       }
     ],
   })
-  model UpdateRequest {
-    @doc("Only the answers that are new or have been modified.")
+  model SaveAnswersRequest {
+    @doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
     answers: AnswerRequest[];
   }
 
@@ -71,13 +71,23 @@ namespace CoreSystem.Responses {
     responses: ResponseJSON[];
   }
 
-  @doc("Response model for a question with its answer")
-  model QuestionAnswerForGetResponse {
+
+  @doc("Response model for a question with its answer in preview view")
+  model PreviewQuestionDto {
     @doc("The question details.")
-    questionId: uuid;
+    question: CoreSystem.Forms.Question;
 
     @doc("The answer value.")
     answer: string;
+  }
+
+  @doc("Response model for a single section in preview view")
+  model PreviewSectionDto {
+    @doc("The section title.")
+    sectionTitle: string;
+
+    @doc("All questions with their answers in this section.")
+    questionAnswerPairs: PreviewQuestionDto[];
   }
 
   @doc("Response model for getting a specific form response")
@@ -91,20 +101,11 @@ namespace CoreSystem.Responses {
     @doc("The form that this response belongs to.")
     formId: uuid;
 
-    @doc("The current section ID.")
-    sectionId: uuid;
-
     @doc("The user who submitted this response.")
     submittedBy: uuid;
 
     @doc("All questions with their answers for this response.")
-    questionAnswerPairs: QuestionAnswerForGetResponse[];
-
-    @doc("The creation timestamp of the response.")
-    createdAt: utcDateTime;
-
-    @doc("The last updated timestamp of the response.")
-    updatedAt: utcDateTime;
+    questionAnswerPairs: PreviewSectionDto[];
   }
 
   @doc("The current progress of the response.")
@@ -146,12 +147,31 @@ namespace CoreSystem.Responses {
     answers: AnswerForQuestionResponse[];
   }
 
+  @doc("Response model for a single section in response sections view")
   model ResponseSections {
     @doc("Unique identifier.")
     id: uuid;
 
     @doc("Section title (e.g., 'Group Info').")
     title: string;
+  }
+
+  @example(#{
+    sections: #[
+      #{
+        id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        title: "Group Info",
+      },
+      #{
+        id: "0f9e8d7c-6b5a-4321-0fed-cba987654321",
+        title: "Self Introduction",
+      }
+    ],
+  })
+  @doc("Response model for listing all sections of a response")
+  model ListSectionResponse {
+    @doc("The section list of the response.")
+    sections: ResponseSections[];
   }
 
   // API Endpoints
@@ -170,12 +190,23 @@ namespace CoreSystem.Responses {
     @body error: ProblemDetail;
   };
 
+  @doc("Submit all the answer in the form response.")
+  @route("/responses/{responseId}/submit")
+  @post
+  op submitFormResponse(@path responseId: uuid): {
+    @statusCode statusCode: 200;
+    @body req: SaveAnswersRequest
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
   @doc("Update answers for the response.")
   @route("/responses/{responseId}/answers")
   @patch(#{implicitOptionality: true})
   op updateFormResponse(
     @path responseId: uuid, 
-    @body req: UpdateRequest
+    @body req: SaveAnswersRequest
   ): {
     @statusCode statusCode: 200;
   };
@@ -212,23 +243,12 @@ namespace CoreSystem.Responses {
     @body error: NotFound;
   };
 
-  @doc("Get all answers for a specific question across all form responses.")
-  @route("/forms/{formId}/questions/{questionId}")
-  @get
-  op getQuestionAnswers(@path formId: uuid, @path questionId: uuid): {
-    @statusCode statusCode: 200;
-    @body response: AnswersForQuestionResponse[];
-  } | {
-    @statusCode statusCode: 404;
-    @body error: NotFound;
-  };
-
   @doc("List the form structure of the response.")
   @route("/responses/{responseId}/sections")
   @get
   op listResponseSections(@path responseId: uuid): {
     @statusCode statusCode: 200;
-    @body response: ResponseSections[];
+    @body response: ListSectionResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
