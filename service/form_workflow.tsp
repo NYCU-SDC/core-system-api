@@ -11,43 +11,25 @@ namespace CoreSystem.FormWorkflow {
   @doc("Node type enum for workflow nodes")
   enum NodeType {
     @doc("Section node - represents a form section/page")
-    section: "section",
+    section: "SECTION",
 
     @doc("End node - represents the end of the workflow (thank you page and redirect)")
-    end: "end",
+    end: "END",
 
     @doc("Start node - represents the workflow entry point")
-    start: "start",
+    start: "START",
 
     @doc("Condition node - represents a logic/condition check node")
-    condition: "condition",
+    condition: "CONDITION",
   }
 
   @doc("Data source for condition rules")
   enum ConditionSource {
-    @doc("Source from JWT token (user context)")
-    jwt: "jwt",
+    @doc("Source from choice answer")
+    choice: "CHOICE",
 
-    @doc("Source from form answers")
-    answer: "answer",
-  }
-
-  @doc("Start node data payload")
-  model StartNodeData {
-    @doc("Callback URL for the workflow entry")
-    callback_url: string;
-  }
-
-  @doc("End node data payload")
-  model EndNodeData {
-    @doc("Title for the end page")
-    title: string;
-
-    @doc("Content/message for the end page")
-    content: string;
-
-    @doc("Redirect URL after form completion")
-    redirect_url: string;
+    @doc("Source from non-choice answer")
+    nonChoice: "NON_CHOICE",
   }
 
   @doc("Condition rule for condition nodes")
@@ -63,12 +45,6 @@ namespace CoreSystem.FormWorkflow {
 
     @doc("Regex flags (e.g., 'i' for case-insensitive)")
     flags?: string;
-  }
-
-  @doc("Condition node data payload")
-  model ConditionNodeData {
-    @doc("Array of condition rules to evaluate")
-    rules: ConditionRule[];
   }
 
   @doc("Next node connection with optional condition result")
@@ -88,14 +64,14 @@ namespace CoreSystem.FormWorkflow {
     @doc("Type of the node")
     type: NodeType;
 
-    @doc("Data payload for the node (structure depends on node type, stored as JSONB)")
-    data: unknown;
-
-    @doc("Frontend payload stored in JSONB")
-    frontend_payload: unknown;
-
     @doc("Array of next nodes with their logic conditions (for sequential nodes, use single item without logic; for condition nodes, use items with logic true/false)")
     nextNodes?: NextNode[];
+
+    @doc("The section reference ID for the node, only for section nodes")
+    sectionRefId?: string;
+
+    @doc("The condition rules for the node, only for condition nodes")
+    conditionRules?: ConditionRule[];
   }
 
   @doc("Complete workflow structure stored as JSONB")
@@ -110,17 +86,18 @@ namespace CoreSystem.FormWorkflow {
       #{
         id: "uuid_node_start",
         type: NodeType.start,
-        data: #{
-          callback_url: "https://core-system.sdc.nycu.club/register-form",
-        },
-        frontend_payload: #{},
         nextNodes: #[#{ nodeId: "uuid_choose_team" }],
       },
       #{
         id: "uuid_choose_team",
-        type: NodeType.section,
-        data: #{ section_ref_id: "8888-content-uuid" },
-        frontend_payload: #{},
+        type: NodeType.condition,
+        conditionRules: #[
+          #{
+            source: ConditionSource.choice,
+            key: "question_id",
+            pattern: "8888-content-uuid",
+          }
+        ],
         nextNodes: #[
           #{ nodeId: "uuid_full_stack_intro", when: true },
           #{ nodeId: "uuid_choose_full_stack_advanced", when: false }
@@ -129,27 +106,16 @@ namespace CoreSystem.FormWorkflow {
       #{
         id: "uuid_full_stack_intro",
         type: NodeType.section,
-        data: #{ section_ref_id: "full-stack-intro-uuid" },
-        frontend_payload: #{},
+        sectionRefId: "full-stack-intro-uuid",
         nextNodes: #[#{ nodeId: "uuid_end" }],
       },
       #{
         id: "uuid_choose_full_stack_advanced",
         type: NodeType.section,
-        data: #{ section_ref_id: "full-stack-advanced-uuid" },
-        frontend_payload: #{},
+        sectionRefId: "full-stack-advanced-uuid",
         nextNodes: #[#{ nodeId: "uuid_end" }],
       },
-      #{
-        id: "uuid_end",
-        type: NodeType.end,
-        data: #{
-          title: "Thank you!",
-          content: "Your form has been submitted successfully.",
-          redirect_url: "https://example.com",
-        },
-        frontend_payload: #{},
-      }
+      #{ id: "uuid_end", type: NodeType.end }
     ],
   })
   model WorkflowRequest {
