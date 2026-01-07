@@ -23,7 +23,7 @@ namespace CoreSystem.Responses {
     value: string;
   }
 
-  @doc("Request model for submitting a complete form response")
+  @doc("Request model for updating the form response")
   @example(#{
     answers: #[
       #{
@@ -36,24 +36,15 @@ namespace CoreSystem.Responses {
       }
     ],
   })
-  model SubmitRequest {
-    @doc("All answers for this form submission.")
+  model UpdateRequest {
+    @doc("Only the answers that are new or have been modified.")
     answers: AnswerRequest[];
   }
 
-  @doc("Response model for a submitted form response")
-  model SubmitResponse {
+  @doc("Response model for creating a form response")
+  model CreateResponse {
     @doc("The response's unique identifier.")
     id: uuid;
-
-    @doc("The form that this response belongs to.")
-    formId: uuid;
-
-    @doc("The creation timestamp of the response.")
-    createdAt: utcDateTime;
-
-    @doc("The last updated timestamp of the response.")
-    updatedAt: utcDateTime;
   }
 
   @doc("Response model for a single response in list view")
@@ -94,8 +85,14 @@ namespace CoreSystem.Responses {
     @doc("The response's unique identifier.")
     id: uuid;
 
+    @doc("The current answering progress of the response.")
+    progress: ResponseProgress;
+
     @doc("The form that this response belongs to.")
     formId: uuid;
+
+    @doc("The current section ID.")
+    sectionId: uuid;
 
     @doc("The user who submitted this response.")
     submittedBy: uuid;
@@ -108,6 +105,15 @@ namespace CoreSystem.Responses {
 
     @doc("The last updated timestamp of the response.")
     updatedAt: utcDateTime;
+  }
+
+  @doc("The current progress of the response.")
+  enum ResponseProgress {
+    @doc("User hasn't started or not finished.")
+    DRAFT: "draft",
+
+    @doc("User has completed/passed this response.")
+    SUBMITTED: "submitted"
   }
 
   @doc("Response model for a single answer in question answers view")
@@ -140,20 +146,38 @@ namespace CoreSystem.Responses {
     answers: AnswerForQuestionResponse[];
   }
 
+  model ResponseSections {
+    @doc("Unique identifier.")
+    id: uuid;
+
+    @doc("Section title (e.g., 'Group Info').")
+    title: string;
+  }
+
   // API Endpoints
 
-  @doc("Submit a new response to a form.")
+  @doc("Create a new response of a form.")
   @route("/forms/{formId}/responses")
   @post
-  op submitFormResponse(@path formId: uuid, @body request: SubmitRequest): {
+  op createFormResponse(@path formId: uuid): {
     @statusCode statusCode: 201;
-    @body response: SubmitResponse;
+    @body response: CreateResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
   } | {
     @statusCode statusCode: 400;
     @body error: ProblemDetail;
+  };
+
+  @doc("Update answers for the response.")
+  @route("/responses/{responseId}/answers")
+  @patch(#{implicitOptionality: true})
+  op updateFormResponse(
+    @path responseId: uuid, 
+    @body req: UpdateRequest
+  ): {
+    @statusCode statusCode: 200;
   };
 
   @doc("List all responses for a specific form.")
@@ -194,6 +218,17 @@ namespace CoreSystem.Responses {
   op getQuestionAnswers(@path formId: uuid, @path questionId: uuid): {
     @statusCode statusCode: 200;
     @body response: AnswersForQuestionResponse[];
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  };
+
+  @doc("List the form structure of the response.")
+  @route("/responses/{responseId}/sections")
+  @get
+  op listResponseSections(@path responseId: uuid): {
+    @statusCode statusCode: 200;
+    @body response: ResponseSections[];
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
