@@ -100,100 +100,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Forms.RecipientSelectionRequest'
-  /api/forms/{formId}/questions:
-    post:
-      operationId: Forms_createQuestion
-      description: Create a new question for a specific form.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Question'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Forms.QuestionRequest'
-    get:
-      operationId: Forms_listQuestions
-      description: List all the questions of a specific form.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Forms.Question'
-      tags:
-        - Forms
   /api/forms/{formId}/questions/{questionId}:
-    put:
-      operationId: Forms_updateQuestion
-      description: Update an existing question by its unique identifier.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: questionId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Question'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Forms.QuestionRequest'
-    delete:
-      operationId: Forms_deleteQuestion
-      description: Delete an existing question by its unique identifier.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: questionId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
-      tags:
-        - Forms
     get:
       operationId: Responses_getQuestionAnswers
       description: Get all answers for a specific question across all form responses.
@@ -227,8 +134,8 @@ paths:
         - Responses
   /api/forms/{formId}/responses:
     post:
-      operationId: Responses_submitFormResponse
-      description: Submit a new response to a form.
+      operationId: Responses_createFormResponse
+      description: Create a new response of a form.
       parameters:
         - name: formId
           in: path
@@ -241,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses.SubmitResponse'
+                $ref: '#/components/schemas/Responses.CreateResponse'
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
@@ -256,12 +163,6 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Responses.SubmitRequest'
     get:
       operationId: Responses_listFormResponses
       description: List all responses for a specific form.
@@ -341,6 +242,41 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/sections/{sectionId}/{responseId}:
+    post:
+      operationId: Forms_submitSection
+      description: Submit current section and get next section content.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.NextSectionResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      tags:
+        - Forms
   /api/forms/{id}:
     put:
       operationId: Forms_updateForm
@@ -1257,6 +1193,148 @@ paths:
                   $ref: '#/components/schemas/Forms.Form'
       tags:
         - Unit
+  /api/responses/{responseId}/answers:
+    patch:
+      operationId: Responses_updateFormResponse
+      description: Update answers for the response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.UpdateRequest'
+  /api/responses/{responseId}/sections:
+    get:
+      operationId: Responses_listResponseSections
+      description: List the form structure of the response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Responses.ResponseSections'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+  /api/sections/{sectionId}/questions:
+    post:
+      operationId: Forms_createQuestion
+      description: Create a new question for a specific form.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Question'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.QuestionRequest'
+    get:
+      operationId: Forms_listQuestions
+      description: List all the questions of a specific form.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Question'
+      tags:
+        - Forms
+  /api/sections/{sectionId}/questions/{questionId}:
+    put:
+      operationId: Forms_updateQuestion
+      description: Update an existing question by its unique identifier.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Question'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.QuestionRequest'
+    delete:
+      operationId: Forms_deleteQuestion
+      description: Delete an existing question by its unique identifier.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+      tags:
+        - Forms
   /api/users/me:
     get:
       operationId: User_getMe
@@ -1402,11 +1480,30 @@ components:
         - draft
         - published
       description: 'The current status of form '
+    Forms.NextSectionResponse:
+      type: object
+      required:
+        - hasNext
+      properties:
+        nextSectionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The ID of the next section to navigate to.
+        hasNext:
+          type: boolean
+          description: If false, there is no next section, ready to submit.
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.Question'
+          description: The questions in the next section.
+      description: The response for next section after completing current section.
     Forms.Question:
       type: object
       required:
         - id
-        - formId
+        - sectionId
+        - onChange
         - required
         - type
         - title
@@ -1419,10 +1516,13 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The question's unique identifier.
-        formId:
+        sectionId:
           allOf:
             - $ref: '#/components/schemas/uuid'
-          description: "The form's id that the question belongs to. "
+          description: The section's id that the question belongs to.
+        onChange:
+          type: boolean
+          description: Whether the question requires immediate server interaction.
         required:
           type: boolean
           description: Whether the question is required to answer or not.
@@ -1458,6 +1558,7 @@ components:
       type: object
       required:
         - required
+        - onChange
         - type
         - title
         - description
@@ -1466,6 +1567,9 @@ components:
         required:
           type: boolean
           description: Whether the question is required to answer or not.
+        onChange:
+          type: boolean
+          description: Whether the question requires immediate server interaction.
         type:
           allOf:
             - $ref: '#/components/schemas/Forms.QuestionTypes'
@@ -1488,6 +1592,7 @@ components:
       description: The request body for creating/updating a question.
       examples:
         - required: true
+          onChange: true
           type: multiple_choice
           title: Which team you want to join???
           description: Pick one of your favorite!!!
@@ -1497,6 +1602,7 @@ components:
             - name: Clustron Team
             - name: HPC Team
         - required: true
+          onChange: false
           type: short_text
           title: What's your name?
           description: Please enter your name
@@ -1509,6 +1615,7 @@ components:
         - single_choice
         - multiple_choice
         - date
+        - upload_file
       description: The current types of question
     Forms.RecipientSelectionRequest:
       type: object
@@ -1547,6 +1654,39 @@ components:
         name:
           type: string
       description: The basic info of a user that can receive the form.
+    Forms.Section:
+      type: object
+      required:
+        - id
+        - formId
+        - title
+        - progress
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form this section belongs to.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Forms.SectionProgress'
+          description: The progress of this section.
+        description:
+          type: string
+          description: Section description.
+      description: A section within a form, grouping questions together.
+    Forms.SectionProgress:
+      type: string
+      enum:
+        - draft
+        - submitted
+      description: The current progress of a section
     Inbox.InboxFormMessage:
       type: object
       required:
@@ -1796,11 +1936,23 @@ components:
             $ref: '#/components/schemas/Responses.AnswerForQuestionResponse'
           description: All answers for this question.
       description: Response model for getting all answers for a specific question
+    Responses.CreateResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+      description: Response model for creating a form response
     Responses.GetResponse:
       type: object
       required:
         - id
+        - progress
         - formId
+        - sectionId
         - submittedBy
         - questionAnswerPairs
         - createdAt
@@ -1810,10 +1962,18 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The response's unique identifier.
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.ResponseProgress'
+          description: The current answering progress of the response.
         formId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form that this response belongs to.
+        sectionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The current section ID.
         submittedBy:
           allOf:
             - $ref: '#/components/schemas/uuid'
@@ -1887,48 +2047,40 @@ components:
           format: date-time
           description: The last updated timestamp of the response.
       description: Response model for a single response in list view
-    Responses.SubmitRequest:
+    Responses.ResponseProgress:
+      type: string
+      enum:
+        - draft
+        - submitted
+      description: The current progress of the response.
+    Responses.ResponseSections:
       type: object
       required:
-        - answers
+        - id
+        - title
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+    Responses.UpdateRequest:
+      type: object
       properties:
         answers:
           type: array
           items:
             $ref: '#/components/schemas/Responses.AnswerRequest'
-          description: All answers for this form submission.
-      description: Request model for submitting a complete form response
+          description: Only the answers that are new or have been modified.
+      description: Request model for updating the form response
       examples:
         - answers:
             - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
               value: John Doe
             - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
               value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
-    Responses.SubmitResponse:
-      type: object
-      required:
-        - id
-        - formId
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The response's unique identifier.
-        formId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The form that this response belongs to.
-        createdAt:
-          type: string
-          format: date-time
-          description: The creation timestamp of the response.
-        updatedAt:
-          type: string
-          format: date-time
-          description: The last updated timestamp of the response.
-      description: Response model for a submitted form response
     Slug.History:
       type: object
       required:
