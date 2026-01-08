@@ -154,12 +154,6 @@ namespace CoreSystem.FormWorkflow {
     title: string;
   }
 
-  @doc("Response model for workflow preview")
-  model WorkflowPreviewResponse {
-    @doc("The sections to display in the workflow")
-    sections: SectionNodeDataForPreview[];
-  }
-
   // API Endpoints
 
   @doc("Create a new workflow for a form (backend/admin)")
