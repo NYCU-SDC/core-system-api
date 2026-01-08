@@ -38,7 +38,7 @@ namespace CoreSystem.FormWorkflow {
     source: ConditionSource;
 
     @doc("The question ID to check against")
-    key: string;
+    key: uuid;
 
     @doc("Regex pattern to match against (required for NON_CHOICE source)")
     pattern?: string;
@@ -53,22 +53,22 @@ namespace CoreSystem.FormWorkflow {
   @doc("Workflow node structure with linked list connections")
   model Node {
     @doc("Unique identifier for the node")
-    id: string;
+    id: uuid;
 
     @doc("Type of the node")
     type: NodeType;
 
     @doc("Next node ID for sequential flow (for start and section nodes)")
-    next?: string;
+    next?: uuid;
 
     @doc("Next node ID when condition is true (for condition nodes)")
-    nextTrue?: string;
+    nextTrue?: uuid;
 
     @doc("Next node ID when condition is false (for condition nodes)")
-    nextFalse?: string;
+    nextFalse?: uuid;
 
     @doc("The section reference ID for the node, only for section nodes")
-    sectionRefId?: string;
+    sectionRefId?: uuid;
 
     @doc("The condition rules for the node, only for condition nodes")
     conditionRules?: ConditionRule[];
