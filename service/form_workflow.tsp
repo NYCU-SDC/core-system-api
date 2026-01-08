@@ -156,7 +156,7 @@ namespace CoreSystem.FormWorkflow {
 
   // API Endpoints
 
-  @doc("Create a new workflow for a form (backend/admin). Request body is optional - if provided, creates workflow with initial nodes; if omitted, creates empty workflow.")
+  @doc("Create a new workflow for a form (backend/admin). Request body is optional - if provided, creates workflow with initial nodes; if omitted, creates empty workflow with only start and end nodes.")
   @route("/forms/{id}/workflow")
   @post
   op createWorkflow(@path id: uuid, @body request?: WorkflowRequest): {
