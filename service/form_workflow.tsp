@@ -50,15 +50,6 @@ namespace CoreSystem.FormWorkflow {
     choiceOptionIds?: uuid[];
   }
 
-  @doc("Next node connection with optional condition result")
-  model NextNode {
-    @doc("The ID of the next node")
-    nodeId: string;
-
-    @doc("When condition evaluates to this value, go to this node (for condition nodes only)")
-    when?: boolean;
-  }
-
   @doc("Workflow node structure with linked list connections")
   model Node {
     @doc("Unique identifier for the node")
@@ -67,8 +58,14 @@ namespace CoreSystem.FormWorkflow {
     @doc("Type of the node")
     type: NodeType;
 
-    @doc("Array of next nodes with their logic conditions (for sequential nodes, use single item without logic; for condition nodes, use items with logic true/false)")
-    nextNodes?: NextNode[];
+    @doc("Next node ID for sequential flow (for start and section nodes)")
+    next?: string;
+
+    @doc("Next node ID when condition is true (for condition nodes)")
+    nextTrue?: string;
+
+    @doc("Next node ID when condition is false (for condition nodes)")
+    nextFalse?: string;
 
     @doc("The section reference ID for the node, only for section nodes")
     sectionRefId?: string;
@@ -89,10 +86,16 @@ namespace CoreSystem.FormWorkflow {
       #{
         id: "uuid_node_start",
         type: NodeType.start,
-        nextNodes: #[#{ nodeId: "uuid_choose_team" }],
+        next: "uuid_choose_team",
       },
       #{
         id: "uuid_choose_team",
+        type: NodeType.section,
+        sectionRefId: "8888-content-uuid",
+        next: "uuid_check_role",
+      },
+      #{
+        id: "uuid_check_role",
         type: NodeType.condition,
         conditionRules: #[
           #{
@@ -110,22 +113,20 @@ namespace CoreSystem.FormWorkflow {
             flags: "i",
           }
         ],
-        nextNodes: #[
-          #{ nodeId: "uuid_full_stack_intro", when: true },
-          #{ nodeId: "uuid_choose_full_stack_advanced", when: false }
-        ],
+        nextTrue: "uuid_full_stack_intro",
+        nextFalse: "uuid_choose_full_stack_advanced",
       },
       #{
         id: "uuid_full_stack_intro",
         type: NodeType.section,
         sectionRefId: "full-stack-intro-uuid",
-        nextNodes: #[#{ nodeId: "uuid_end" }],
+        next: "uuid_end",
       },
       #{
         id: "uuid_choose_full_stack_advanced",
         type: NodeType.section,
         sectionRefId: "full-stack-advanced-uuid",
-        nextNodes: #[#{ nodeId: "uuid_end" }],
+        next: "uuid_end",
       },
       #{ id: "uuid_end", type: NodeType.end }
     ],
