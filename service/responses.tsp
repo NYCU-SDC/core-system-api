@@ -28,7 +28,7 @@ namespace CoreSystem.Responses {
       }
     ],
   })
-  model AnswerRequest {
+  model AnswersRequest {
     @doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
     answers: AnswerJSON[];
   }
@@ -177,9 +177,6 @@ namespace CoreSystem.Responses {
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
   };
 
   @doc("Submit all the answer in the form response.")
@@ -187,10 +184,7 @@ namespace CoreSystem.Responses {
   @post
   op submitFormResponse(@path responseId: uuid): {
     @statusCode statusCode: 200;
-    @body req: AnswerRequest
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
+    @body req: AnswersRequest
   };
 
   @doc("Update answers for the response.")
@@ -198,7 +192,7 @@ namespace CoreSystem.Responses {
   @patch(#{implicitOptionality: true})
   op updateFormResponse(
     @path responseId: uuid, 
-    @body req: AnswerRequest
+    @body req: AnswersRequest
   ): {
     @statusCode statusCode: 200;
   };
@@ -225,22 +219,22 @@ namespace CoreSystem.Responses {
     @body error: NotFound;
   };
 
-  @doc("Delete a response and all its associated data.")
-  @route("/forms/{formId}/responses/{responseId}")
-  @delete
-  op deleteFormResponse(@path formId: uuid, @path responseId: uuid): {
-    @statusCode statusCode: 204;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: NotFound;
-  };
-
   @doc("List the form structure of the response.")
   @route("/responses/{responseId}/sections")
   @get
   op listResponseSections(@path responseId: uuid): {
     @statusCode statusCode: 200;
     @body response: ListSectionResponse;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  };
+
+  @doc("Delete a response and all its associated data.")
+  @route("/forms/{formId}/responses/{responseId}")
+  @delete
+  op deleteFormResponse(@path formId: uuid, @path responseId: uuid): {
+    @statusCode statusCode: 204;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
