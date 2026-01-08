@@ -7,15 +7,7 @@ using OpenAPI;
 @tag("Responses")
 namespace CoreSystem.Responses {
   @doc("Request model for submitting an individual answer")
-  @example(#{
-    questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
-    value: "John Doe",
-  })
-  @example(#{
-    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-    value: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
-  })
-  model AnswerRequest {
+  model AnswerJSON {
     @doc("The question being answered.")
     questionId: uuid;
 
@@ -23,7 +15,7 @@ namespace CoreSystem.Responses {
     value: string;
   }
 
-  @doc("Request model for updating the form response, may contain 1~all answers.")
+  @doc("Request model for update or submit the form response.")
   @example(#{
     answers: #[
       #{
@@ -36,9 +28,9 @@ namespace CoreSystem.Responses {
       }
     ],
   })
-  model SaveAnswersRequest {
+  model AnswerRequest {
     @doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
-    answers: AnswerRequest[];
+    answers: AnswerJSON[];
   }
 
   @doc("Response model for creating a form response")
@@ -111,10 +103,10 @@ namespace CoreSystem.Responses {
   @doc("The current progress of the response.")
   enum ResponseProgress {
     @doc("User hasn't started or not finished.")
-    DRAFT: "draft",
+    draft: "DRAFT",
 
     @doc("User has completed/passed this response.")
-    SUBMITTED: "submitted"
+    submitted: "SUBMITTED"
   }
 
   @doc("Response model for a single answer in question answers view")
@@ -195,7 +187,7 @@ namespace CoreSystem.Responses {
   @post
   op submitFormResponse(@path responseId: uuid): {
     @statusCode statusCode: 200;
-    @body req: SaveAnswersRequest
+    @body req: AnswerRequest
   } | {
     @statusCode statusCode: 400;
     @body error: ProblemDetail;
@@ -206,7 +198,7 @@ namespace CoreSystem.Responses {
   @patch(#{implicitOptionality: true})
   op updateFormResponse(
     @path responseId: uuid, 
-    @body req: SaveAnswersRequest
+    @body req: AnswerRequest
   ): {
     @statusCode statusCode: 200;
   };

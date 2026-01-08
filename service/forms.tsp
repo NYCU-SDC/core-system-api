@@ -79,26 +79,26 @@ namespace CoreSystem.Forms {
   @doc("The current progress of a section")
   enum SectionProgress {
     @doc("User hasn't started or not finished.")
-    DRAFT: "draft",
+    draft: "DRAFT",
 
     @doc("User has completed/passed this response.")
-    SUBMITTED: "submitted"
+    submitted: "SUBMITTED"
   }
 
   @doc("The current status of form ")
   enum FormStatus {
-    draft: "draft",
-    published: "published",
+    draft: "DRAFT",
+    published: "PUBLISHED",
   }
 
   @doc("The current types of question")
   enum QuestionTypes {
-    shortText: "short_text",
-    longText: "long_text",
-    singleChoice: "single_choice",
-    multipleChoice: "multiple_choice",
-    date: "date",
-    uploadFile: "upload_file",
+    shortText: "SHORT_TEXT",
+    longText: "LONG_TEXT",
+    singleChoice: "SINGLE_CHOICE",
+    multipleChoice: "MULTIPLE_CHOICE",
+    date: "DATE",
+    uploadFile: "UPLOAD_FILE",
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
