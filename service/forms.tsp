@@ -269,6 +269,12 @@ namespace CoreSystem.Forms {
     visibility: FormVisibility;
   }
 
+  @doc("Response containing the Gmail address for Google Sheet permissions.")
+  model GoogleSheetEmailResponse {
+    @doc("The Gmail address that should be added to Google Sheet permissions so the system can modify the form.")
+    email: string;
+  }
+
   @doc("Update an existing form by its unique identifier.")
   @route("/forms/{id}")
   @put
@@ -352,4 +358,9 @@ namespace CoreSystem.Forms {
     @statusCode statusCode: 200;
     @body response: FormPublishResponse;
   };
+
+  @doc("Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.")
+  @route("/forms/google-sheet-email")
+  @get
+  op getGoogleSheetEmail(): GoogleSheetEmailResponse;
 }
