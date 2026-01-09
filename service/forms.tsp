@@ -297,9 +297,10 @@ namespace CoreSystem.Forms {
   op listQuestions(@path formId: uuid): Question[];
 
   @doc("Upload a cover image for a form.")
-  @route("/forms/upload-cover")
+  @route("/forms/{id}/upload-cover")
   @post
   op uploadFormCoverImage(
+    @path id: uuid,
     @header("content-type") contentType: "multipart/form-data",
     @multipartBody body: FormCoverUploadRequest,
   ): FormCoverUploadResponse;
