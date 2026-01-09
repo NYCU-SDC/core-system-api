@@ -42,7 +42,7 @@ namespace CoreSystem.Forms {
     messageAfterSubmission: string;
 
     @doc("The dressing of the form.")
-    dressing?: Record<string>;
+    dressing?: FormDressing;
 
     @doc("The image path returned by the upload API.")
     coverImage?: string;
@@ -84,7 +84,7 @@ namespace CoreSystem.Forms {
     messageAfterSubmission: string;
 
     @doc("The dressing of the form.")
-    dressing?: Record<string>;
+    dressing?: FormDressing;
 
     @doc("The full URL to access the cover image.")
     coverImage?: string;
@@ -97,6 +97,27 @@ namespace CoreSystem.Forms {
 
     @doc("The last updated timestamp of the form")
     updatedAt: utcDateTime;
+  }
+
+  @doc("The appearance/dressing configuration for a form.")
+  @example(#{
+    color: "#0066cc",
+    headerFont: "LINESeedTW",
+    questionFont: "LINESeedTW",
+    textFont: "LINESeedTW",
+  })
+  model FormDressing {
+    @doc("Color in hex format (e.g., #0066cc)")
+    color?: string;
+
+    @doc("Header font id from https://font.emtech.cc/list")
+    headerFont?: string;
+
+    @doc("Question font id from https://font.emtech.cc/list")
+    questionFont?: string;
+
+    @doc("Text font id from https://font.emtech.cc/list")
+    textFont?: string;
   }
 
   @doc("The current status of form ")
