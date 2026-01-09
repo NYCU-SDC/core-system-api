@@ -58,15 +58,6 @@ namespace CoreSystem.Unit {
     slug: string;
   }
 
-  @doc("Model representing a member of a unit, linking unit and member by their unique identifiers")
-  model UnitMember {
-    @doc("The unique identifier of the unit")
-    unitId: uuid;
-
-    @doc("The unique identifier of the member")
-    memberId: uuid;
-  }
-
   @doc("Model representing a member of an organization, linking organization and member by their unique identifiers")
   model OrgMember {
     @doc("The unique identifier of the organization")
@@ -80,15 +71,6 @@ namespace CoreSystem.Unit {
   model OrgMemberResponse {
     @doc("The unique identifier of the organization")
     orgId: uuid;
-
-    @doc("Full user details including emails")
-    member: CoreSystem.User.User;
-  }
-
-  @doc("Response model for unit member with full user details")
-  model UnitMemberResponse {
-    @doc("The unique identifier of the unit")
-    unitId: uuid;
 
     @doc("Full user details including emails")
     member: CoreSystem.User.User;
@@ -172,11 +154,6 @@ namespace CoreSystem.Unit {
     email: string;
   }
 
-  @example(#{ email: "123@gmail.com" })
-  model UnitMemberRequest {
-    email: string;
-  }
-
   // --- CRUD Operations for Orgs and Units ---
   @get
   @route("/orgs/{slug}/units")
@@ -228,7 +205,6 @@ namespace CoreSystem.Unit {
   @route("/orgs")
   @doc("Get all organizations")
   op getAllOrganizations(): Organization[];
-
 
   @get
   @route("/orgs/me")
@@ -335,37 +311,6 @@ namespace CoreSystem.Unit {
   @route("/orgs/{slug}/members/{member_id}")
   @doc("Remove an organization-member relationship")
   op removeOrgMember(@path slug: string, @path member_id: uuid): {
-    @statusCode statusCode: 204;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: string;
-  };
-
-  @post
-  @route("/orgs/{slug}/units/{id}/members")
-  @doc("Add a member to an unit")
-  op addUnitMember(
-    @path slug: string,
-    @path id: uuid,
-    @body Request: UnitMemberRequest,
-  ): {
-    @statusCode statusCode: 201;
-    @body unitMember: UnitMemberResponse;
-  };
-
-  @get
-  @route("/orgs/{slug}/units/{id}/members")
-  @doc("List all members of a specific unit")
-  op listUnitMembers(@path slug: string, @path id: uuid): User[];
-
-  @delete
-  @route("/orgs/{slug}/units/{id}/members/{member_id}")
-  @doc("Remove an unit-member relationship")
-  op removeUnitMember(
-    @path slug: string,
-    @path id: uuid,
-    @path member_id: uuid,
-  ): {
     @statusCode statusCode: 204;
   } | {
     @statusCode statusCode: 404;
