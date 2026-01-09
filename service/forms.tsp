@@ -124,6 +124,33 @@ namespace CoreSystem.Forms {
     @doc("Text font id from https://font.emtech.cc/list")
     textFont?: string;
   }
+  
+  @doc("A section within a form, grouping questions together.")
+  model Section {
+    @doc("Unique identifier.")
+    id: uuid;
+
+    @doc("The form this section belongs to.")
+    formId: uuid;
+
+    @doc("Section title (e.g., 'Group Info').")
+    title: string;
+
+    @doc("The progress of this section.")
+    progress: SectionProgress;
+
+    @doc("Section description.")
+    description?: string;
+  }
+
+  @doc("The current progress of a section")
+  enum SectionProgress {
+    @doc("User hasn't started or not finished.")
+    DRAFT: "draft",
+
+    @doc("User has completed/passed this response.")
+    SUBMITTED: "submitted"
+  }
 
   @doc("The current status of form ")
   enum FormStatus {
@@ -147,6 +174,7 @@ namespace CoreSystem.Forms {
     singleChoice: "single_choice",
     multipleChoice: "multiple_choice",
     date: "date",
+    uploadFile: "upload_file",
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
@@ -169,8 +197,11 @@ namespace CoreSystem.Forms {
     @doc("The question's unique identifier.")
     id: uuid;
 
-    @doc("The form's id that the question belongs to. ")
-    formId: uuid;
+    @doc("The section's id that the question belongs to.")
+    sectionId: uuid;
+
+    @doc("Whether the question requires immediate server interaction.")
+    onChange: boolean;
 
     @doc("Whether the question is required to answer or not.")
     required: boolean;
@@ -200,6 +231,7 @@ namespace CoreSystem.Forms {
   @doc("The request body for creating/updating a question.")
   @example(#{
     required: true,
+    onChange: false,
     type: QuestionTypes.shortText,
     title: "What's your name?",
     description: "Please enter your name",
@@ -207,6 +239,7 @@ namespace CoreSystem.Forms {
   })
   @example(#{
     required: true,
+    onChange: true,
     type: QuestionTypes.multipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
@@ -220,6 +253,9 @@ namespace CoreSystem.Forms {
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
     required: boolean;
+
+    @doc("Whether the question requires immediate server interaction.")
+    onChange: boolean;
 
     @doc("The type of the question.")
     type: QuestionTypes;
@@ -235,6 +271,19 @@ namespace CoreSystem.Forms {
 
     @doc("Available choice options for single_choice and multiple_choice questions.")
     choices?: ChoiceOption[];
+  }
+
+
+  @doc("The response for next section after completing current section.")
+  model NextSectionResponse {
+    @doc("The ID of the next section to navigate to.")
+    nextSectionId?: uuid;
+
+    @doc("If false, there is no next section, ready to submit.")
+    hasNext: boolean; 
+
+    @doc("The questions in the next section.")
+    questions?: Question[];
   }
 
   // form recipientUser
@@ -297,33 +346,48 @@ namespace CoreSystem.Forms {
   op listForms(): Form[];
 
   @doc("Create a new question for a specific form.")
-  @route("/forms/{formId}/questions")
+  @route("/sections/{sectionId}/questions")
   @post
-  op createQuestion(@path formId: uuid, @body q: QuestionRequest): {
+  op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
     @body question: Question;
   };
 
   @doc("Update an existing question by its unique identifier.")
-  @route("/forms/{formId}/questions/{questionId}")
+  @route("/sections/{sectionId}/questions/{questionId}")
   @put
   op updateQuestion(
-    @path formId: uuid,
+    @path sectionId: uuid,
     @path questionId: uuid,
     @body q: QuestionRequest,
   ): Question;
 
   @doc("Delete an existing question by its unique identifier.")
-  @route("/forms/{formId}/questions/{questionId}")
+  @route("/sections/{sectionId}/questions/{questionId}")
   @delete
-  op deleteQuestion(@path formId: uuid, @path questionId: uuid): {
+  op deleteQuestion(@path sectionId: uuid, @path questionId: uuid): {
     @statusCode statusCode: 204;
   };
 
   @doc("List all the questions of a specific form.")
-  @route("/forms/{formId}/questions")
+  @route("/sections/{sectionId}/questions")
   @get
-  op listQuestions(@path formId: uuid): Question[];
+  op listQuestions(@path sectionId: uuid): Question[];
+
+  @doc("Submit current section and get next section content.")
+  @route("/forms/{formId}/sections/{sectionId}")
+  @post
+  op submitSection(
+    @path formId: uuid,
+    @path responseId: uuid,
+    @path sectionId: uuid
+  ): {
+    @statusCode statusCode: 200;
+    @body response: NextSectionResponse;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/upload-cover")
