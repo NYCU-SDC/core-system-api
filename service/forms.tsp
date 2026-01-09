@@ -49,6 +49,9 @@ namespace CoreSystem.Forms {
 
     @doc("The google sheet url this from's responses will be sent to.")
     googleSheetUrl?: string;
+
+    @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+    visibility?: FormVisibility;
   }
 
   @doc("The structure of a form.")
@@ -92,6 +95,9 @@ namespace CoreSystem.Forms {
     @doc("The google sheet url this from's responses will be sent to.")
     googleSheetUrl?: string;
 
+    @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+    visibility: FormVisibility;
+
     @doc("The creation timestamp of the form.")
     createdAt: utcDateTime;
 
@@ -124,6 +130,15 @@ namespace CoreSystem.Forms {
   enum FormStatus {
     draft: "draft",
     published: "published",
+  }
+
+  @doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+  enum FormVisibility {
+    @doc("Public: visible to all logged-in users")
+    public: "public",
+
+    @doc("Private: requires a direct link to access")
+    private: "private",
   }
 
   @doc("The current types of question")
@@ -245,6 +260,15 @@ namespace CoreSystem.Forms {
     recipients: RecipientUser[];
   }
 
+  @doc("Response after publishing a form.")
+  model FormPublishResponse {
+    @doc("The URL to access the published form.")
+    url: string;
+
+    @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+    visibility: FormVisibility;
+  }
+
   @doc("Update an existing form by its unique identifier.")
   @route("/forms/{id}")
   @put
@@ -326,5 +350,6 @@ namespace CoreSystem.Forms {
   @post
   op publishForm(@path id: uuid, @body req: RecipientSelectionRequest): {
     @statusCode statusCode: 200;
+    @body response: FormPublishResponse;
   };
 }
