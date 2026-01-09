@@ -113,7 +113,7 @@ namespace CoreSystem.Responses {
     DRAFT: "draft",
 
     @doc("User has completed/passed this response.")
-    SUBMITTED: "submitted"
+    SUBMITTED: "submitted",
   }
 
   @doc("Response model for a single answer in question answers view")
@@ -172,11 +172,8 @@ namespace CoreSystem.Responses {
 
   @doc("Update answers for the response.")
   @route("/responses/{responseId}/answers")
-  @patch(#{implicitOptionality: true})
-  op updateFormResponse(
-    @path responseId: uuid, 
-    @body req: UpdateRequest
-  ): {
+  @patch(#{ implicitOptionality: true })
+  op updateFormResponse(@path responseId: uuid, @body req: UpdateRequest): {
     @statusCode statusCode: 200;
   };
 
