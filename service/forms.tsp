@@ -345,10 +345,10 @@ namespace CoreSystem.Forms {
     @body req: RecipientSelectionRequest,
   ): RecipientSelectionResponse;
 
-  @doc("Publish a form. Set status to 'published', compute recipients, update inbox threads.")
+  @doc("Publish a form. Set status to 'published'.")
   @route("/forms/{id}/publish")
   @post
-  op publishForm(@path id: uuid, @body req: RecipientSelectionRequest): {
+  op publishForm(@path id: uuid): {
     @statusCode statusCode: 200;
     @body response: FormPublishResponse;
   };
