@@ -10,6 +10,7 @@ namespace CoreSystem.Forms {
   model FormCoverUploadRequest {
     coverImage: HttpPart<bytes>;
   }
+
   @doc("Response after uploading a cover image.")
   model FormCoverUploadResponse {
     @doc("The temporary full URL of the uploaded image.")
@@ -124,7 +125,7 @@ namespace CoreSystem.Forms {
     @doc("Text font id from https://font.emtech.cc/list")
     textFont?: string;
   }
-  
+
   @doc("A section within a form, grouping questions together.")
   model Section {
     @doc("Unique identifier.")
@@ -149,7 +150,7 @@ namespace CoreSystem.Forms {
     DRAFT: "draft",
 
     @doc("User has completed/passed this response.")
-    SUBMITTED: "submitted"
+    SUBMITTED: "submitted",
   }
 
   @doc("The current status of form ")
@@ -273,14 +274,13 @@ namespace CoreSystem.Forms {
     choices?: ChoiceOption[];
   }
 
-
   @doc("The response for next section after completing current section.")
   model NextSectionResponse {
     @doc("The ID of the next section to navigate to.")
     nextSectionId?: uuid;
 
     @doc("If false, there is no next section, ready to submit.")
-    hasNext: boolean; 
+    hasNext: boolean;
 
     @doc("The questions in the next section.")
     questions?: Question[];
@@ -380,7 +380,7 @@ namespace CoreSystem.Forms {
   op submitSection(
     @path formId: uuid,
     @path responseId: uuid,
-    @path sectionId: uuid
+    @path sectionId: uuid,
   ): {
     @statusCode statusCode: 200;
     @body response: NextSectionResponse;
