@@ -317,23 +317,19 @@ namespace CoreSystem.Unit {
     @body error: string;
   };
 
-  // --- Creation and List forms under Unit ---
-  @doc("Create a new form under a unit.")
-  @route("/orgs/{slug}/units/{unitId}/forms")
+  // --- Creation and List forms under Organization ---
+  @doc("Create a new form under an organization.")
+  @route("/orgs/{slug}/forms")
   @post
-  op createUnitForm(
-    @path slug: string,
-    @path unitId: uuid,
-    @body createFormRequest: FormRequest,
-  ): {
+  op createOrgForm(@path slug: string, @body createFormRequest: FormRequest): {
     @statusCode statusCode: 201;
     @body form: Form;
   };
 
-  @doc("List forms under a specific unit.")
-  @route("/orgs/{slug}/units/{unitId}/forms")
+  @doc("List forms under a specific organization.")
+  @route("/orgs/{slug}/forms")
   @get
-  op listFormsByUnit(@path slug: string, @path unitId: uuid): Form[];
+  op listFormsByOrg(@path slug: string): Form[];
 
   // --- Current User Forms ---
   @doc("List all forms of current user")
