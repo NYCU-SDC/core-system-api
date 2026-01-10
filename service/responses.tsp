@@ -6,6 +6,14 @@ using OpenAPI;
 
 @tag("Responses")
 namespace CoreSystem.Responses {
+  @example(#{
+    questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
+    value: "John Doe",
+  })
+  @example(#{
+    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    value: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
+  })
   @doc("Request model for submitting an individual answer")
   model AnswerJSON {
     @doc("The question being answered.")
@@ -64,22 +72,22 @@ namespace CoreSystem.Responses {
   }
 
 
-  @doc("Response model for a question with its answer in preview view")
-  model PreviewQuestionDto {
+  @doc("Model for a question with its answer in preview view")
+  model PreviewQuestion {
     @doc("The question details.")
-    question: CoreSystem.Forms.Question;
+    question: CoreSystem.Forms.QuestionResponse;
 
     @doc("The answer value.")
     answer: string;
   }
 
-  @doc("Response model for a single section in preview view")
-  model PreviewSectionDto {
+  @doc("Model for a single section in preview view")
+  model PreviewSection {
     @doc("The section title.")
     sectionTitle: string;
 
     @doc("All questions with their answers in this section.")
-    questionAnswerPairs: PreviewQuestionDto[];
+    questionAnswerPairs: PreviewQuestion[];
   }
 
   @doc("Response model for getting a specific form response")
@@ -97,7 +105,7 @@ namespace CoreSystem.Responses {
     submittedBy: uuid;
 
     @doc("All questions with their answers for this response.")
-    questionAnswerPairs: PreviewSectionDto[];
+    questionAnswerPairs: PreviewSection[];
   }
 
   @doc("The current progress of the response.")
@@ -133,7 +141,7 @@ namespace CoreSystem.Responses {
   @doc("Response model for getting all answers for a specific question")
   model AnswersForQuestionResponse {
     @doc("The question details.")
-    question: CoreSystem.Forms.Question;
+    question: CoreSystem.Forms.QuestionResponse;
 
     @doc("All answers for this question.")
     answers: AnswerForQuestionResponse[];

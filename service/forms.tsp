@@ -116,8 +116,8 @@ namespace CoreSystem.Forms {
     name: string;
   }
 
-  @doc("The structure of a question.")
-  model Question {
+  @doc("Response model for the detailed structure of a question.")
+  model QuestionResponse {
     @doc("The question's unique identifier.")
     id: uuid;
 
@@ -136,6 +136,9 @@ namespace CoreSystem.Forms {
     @doc("More details of this question.")
     description: string;
 
+    @doc("What is the number of this question in the form.")
+    order: int32;
+
     @doc("Available choices for single_choice and multiple_choice questions.")
     choices?: Choice[];
 
@@ -152,12 +155,14 @@ namespace CoreSystem.Forms {
     type: QuestionTypes.shortText,
     title: "What's your name?",
     description: "Please enter your name",
+    order: 1,
   })
   @example(#{
     required: true,
     type: QuestionTypes.multipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
+    order: 2,
     choices: #[
       #{ name: "Core System Team" },
       #{ name: "Clustron Team" },
@@ -176,6 +181,9 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
+
+    @doc("What is the number of this question in the form.")
+    order: int32;
 
     @doc("Available choice options for single_choice and multiple_choice questions.")
     choices?: ChoiceOption[];
@@ -231,7 +239,7 @@ namespace CoreSystem.Forms {
   @post
   op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
-    @body question: Question;
+    @body question: QuestionResponse;
   };
 
   @doc("Update an existing question by its unique identifier.")
@@ -241,7 +249,7 @@ namespace CoreSystem.Forms {
     @path sectionId: uuid,
     @path questionId: uuid,
     @body q: QuestionRequest,
-  ): Question;
+  ): QuestionResponse;
 
   @doc("Delete an existing question by its unique identifier.")
   @route("/sections/{sectionId}/questions/{questionId}")
@@ -253,7 +261,7 @@ namespace CoreSystem.Forms {
   @doc("List all the questions of a specific section.")
   @route("/sections/{sectionId}/questions")
   @get
-  op listQuestions(@path sectionId: uuid): Question[];
+  op listQuestions(@path sectionId: uuid): QuestionResponse[];
 
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")
