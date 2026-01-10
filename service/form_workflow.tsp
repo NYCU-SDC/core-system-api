@@ -224,9 +224,9 @@ namespace CoreSystem.FormWorkflow {
   };
 
   @doc("Create a new node for a workflow")
-  @route("/forms/{id}/workflow/nodes")
+  @route("/forms/{formId}/workflow/nodes")
   @post
-  op createNode(@path id: uuid, @body request: CreateNodeRequest): {
+  op createNode(@path formId: uuid, @body request: CreateNodeRequest): {
     @statusCode statusCode: 201;
     @body response: NodeStructure;
   } | {
