@@ -37,6 +37,9 @@ namespace CoreSystem.FormWorkflow {
     @doc("Source of data for the condition")
     source: ConditionSource;
 
+    @doc("The node ID that contains the question to check against")
+    nodeId: string;
+
     @doc("The question ID to check against")
     key: uuid;
 
@@ -46,8 +49,8 @@ namespace CoreSystem.FormWorkflow {
     @doc("Regex flags (e.g., 'i' for case-insensitive, only for NON_CHOICE source)")
     flags?: string;
 
-    @doc("Array of choice option IDs to match against (required for CHOICE source)")
-    choiceOptionIds?: uuid[];
+    @doc("Single choice option ID to match against (required for CHOICE source)")
+    choiceOptionId?: uuid;
   }
 
   @doc("Workflow node structure with linked list connections")
@@ -90,40 +93,46 @@ namespace CoreSystem.FormWorkflow {
   @doc("Request body for creating/updating workflow")
   @example(#{
     nodes: #[
-      #{ id: "start", type: NodeType.start, next: "choose_team" },
       #{
-        id: "choose_team",
-        type: NodeType.section,
-        sectionRefId: "8888-content-uuid",
-        next: "check_role",
+        id: "node_start",
+        label: "開始表單",
+        type: NodeType.start,
+        next: "uuid_choose_team",
       },
       #{
-        id: "check_role",
+        id: "choose_team",
+        label: "選擇組別",
+        type: NodeType.section,
+        sectionRefId: "uuid_choose_team_section",
+        next: "uuid_choose_full_stack_intro",
+      },
+      #{
+        id: "choose_full_stack_intro",
+        label: "如果[選擇組別][選擇你感興趣的組別]選擇[Full Stack Intro]",
         type: NodeType.condition,
         conditionRule: #{
           source: ConditionSource.choice,
-          key: "question_id",
-          choiceOptionIds: #[
-            "f421cfc2-2b84-4da9-9629-011af609935a",
-            "2ca86a6d-7735-4f17-8676-29b4724b524f"
-          ],
+          nodeId: "choose_team",
+          key: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+          choiceOptionId: "f421cfc2-2b84-4da9-9629-011af609935a",
         },
         nextTrue: "full_stack_intro",
         nextFalse: "choose_full_stack_advanced",
       },
       #{
-        id: "full_stack_intro",
-        type: NodeType.section,
-        sectionRefId: "full-stack-intro-uuid",
-        next: "end",
+        id: "engineering_dept_spend_time",
+        label: "如果[開發部][你每週願意花費的時間]符合[^([6-9]|[1-9][0-9]+)$]",
+        type: NodeType.condition,
+        conditionRule: #{
+          source: ConditionSource.nonChoice,
+          nodeId: "engineering_dept",
+          key: "2ca86a6d-7735-4f17-8676-29b4724b524f",
+          pattern: "^([6-9]|[1-9][0-9]+)$",
+        },
+        nextTrue: "full_stack_intro",
+        nextFalse: "choose_full_stack_advanced",
       },
-      #{
-        id: "choose_full_stack_advanced",
-        type: NodeType.section,
-        sectionRefId: "full-stack-advanced-uuid",
-        next: "end",
-      },
-      #{ id: "end", type: NodeType.end }
+      #{ id: "end", label: "確認/送出", type: NodeType.end }
     ],
   })
   model WorkflowRequest {
