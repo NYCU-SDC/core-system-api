@@ -61,8 +61,8 @@ namespace CoreSystem.FormWorkflow {
     @doc("The section reference ID for the node, only for section nodes")
     sectionRefId?: uuid;
 
-    @doc("The condition rules for the node, only for condition nodes")
-    conditionRules?: ConditionRule[];
+    @doc("The condition rule for the node, only for condition nodes")
+    conditionRule?: ConditionRule;
 
     @doc("Next node ID for sequential flow (for start and section nodes)")
     next?: uuid;
@@ -97,22 +97,14 @@ namespace CoreSystem.FormWorkflow {
       #{
         id: "uuid_check_role",
         type: NodeType.condition,
-        conditionRules: #[
-          #{
-            source: ConditionSource.choice,
-            key: "question_id",
-            choiceOptionIds: #[
-              "f421cfc2-2b84-4da9-9629-011af609935a",
-              "2ca86a6d-7735-4f17-8676-29b4724b524f"
-            ],
-          },
-          #{
-            source: ConditionSource.nonChoice,
-            key: "name_question_id",
-            pattern: "^[A-Z]",
-            flags: "i",
-          }
-        ],
+        conditionRule: #{
+          source: ConditionSource.choice,
+          key: "question_id",
+          choiceOptionIds: #[
+            "f421cfc2-2b84-4da9-9629-011af609935a",
+            "2ca86a6d-7735-4f17-8676-29b4724b524f"
+          ],
+        },
         nextTrue: "uuid_full_stack_intro",
         nextFalse: "uuid_choose_full_stack_advanced",
       },
