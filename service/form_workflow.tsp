@@ -58,6 +58,12 @@ namespace CoreSystem.FormWorkflow {
     @doc("Type of the node")
     type: NodeType;
 
+    @doc("The section reference ID for the node, only for section nodes")
+    sectionRefId?: uuid;
+
+    @doc("The condition rules for the node, only for condition nodes")
+    conditionRules?: ConditionRule[];
+
     @doc("Next node ID for sequential flow (for start and section nodes)")
     next?: uuid;
 
@@ -66,12 +72,6 @@ namespace CoreSystem.FormWorkflow {
 
     @doc("Next node ID when condition is false (for condition nodes)")
     nextFalse?: uuid;
-
-    @doc("The section reference ID for the node, only for section nodes")
-    sectionRefId?: uuid;
-
-    @doc("The condition rules for the node, only for condition nodes")
-    conditionRules?: ConditionRule[];
   }
 
   @doc("Complete workflow structure stored as JSONB")
