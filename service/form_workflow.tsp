@@ -35,21 +35,27 @@ namespace CoreSystem.FormWorkflow {
   @doc("Condition rule for condition nodes")
   model ConditionRule {
     @doc("Source of data for the condition")
+    @example(ConditionSource.nonChoice)
     source: ConditionSource;
 
     @doc("The node ID that contains the question to check against")
+    @example("engineering_dept")
     nodeId: string;
 
     @doc("The question ID to check against")
+    @example("9a843aa0-8451-4e3b-b6a0-8c0e994e9040")
     key: uuid;
 
     @doc("Regex pattern to match against (required for NON_CHOICE source)")
+    @example("^([6-9]|[1-9][0-9]+)$")
     pattern?: string;
 
     @doc("Regex flags (e.g., 'i' for case-insensitive, only for NON_CHOICE source)")
+    @example("ig")
     flags?: string;
 
     @doc("Single choice option ID to match against (required for CHOICE source)")
+    @example("f421cfc2-2b84-4da9-9629-011af609935a")
     choiceOptionId?: uuid;
   }
 
@@ -63,24 +69,30 @@ namespace CoreSystem.FormWorkflow {
     id: string;
 
     @doc("Type of the node")
+    @example(NodeType.start)
     type: NodeType;
 
     @doc("The label for the node")
+    @example("開始表單")
     label?: string;
 
     @doc("The section reference ID for the node, only for section nodes")
+    @example("4c299120-2122-484d-9933-01360749500e")
     sectionRefId?: uuid;
 
     @doc("The condition rule for the node, only for condition nodes")
     conditionRule?: ConditionRule;
 
     @doc("Next node id for sequential flow (for start and section nodes)")
+    @example("choose_team")
     next?: string;
 
     @doc("Next node id when condition is true (for condition nodes)")
+    @example("full_stack_intro")
     nextTrue?: string;
 
     @doc("Next node id when condition is false (for condition nodes)")
+    @example("choose_full_stack_advanced")
     nextFalse?: string;
   }
 
