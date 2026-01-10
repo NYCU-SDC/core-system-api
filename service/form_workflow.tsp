@@ -60,13 +60,9 @@ namespace CoreSystem.FormWorkflow {
   }
 
   @doc("Workflow node structure with linked list connections")
-  model Node {
-    @doc("Unique identifier for the node. This would use a custom name for the node in the workflow.")
-    @example("start")
-    @pattern("^[a-zA-Z0-9_]+$")
-    @minLength(1)
-    @maxLength(255)
-    id: string;
+  model NodeStructure {
+    @doc("Unique identifier for the node.")
+    id: uuid;
 
     @doc("Type of the node")
     @example(NodeType.start)
@@ -74,90 +70,116 @@ namespace CoreSystem.FormWorkflow {
 
     @doc("The label for the node")
     @example("開始表單")
-    label?: string;
+    label: string;
+  }
 
-    @doc("The section reference ID for the node, only for section nodes")
-    @example("4c299120-2122-484d-9933-01360749500e")
-    sectionRefId?: uuid;
+  @doc("Request body for creating a new node for a workflow")
+  @example(#{ type: NodeType.start, label: "開始表單" })
+  model CreateNodeRequest {
+    @doc("Type of the node")
+    @example(NodeType.start)
+    type: NodeType;
+
+    @doc("The label for the node")
+    @example("開始表單")
+    label?: string;
+  }
+
+  @doc("Workflow node request model with linked list connections")
+  model NodeRequest {
+    ...NodeStructure;
 
     @doc("The condition rule for the node, only for condition nodes")
     conditionRule?: ConditionRule;
 
     @doc("Next node id for sequential flow (for start and section nodes)")
-    @example("choose_team")
-    next?: string;
+    next?: uuid;
 
     @doc("Next node id when condition is true (for condition nodes)")
-    @example("full_stack_intro")
-    nextTrue?: string;
+    nextTrue?: uuid;
 
     @doc("Next node id when condition is false (for condition nodes)")
-    @example("choose_full_stack_advanced")
-    nextFalse?: string;
+    nextFalse?: uuid;
   }
 
-  @doc("Complete workflow structure stored as JSONB")
-  model Workflow {
-    @doc("Array of workflow nodes (connections are stored within each node)")
-    nodes: Node[];
+  @doc("Workflow node response model with linked list connections")
+  model NodeResponse {
+    ...NodeStructure;
+
+    @doc("The section reference ID for the node, only for section nodes")
+    @example("f421cfc2-2b84-4da9-9629-011af609935a")
+    sectionRefId: uuid;
+
+    @doc("The condition rule for the node, only for condition nodes")
+    conditionRule: ConditionRule;
+
+    @doc("Next node id for sequential flow (for start and section nodes)")
+    next: uuid;
+
+    @doc("Next node id when condition is true (for condition nodes)")
+    nextTrue: uuid;
+
+    @doc("Next node id when condition is false (for condition nodes)")
+    nextFalse: uuid;
   }
 
   @doc("Request body for creating/updating workflow")
   @example(#{
     nodes: #[
       #{
-        id: "node_start",
+        id: "4c299120-2122-484d-9933-01360749500e",
         label: "開始表單",
         type: NodeType.start,
-        next: "uuid_choose_team",
+        next: "32a86a6d-7735-4f17-8676-29b4724b524f",
       },
       #{
-        id: "choose_team",
+        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
         label: "選擇組別",
         type: NodeType.section,
-        sectionRefId: "uuid_choose_team_section",
-        next: "uuid_choose_full_stack_intro",
+        next: "32a86a6d-7735-4f17-8676-29b4724b524f",
       },
       #{
-        id: "choose_full_stack_intro",
+        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
         label: "如果[選擇組別][選擇你感興趣的組別]選擇[Full Stack Intro]",
         type: NodeType.condition,
         conditionRule: #{
           source: ConditionSource.choice,
-          nodeId: "choose_team",
+          nodeId: "32a86a6d-7735-4f17-8676-29b4724b524f",
           key: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
           choiceOptionId: "f421cfc2-2b84-4da9-9629-011af609935a",
         },
-        nextTrue: "full_stack_intro",
-        nextFalse: "choose_full_stack_advanced",
+        nextTrue: "32a86a6d-7735-4f17-8676-29b4724b524f",
+        nextFalse: "32a86a6d-7735-4f17-8676-29b4724b524f",
       },
       #{
-        id: "engineering_dept_spend_time",
+        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
         label: "如果[開發部][你每週願意花費的時間]符合[^([6-9]|[1-9][0-9]+)$]",
         type: NodeType.condition,
         conditionRule: #{
           source: ConditionSource.nonChoice,
-          nodeId: "engineering_dept",
+          nodeId: "32a86a6d-7735-4f17-8676-29b4724b524f",
           key: "2ca86a6d-7735-4f17-8676-29b4724b524f",
           pattern: "^([6-9]|[1-9][0-9]+)$",
         },
-        nextTrue: "full_stack_intro",
-        nextFalse: "choose_full_stack_advanced",
+        nextTrue: "32a86a6d-7735-4f17-8676-29b4724b524f",
+        nextFalse: "32a86a6d-7735-4f17-8676-29b4724b524f",
       },
-      #{ id: "end", label: "確認/送出", type: NodeType.end }
+      #{
+        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
+        label: "確認/送出",
+        type: NodeType.end,
+      }
     ],
   })
   model WorkflowRequest {
-    ...Workflow;
+    @doc("Array of workflow nodes")
+    nodes: NodeRequest[];
   }
 
-  @doc("Workflow response model")
+  @doc("Response model for getting workflow")
   model WorkflowResponse {
-    @doc("The form ID this workflow belongs to")
-    formId: uuid;
-
-    @doc("The complete workflow structure")
-    workflow: Workflow;
+    @doc("Array of workflow nodes")
+    nodes: NodeResponse[];
   }
 
   // API Endpoints
@@ -193,6 +215,33 @@ namespace CoreSystem.FormWorkflow {
   op updateWorkflow(@path id: uuid, @body request: WorkflowRequest): {
     @statusCode statusCode: 200;
     @body response: WorkflowResponse;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
+  @doc("Create a new node for a workflow")
+  @route("/forms/{id}/workflow/nodes")
+  @post
+  op createNode(@path id: uuid, @body request: CreateNodeRequest): {
+    @statusCode statusCode: 201;
+    @body response: NodeStructure;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
+  @doc("Update a node for a workflow")
+  @route("/forms/{formId}/workflow/nodes/{nodeId}")
+  @delete
+  op deleteNode(@path formId: uuid, @path nodeId: uuid): {
+    @statusCode statusCode: 204;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
