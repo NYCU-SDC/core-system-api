@@ -135,10 +135,7 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
-
-    @doc("What is the number of this question in the form.")
-    order: int32;
-
+    
     @doc("Available choices for single_choice and multiple_choice questions.")
     choices?: Choice[];
 
