@@ -237,6 +237,20 @@ namespace CoreSystem.FormWorkflow {
     @body error: ProblemDetail;
   };
 
+  @doc("Get a specific node by its ID for reference section. Only for section nodes")
+  @route("/forms/{formId}/workflow/nodes/{nodeId}")
+  @get
+  op getNodeReferenceSection(@path formId: uuid, @path nodeId: uuid): {
+    @statusCode statusCode: 200;
+    @body response: Forms.Section;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
   @doc("Update a node for a workflow")
   @route("/forms/{formId}/workflow/nodes/{nodeId}")
   @delete
