@@ -75,7 +75,7 @@ namespace CoreSystem.FormWorkflow {
   }
 
   @doc("Complete workflow structure stored as JSONB")
-  model WorkflowStructure {
+  model Workflow {
     @doc("Array of workflow nodes (connections are stored within each node)")
     nodes: Node[];
   }
@@ -132,7 +132,7 @@ namespace CoreSystem.FormWorkflow {
     ],
   })
   model WorkflowRequest {
-    ...WorkflowStructure;
+    ...Workflow;
   }
 
   @doc("Workflow response model")
@@ -141,7 +141,7 @@ namespace CoreSystem.FormWorkflow {
     formId: uuid;
 
     @doc("The complete workflow structure")
-    workflow: WorkflowStructure;
+    workflow: Workflow;
   }
 
   // API Endpoints
