@@ -52,11 +52,18 @@ namespace CoreSystem.FormWorkflow {
 
   @doc("Workflow node structure with linked list connections")
   model Node {
-    @doc("Unique identifier for the node")
-    id: uuid;
+    @doc("Unique identifier for the node. This would use a custom name for the node in the workflow.")
+    @example("start")
+    @pattern("^[a-zA-Z0-9_]+$")
+    @minLength(1)
+    @maxLength(255)
+    id: string;
 
     @doc("Type of the node")
     type: NodeType;
+
+    @doc("The label for the node")
+    label?: string;
 
     @doc("The section reference ID for the node, only for section nodes")
     sectionRefId?: uuid;
@@ -64,14 +71,14 @@ namespace CoreSystem.FormWorkflow {
     @doc("The condition rule for the node, only for condition nodes")
     conditionRule?: ConditionRule;
 
-    @doc("Next node ID for sequential flow (for start and section nodes)")
-    next?: uuid;
+    @doc("Next node id for sequential flow (for start and section nodes)")
+    next?: string;
 
-    @doc("Next node ID when condition is true (for condition nodes)")
-    nextTrue?: uuid;
+    @doc("Next node id when condition is true (for condition nodes)")
+    nextTrue?: string;
 
-    @doc("Next node ID when condition is false (for condition nodes)")
-    nextFalse?: uuid;
+    @doc("Next node id when condition is false (for condition nodes)")
+    nextFalse?: string;
   }
 
   @doc("Complete workflow structure stored as JSONB")
@@ -83,19 +90,15 @@ namespace CoreSystem.FormWorkflow {
   @doc("Request body for creating/updating workflow")
   @example(#{
     nodes: #[
+      #{ id: "start", type: NodeType.start, next: "choose_team" },
       #{
-        id: "uuid_node_start",
-        type: NodeType.start,
-        next: "uuid_choose_team",
-      },
-      #{
-        id: "uuid_choose_team",
+        id: "choose_team",
         type: NodeType.section,
         sectionRefId: "8888-content-uuid",
-        next: "uuid_check_role",
+        next: "check_role",
       },
       #{
-        id: "uuid_check_role",
+        id: "check_role",
         type: NodeType.condition,
         conditionRule: #{
           source: ConditionSource.choice,
@@ -105,22 +108,22 @@ namespace CoreSystem.FormWorkflow {
             "2ca86a6d-7735-4f17-8676-29b4724b524f"
           ],
         },
-        nextTrue: "uuid_full_stack_intro",
-        nextFalse: "uuid_choose_full_stack_advanced",
+        nextTrue: "full_stack_intro",
+        nextFalse: "choose_full_stack_advanced",
       },
       #{
-        id: "uuid_full_stack_intro",
+        id: "full_stack_intro",
         type: NodeType.section,
         sectionRefId: "full-stack-intro-uuid",
-        next: "uuid_end",
+        next: "end",
       },
       #{
-        id: "uuid_choose_full_stack_advanced",
+        id: "choose_full_stack_advanced",
         type: NodeType.section,
         sectionRefId: "full-stack-advanced-uuid",
-        next: "uuid_end",
+        next: "end",
       },
-      #{ id: "uuid_end", type: NodeType.end }
+      #{ id: "end", type: NodeType.end }
     ],
   })
   model WorkflowRequest {
