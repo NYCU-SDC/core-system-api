@@ -132,8 +132,7 @@ namespace CoreSystem.FormWorkflow {
     ],
   })
   model WorkflowRequest {
-    @doc("Workflow structure with nodes (linked list connections stored in each node)")
-    nodes: Node[];
+    ...WorkflowStructure;
   }
 
   @doc("Workflow response model")
