@@ -128,6 +128,9 @@ namespace CoreSystem.Forms {
   model ChoiceOption {
     @doc("The name/text of the choice option.")
     name: string;
+
+    @doc("Optional description for the choice.")
+    description?: string;
   }
 
   @doc("A choice with ID and name for choice-based questions.")
@@ -138,7 +141,7 @@ namespace CoreSystem.Forms {
     @doc("The name/text of the choice.")
     name: string;
 
-    @doc("More details for the detailed choice option.")
+    @doc("Optional description for the choice.")
     description?: string;
   }
 
