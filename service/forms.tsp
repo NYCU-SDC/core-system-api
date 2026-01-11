@@ -93,12 +93,34 @@ namespace CoreSystem.Forms {
 
   @doc("The current types of question")
   enum QuestionTypes {
+    @doc("Short text input field")
     shortText: "SHORT_TEXT",
+    
+    @doc("Long text textarea field")
     longText: "LONG_TEXT",
+    
+    @doc("Single choice with radio buttons")
     singleChoice: "SINGLE_CHOICE",
+    
+    @doc("Multiple choice with checkboxes")
     multipleChoice: "MULTIPLE_CHOICE",
+    
+    @doc("Single choice with dropdown select")
+    dropdown: "DROPDOWN",
+    
+    @doc("Multiple choice with detailed checkboxes (more spacing/styling)")
+    detailedMultipleChoice: "DETAILED_MULTIPLE_CHOICE",
+    
+    @doc("Date picker")
     date: "DATE",
+    
+    @doc("File upload")
     uploadFile: "UPLOAD_FILE",
+    
+    @doc("Linear scale/rating (1-5, 1-10, etc.)")
+    linearScale: "LINEAR_SCALE",
+    
+    @doc("Ranking/ordering items by preference")
     ranking: "RANKING",
   }
 
