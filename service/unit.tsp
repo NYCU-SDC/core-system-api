@@ -208,7 +208,6 @@ namespace CoreSystem.Unit {
   @doc("Get all organizations")
   op getAllOrganizations(): Organization[];
 
-
   @get
   @route("/orgs/me")
   @doc("List all organizations of current user")
