@@ -73,18 +73,6 @@ namespace CoreSystem.FormWorkflow {
     label: string;
   }
 
-  @doc("Request body for creating a new node for a workflow")
-  @example(#{ type: NodeType.start, label: "開始表單" })
-  model CreateNodeRequest {
-    @doc("Type of the node")
-    @example(NodeType.start)
-    type: NodeType;
-
-    @doc("The label for the node")
-    @example("開始表單")
-    label?: string;
-  }
-
   @doc("Workflow node request model with linked list connections")
   model NodeRequest {
     ...NodeStructure;
