@@ -79,32 +79,58 @@ namespace CoreSystem.Forms {
   @doc("The current progress of a section")
   enum SectionProgress {
     @doc("User hasn't started or not finished.")
-    DRAFT: "draft",
+    draft: "DRAFT",
 
     @doc("User has completed/passed this response.")
-    SUBMITTED: "submitted"
+    submitted: "SUBMITTED"
   }
 
   @doc("The current status of form ")
   enum FormStatus {
-    draft: "draft",
-    published: "published",
+    draft: "DRAFT",
+    published: "PUBLISHED",
   }
 
   @doc("The current types of question")
   enum QuestionTypes {
-    shortText: "short_text",
-    longText: "long_text",
-    singleChoice: "single_choice",
-    multipleChoice: "multiple_choice",
-    date: "date",
-    uploadFile: "upload_file",
+    @doc("Short text input field")
+    shortText: "SHORT_TEXT",
+    
+    @doc("Long text textarea field")
+    longText: "LONG_TEXT",
+    
+    @doc("Single choice with radio buttons")
+    singleChoice: "SINGLE_CHOICE",
+    
+    @doc("Multiple choice with checkboxes")
+    multipleChoice: "MULTIPLE_CHOICE",
+    
+    @doc("Single choice with dropdown select")
+    dropdown: "DROPDOWN",
+    
+    @doc("Multiple choice with detailed checkboxes (more spacing/styling)")
+    detailedMultipleChoice: "DETAILED_MULTIPLE_CHOICE",
+    
+    @doc("Date picker")
+    date: "DATE",
+    
+    @doc("File upload")
+    uploadFile: "UPLOAD_FILE",
+    
+    @doc("Linear scale/rating (1-5, 1-10, etc.)")
+    linearScale: "LINEAR_SCALE",
+    
+    @doc("Ranking/ordering items by preference")
+    ranking: "RANKING",
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
   model ChoiceOption {
     @doc("The name/text of the choice option.")
     name: string;
+
+    @doc("Optional description for the choice.")
+    description?: string;
   }
 
   @doc("A choice with ID and name for choice-based questions.")
@@ -114,18 +140,18 @@ namespace CoreSystem.Forms {
 
     @doc("The name/text of the choice.")
     name: string;
+
+    @doc("Optional description for the choice.")
+    description?: string;
   }
 
-  @doc("The structure of a question.")
-  model Question {
+  @doc("Response model for the detailed structure of a question.")
+  model QuestionResponse {
     @doc("The question's unique identifier.")
     id: uuid;
 
     @doc("The section's id that the question belongs to.")
     sectionId: uuid;
-
-    @doc("Whether the question requires immediate server interaction.")
-    onChange: boolean;
 
     @doc("Whether the question is required to answer or not.")
     required: boolean;
@@ -138,12 +164,12 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
-
-    @doc("What is the number of this question in the form.")
-    order: int32;
-
+    
     @doc("Available choices for single_choice and multiple_choice questions.")
     choices?: Choice[];
+
+    @doc("If set, choices are dynamically generated from answers to this question.")
+    sourceQuestionId?: uuid;
 
     @doc("The creation timestamp of the question.")
     createdAt: utcDateTime;
@@ -155,15 +181,13 @@ namespace CoreSystem.Forms {
   @doc("The request body for creating/updating a question.")
   @example(#{
     required: true,
-    onChange: false,
     type: QuestionTypes.shortText,
     title: "What's your name?",
     description: "Please enter your name",
-    order: 2,
+    order: 1,
   })
   @example(#{
     required: true,
-    onChange: true,
     type: QuestionTypes.multipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
@@ -174,12 +198,17 @@ namespace CoreSystem.Forms {
       #{ name: "HPC Team" }
     ],
   })
+  @example(#{
+    required: true,
+    type: QuestionTypes.multipleChoice,
+    title: "Program Match",
+    description: "Sort the following programs based on your preference.",
+    order: 3,
+    sourceQuestionId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
     required: boolean;
-
-    @doc("Whether the question requires immediate server interaction.")
-    onChange: boolean;
 
     @doc("The type of the question.")
     type: QuestionTypes;
@@ -195,19 +224,9 @@ namespace CoreSystem.Forms {
 
     @doc("Available choice options for single_choice and multiple_choice questions.")
     choices?: ChoiceOption[];
-  }
 
-
-  @doc("The response for next section after completing current section.")
-  model NextSectionResponse {
-    @doc("The ID of the next section to navigate to.")
-    nextSectionId?: uuid;
-
-    @doc("If false, there is no next section, ready to submit.")
-    hasNext: boolean; 
-
-    @doc("The questions in the next section.")
-    questions?: Question[];
+    @doc("If set, choices are dynamically generated from answers to this question.")
+    sourceQuestionId?: uuid;
   }
 
   // form recipientUser
@@ -254,12 +273,13 @@ namespace CoreSystem.Forms {
   @get
   op listForms(): Form[];
 
-  @doc("Create a new question for a specific form.")
+  // for form edit - question management
+  @doc("Create a new question for a specific section.")
   @route("/sections/{sectionId}/questions")
   @post
   op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
-    @body question: Question;
+    @body question: QuestionResponse;
   };
 
   @doc("Update an existing question by its unique identifier.")
@@ -269,7 +289,7 @@ namespace CoreSystem.Forms {
     @path sectionId: uuid,
     @path questionId: uuid,
     @body q: QuestionRequest,
-  ): Question;
+  ): QuestionResponse;
 
   @doc("Delete an existing question by its unique identifier.")
   @route("/sections/{sectionId}/questions/{questionId}")
@@ -278,25 +298,10 @@ namespace CoreSystem.Forms {
     @statusCode statusCode: 204;
   };
 
-  @doc("List all the questions of a specific form.")
+  @doc("List all the questions of a specific section.")
   @route("/sections/{sectionId}/questions")
   @get
-  op listQuestions(@path sectionId: uuid): Question[];
-
-  @doc("Submit current section and get next section content.")
-  @route("/forms/{formId}/sections/{sectionId}")
-  @post
-  op submitSection(
-    @path formId: uuid,
-    @path responseId: uuid,
-    @path sectionId: uuid
-  ): {
-    @statusCode statusCode: 200;
-    @body response: NextSectionResponse;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
-  };
+  op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
 
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")
