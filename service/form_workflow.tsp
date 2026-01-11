@@ -182,6 +182,15 @@ namespace CoreSystem.FormWorkflow {
     nodes: NodeResponse[];
   }
 
+  @doc("Response model for activating workflow")
+  model ActivateWorkflowResponse {
+    ...WorkflowResponse;
+
+    @doc("The status of the workflow")
+    @example(true)
+    isActivated: boolean;
+  }
+
   // API Endpoints
 
   @doc("Create a new workflow for a form (backend/admin). Request body is optional - if provided, creates workflow with initial nodes; if omitted, creates empty workflow with only start and end nodes.")
@@ -215,6 +224,20 @@ namespace CoreSystem.FormWorkflow {
   op updateWorkflow(@path id: uuid, @body request: WorkflowRequest): {
     @statusCode statusCode: 200;
     @body response: WorkflowResponse;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
+  @doc("Activate workflow for a form (backend/admin)")
+  @route("/forms/{id}/workflow/activate")
+  @post
+  op activateWorkflow(@path id: uuid, @body request: WorkflowRequest): {
+    @statusCode statusCode: 200;
+    @body response: ActivateWorkflowResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
