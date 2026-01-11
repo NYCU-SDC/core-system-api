@@ -246,20 +246,6 @@ namespace CoreSystem.FormWorkflow {
     @body error: ProblemDetail;
   };
 
-  @doc("Create a new node for a workflow")
-  @route("/forms/{formId}/workflow/nodes")
-  @post
-  op createNode(@path formId: uuid, @body request: CreateNodeRequest): {
-    @statusCode statusCode: 201;
-    @body response: NodeStructure;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: NotFound;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
-  };
-
   @doc("Get a specific node by its ID for reference section. Only for section nodes")
   @route("/forms/{formId}/workflow/nodes/{nodeId}")
   @get
