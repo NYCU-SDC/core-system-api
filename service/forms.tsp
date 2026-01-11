@@ -137,6 +137,9 @@ namespace CoreSystem.Forms {
 
     @doc("The name/text of the choice.")
     name: string;
+
+    @doc("More details for the detailed choice option.")
+    description?: string;
   }
 
   @doc("Response model for the detailed structure of a question.")
