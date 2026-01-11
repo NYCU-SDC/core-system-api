@@ -80,6 +80,20 @@ paths:
                   $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
+  /api/forms/google-sheet-email:
+    get:
+      operationId: Forms_getGoogleSheetEmail
+      description: Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.GoogleSheetEmailResponse'
+      tags:
+        - Forms
   /api/forms/me:
     get:
       operationId: Unit_listFormsOfCurrentUser
@@ -350,10 +364,10 @@ paths:
                 $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
-  /api/forms/{id}/publish:
-    post:
-      operationId: Forms_publishForm
-      description: Publish a form. Set status to 'published', compute recipients, update inbox threads.
+  /api/forms/{id}/cover:
+    get:
+      operationId: Forms_getFormCoverImage
+      description: Get the cover image binary data. Returns the image in WebP format.
       parameters:
         - name: id
           in: path
@@ -363,14 +377,56 @@ paths:
       responses:
         '200':
           description: The request has succeeded.
+          content:
+            image/webp:
+              schema:
+                contentMediaType: image/webp
+      tags:
+        - Forms
+  /api/forms/{id}/publish:
+    post:
+      operationId: Forms_publishForm
+      description: Publish a form. Set status to 'published'.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormPublishResponse'
+      tags:
+        - Forms
+  /api/forms/{id}/upload-cover:
+    post:
+      operationId: Forms_uploadFormCoverImage
+      description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormCoverUploadResponse'
       tags:
         - Forms
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Forms.RecipientSelectionRequest'
+              $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
@@ -1332,6 +1388,8 @@ components:
         - status
         - unitId
         - lastEditor
+        - messageAfterSubmission
+        - visibility
         - createdAt
         - updatedAt
       properties:
@@ -1364,6 +1422,27 @@ components:
           type: string
           format: date-time
           description: (Optional) Deadline for form completion. If not specified, returns null.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The full URL to access the cover image.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this from's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
         createdAt:
           type: string
           format: date-time
@@ -1373,11 +1452,62 @@ components:
           format: date-time
           description: The last updated timestamp of the form
       description: The structure of a form.
+    Forms.FormCoverUploadRequest:
+      type: object
+      properties:
+        coverImage: {}
+      required:
+        - coverImage
+    Forms.FormCoverUploadResponse:
+      type: object
+      required:
+        - imageUrl
+      properties:
+        imageUrl:
+          type: string
+          description: The temporary full URL of the uploaded image.
+      description: Response after uploading a cover image.
+    Forms.FormDressing:
+      type: object
+      properties:
+        color:
+          type: string
+          description: 'Color in hex format (e.g., #0066cc)'
+        headerFont:
+          type: string
+          description: Header font id from https://font.emtech.cc/list
+        questionFont:
+          type: string
+          description: Question font id from https://font.emtech.cc/list
+        textFont:
+          type: string
+          description: Text font id from https://font.emtech.cc/list
+      description: The appearance/dressing configuration for a form.
+      examples:
+        - color: '#0066cc'
+          headerFont: LINESeedTW
+          questionFont: LINESeedTW
+          textFont: LINESeedTW
+    Forms.FormPublishResponse:
+      type: object
+      required:
+        - url
+        - visibility
+      properties:
+        url:
+          type: string
+          description: The URL to access the published form.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+      description: Response after publishing a form.
     Forms.FormRequest:
       type: object
       required:
         - title
         - description
+        - messageAfterSubmission
       properties:
         title:
           type: string
@@ -1392,16 +1522,53 @@ components:
           type: string
           format: date-time
           description: (Optional) Deadline for form completion.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The image path returned by the upload API.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this from's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
           description: If you want to join us, just fill in this form!
+          messageAfterSubmission: Thank you for your submission!
     Forms.FormStatus:
       type: string
       enum:
         - draft
         - published
       description: 'The current status of form '
+    Forms.FormVisibility:
+      type: string
+      enum:
+        - public
+        - private
+      description: The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+    Forms.GoogleSheetEmailResponse:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          description: The Gmail address that should be added to Google Sheet permissions so the system can modify the form.
+      description: Response containing the Gmail address for Google Sheet permissions.
     Forms.NextSectionResponse:
       type: object
       required:
