@@ -80,6 +80,22 @@ paths:
                   $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
+  /api/forms/me:
+    get:
+      operationId: Unit_listFormsOfCurrentUser
+      description: List all forms of current user
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.UserForm'
+      tags:
+        - Unit
   /api/forms/recipients/preview:
     post:
       operationId: Forms_previewRecipients
@@ -701,6 +717,51 @@ paths:
                 type: string
       tags:
         - Unit
+  /api/orgs/{slug}/forms:
+    post:
+      operationId: Unit_createOrgForm
+      description: Create a new form under an organization.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.FormRequest'
+    get:
+      operationId: Unit_listFormsByOrg
+      description: List forms under a specific organization.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Unit
   /api/orgs/{slug}/history:
     get:
       operationId: Slug_getSlugHistory
@@ -988,90 +1049,6 @@ paths:
                 type: string
       tags:
         - Unit
-  /api/orgs/{slug}/units/{id}/members:
-    post:
-      operationId: Unit_addUnitMember
-      description: Add a member to an unit
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Unit.UnitMemberResponse'
-      tags:
-        - Unit
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Unit.UnitMemberRequest'
-    get:
-      operationId: Unit_listUnitMembers
-      description: List all members of a specific unit
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-      tags:
-        - Unit
-  /api/orgs/{slug}/units/{id}/members/{member_id}:
-    delete:
-      operationId: Unit_removeUnitMember
-      description: Remove an unit-member relationship
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: member_id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            text/plain:
-              schema:
-                type: string
-      tags:
-        - Unit
   /api/orgs/{slug}/units/{id}/subunit-ids:
     get:
       operationId: Unit_listUnitSubUnitIds
@@ -1136,61 +1113,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Unit.Unit'
-      tags:
-        - Unit
-  /api/orgs/{slug}/units/{unitId}/forms:
-    post:
-      operationId: Unit_createUnitForm
-      description: Create a new form under a unit.
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: unitId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Form'
-      tags:
-        - Unit
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Forms.FormRequest'
-    get:
-      operationId: Unit_listFormsByUnit
-      description: List forms under a specific unit.
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: unitId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Forms.Form'
       tags:
         - Unit
   /api/responses/{responseId}/answers:
@@ -2398,45 +2320,6 @@ components:
           type: string
           format: date-time
           description: The last updated timestamp of the unit or organization
-    Unit.UnitMember:
-      type: object
-      required:
-        - unitId
-        - memberId
-      properties:
-        unitId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The unique identifier of the unit
-        memberId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The unique identifier of the member
-      description: Model representing a member of a unit, linking unit and member by their unique identifiers
-    Unit.UnitMemberRequest:
-      type: object
-      required:
-        - email
-      properties:
-        email:
-          type: string
-      examples:
-        - email: 123@gmail.com
-    Unit.UnitMemberResponse:
-      type: object
-      required:
-        - unitId
-        - member
-      properties:
-        unitId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The unique identifier of the unit
-        member:
-          allOf:
-            - $ref: '#/components/schemas/User.User'
-          description: Full user details including emails
-      description: Response model for unit member with full user details
     Unit.UpdateOrgRequest:
       type: object
       required:
@@ -2476,6 +2359,36 @@ components:
           unevaluatedProperties:
             type: string
           description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+    Unit.UserForm:
+      type: object
+      required:
+        - id
+        - title
+        - deadline
+        - status
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the form
+        title:
+          type: string
+          description: The title of the form
+        deadline:
+          type: string
+          format: date-time
+          description: The deadline of the form
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Unit.UserFormStatus'
+          description: The completion status of the form for the current user
+      description: Response model for listing user forms with status
+    Unit.UserFormStatus:
+      type: string
+      enum:
+        - in_progress
+        - completed
+      description: The completion status of the form for the user
     User.Role:
       type: string
       enum:
