@@ -73,6 +73,18 @@ namespace CoreSystem.FormWorkflow {
     label: string;
   }
 
+  @doc("Request body for creating a new node for a workflow")
+  @example(#{ type: NodeType.start, label: "開始表單" })
+  model CreateNodeRequest {
+    @doc("Type of the node")
+    @example(NodeType.start)
+    type: NodeType;
+
+    @doc("The label for the node")
+    @example("開始表單")
+    label?: string;
+  }
+
   @doc("Workflow node request model with linked list connections")
   model NodeRequest {
     ...NodeStructure;
@@ -181,20 +193,6 @@ namespace CoreSystem.FormWorkflow {
 
   // API Endpoints
 
-  @doc("Create a new workflow for a form (backend/admin). Request body is optional - if provided, creates workflow with initial nodes; if omitted, creates empty workflow with only start and end nodes.")
-  @route("/forms/{id}/workflow")
-  @post
-  op createWorkflow(@path id: uuid, @body request?: WorkflowRequest): {
-    @statusCode statusCode: 201;
-    @body response: WorkflowResponse;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: NotFound;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ProblemDetail;
-  };
-
   @doc("Get workflow for a form (backend/admin)")
   @route("/forms/{id}/workflow")
   @get
@@ -226,6 +224,20 @@ namespace CoreSystem.FormWorkflow {
   op activateWorkflow(@path id: uuid, @body request: WorkflowRequest): {
     @statusCode statusCode: 200;
     @body response: ActivateWorkflowResponse;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
+  @doc("Create a new node for a workflow")
+  @route("/forms/{formId}/workflow/nodes")
+  @post
+  op createNode(@path formId: uuid, @body request: CreateNodeRequest): {
+    @statusCode statusCode: 201;
+    @body response: NodeStructure;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
