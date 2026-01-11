@@ -19,7 +19,15 @@ namespace CoreSystem.FormWorkflow {
     @doc("Start node - represents the workflow entry point")
     start: "START",
 
-    @doc("Condition node - represents a logic/condition check node")
+    @doc("Condition node - represents a condition check node")
+    condition: "CONDITION",
+  }
+
+  enum CreateNodeRequestType {
+    @doc("Create a section node - represents a form section")
+    section: "SECTION",
+
+    @doc("Create a condition node - represents a condition check node")
     condition: "CONDITION",
   }
 
@@ -74,15 +82,11 @@ namespace CoreSystem.FormWorkflow {
   }
 
   @doc("Request body for creating a new node for a workflow")
-  @example(#{ type: NodeType.start, label: "開始表單" })
+  @example(#{ type: CreateNodeRequestType.section })
   model CreateNodeRequest {
     @doc("Type of the node")
-    @example(NodeType.start)
-    type: NodeType;
-
-    @doc("The label for the node")
-    @example("開始表單")
-    label?: string;
+    @example(CreateNodeRequestType.section)
+    type: CreateNodeRequestType;
   }
 
   @doc("Workflow node request model with linked list connections")
