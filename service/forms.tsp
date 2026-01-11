@@ -99,6 +99,7 @@ namespace CoreSystem.Forms {
     multipleChoice: "MULTIPLE_CHOICE",
     date: "DATE",
     uploadFile: "UPLOAD_FILE",
+    ranking: "RANKING",
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
@@ -139,6 +140,9 @@ namespace CoreSystem.Forms {
     @doc("Available choices for single_choice and multiple_choice questions.")
     choices?: Choice[];
 
+    @doc("If set, choices are dynamically generated from answers to this question.")
+    sourceQuestionId?: uuid;
+
     @doc("The creation timestamp of the question.")
     createdAt: utcDateTime;
 
@@ -166,6 +170,14 @@ namespace CoreSystem.Forms {
       #{ name: "HPC Team" }
     ],
   })
+  @example(#{
+    required: true,
+    type: QuestionTypes.multipleChoice,
+    title: "Program Match",
+    description: "Sort the following programs based on your preference.",
+    order: 3,
+    sourceQuestionId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
     required: boolean;
@@ -184,6 +196,9 @@ namespace CoreSystem.Forms {
 
     @doc("Available choice options for single_choice and multiple_choice questions.")
     choices?: ChoiceOption[];
+
+    @doc("If set, choices are dynamically generated from answers to this question.")
+    sourceQuestionId?: uuid;
   }
 
   // form recipientUser
@@ -258,7 +273,7 @@ namespace CoreSystem.Forms {
   @doc("List all the questions of a specific section.")
   @route("/sections/{sectionId}/questions")
   @get
-  op listQuestions(@path sectionId: uuid): QuestionResponse[];
+  op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
 
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")
