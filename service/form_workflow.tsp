@@ -123,74 +123,6 @@ namespace CoreSystem.FormWorkflow {
     nextFalse: uuid;
   }
 
-  @doc("Request body for creating/updating workflow")
-  @example(#{
-    nodes: #[
-      #{
-        id: "4c299120-2122-484d-9933-01360749500e",
-        label: "開始表單",
-        type: NodeType.start,
-        next: "32a86a6d-7735-4f17-8676-29b4724b524f",
-      },
-      #{
-        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
-        label: "選擇組別",
-        type: NodeType.section,
-        next: "32a86a6d-7735-4f17-8676-29b4724b524f",
-      },
-      #{
-        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
-        label: "如果[選擇組別][選擇你感興趣的組別]選擇[Full Stack Intro]",
-        type: NodeType.condition,
-        conditionRule: #{
-          source: ConditionSource.choice,
-          nodeId: "32a86a6d-7735-4f17-8676-29b4724b524f",
-          key: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
-          choiceOptionId: "f421cfc2-2b84-4da9-9629-011af609935a",
-        },
-        nextTrue: "32a86a6d-7735-4f17-8676-29b4724b524f",
-        nextFalse: "32a86a6d-7735-4f17-8676-29b4724b524f",
-      },
-      #{
-        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
-        label: "如果[開發部][你每週願意花費的時間]符合[^([6-9]|[1-9][0-9]+)$]",
-        type: NodeType.condition,
-        conditionRule: #{
-          source: ConditionSource.nonChoice,
-          nodeId: "32a86a6d-7735-4f17-8676-29b4724b524f",
-          key: "2ca86a6d-7735-4f17-8676-29b4724b524f",
-          pattern: "^([6-9]|[1-9][0-9]+)$",
-        },
-        nextTrue: "32a86a6d-7735-4f17-8676-29b4724b524f",
-        nextFalse: "32a86a6d-7735-4f17-8676-29b4724b524f",
-      },
-      #{
-        id: "32a86a6d-7735-4f17-8676-29b4724b524f",
-        label: "確認/送出",
-        type: NodeType.end,
-      }
-    ],
-  })
-  model WorkflowRequest {
-    @doc("Array of workflow nodes")
-    nodes: NodeRequest[];
-  }
-
-  @doc("Response model for getting workflow")
-  model WorkflowResponse {
-    @doc("Array of workflow nodes")
-    nodes: NodeResponse[];
-  }
-
-  @doc("Response model for activating workflow")
-  model ActivateWorkflowResponse {
-    ...WorkflowResponse;
-
-    @doc("The status of the workflow")
-    @example(true)
-    isActivated: boolean;
-  }
-
   // API Endpoints
 
   @doc("Get workflow for a form (backend/admin)")
@@ -198,7 +130,7 @@ namespace CoreSystem.FormWorkflow {
   @get
   op getWorkflow(@path id: uuid): {
     @statusCode statusCode: 200;
-    @body response: WorkflowResponse;
+    @body response: NodeResponse[];
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
@@ -207,9 +139,9 @@ namespace CoreSystem.FormWorkflow {
   @doc("Update workflow for a form (backend/admin)")
   @route("/forms/{id}/workflow")
   @put
-  op updateWorkflow(@path id: uuid, @body request: WorkflowRequest): {
+  op updateWorkflow(@path id: uuid, @body request: NodeRequest[]): {
     @statusCode statusCode: 200;
-    @body response: WorkflowResponse;
+    @body response: NodeResponse[];
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
@@ -221,9 +153,8 @@ namespace CoreSystem.FormWorkflow {
   @doc("Activate workflow for a form (backend/admin)")
   @route("/forms/{id}/workflow/activate")
   @post
-  op activateWorkflow(@path id: uuid, @body request: WorkflowRequest): {
+  op activateWorkflow(@path id: uuid, @body request: NodeRequest[]): {
     @statusCode statusCode: 200;
-    @body response: ActivateWorkflowResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
