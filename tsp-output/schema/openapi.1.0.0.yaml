@@ -130,38 +130,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Forms.RecipientSelectionRequest'
-  /api/forms/{formId}/questions/{questionId}:
-    get:
-      operationId: Responses_getQuestionAnswers
-      description: Get all answers for a specific question across all form responses.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: questionId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Responses.AnswersForQuestionResponse'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Responses
   /api/forms/{formId}/responses:
     post:
       operationId: Responses_createFormResponse
@@ -179,12 +147,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Responses.CreateResponse'
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -272,41 +234,6 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
-  /api/forms/{formId}/sections/{sectionId}/{responseId}:
-    post:
-      operationId: Forms_submitSection
-      description: Submit current section and get next section content.
-      parameters:
-        - name: formId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: responseId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: sectionId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.NextSectionResponse'
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-      tags:
-        - Forms
   /api/forms/{id}:
     put:
       operationId: Forms_updateForm
@@ -1191,7 +1118,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Responses.UpdateRequest'
+              $ref: '#/components/schemas/Responses.AnswersRequestUpdate'
   /api/responses/{responseId}/sections:
     get:
       operationId: Responses_listResponseSections
@@ -1208,9 +1135,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Responses.ResponseSections'
+                $ref: '#/components/schemas/Responses.ListSectionResponse'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -1219,10 +1144,29 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/responses/{responseId}/submit:
+    post:
+      operationId: Responses_submitFormResponse
+      description: Submit all the answer in the form response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.AnswersRequest'
+      tags:
+        - Responses
   /api/sections/{sectionId}/questions:
     post:
       operationId: Forms_createQuestion
-      description: Create a new question for a specific form.
+      description: Create a new question for a specific section.
       parameters:
         - name: sectionId
           in: path
@@ -1235,7 +1179,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Question'
+                $ref: '#/components/schemas/Forms.QuestionResponse'
       tags:
         - Forms
       requestBody:
@@ -1246,13 +1190,19 @@ paths:
               $ref: '#/components/schemas/Forms.QuestionRequest'
     get:
       operationId: Forms_listQuestions
-      description: List all the questions of a specific form.
+      description: List all the questions of a specific section.
       parameters:
         - name: sectionId
           in: path
           required: true
           schema:
             $ref: '#/components/schemas/uuid'
+        - name: responseId
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -1261,7 +1211,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.Question'
+                  $ref: '#/components/schemas/Forms.QuestionResponse'
       tags:
         - Forms
   /api/sections/{sectionId}/questions/{questionId}:
@@ -1285,7 +1235,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Question'
+                $ref: '#/components/schemas/Forms.QuestionResponse'
       tags:
         - Forms
       requestBody:
@@ -1368,6 +1318,9 @@ components:
         name:
           type: string
           description: The name/text of the choice.
+        description:
+          type: string
+          description: Optional description for the choice.
       description: A choice with ID and name for choice-based questions.
     Forms.ChoiceOption:
       type: object
@@ -1377,6 +1330,9 @@ components:
         name:
           type: string
           description: The name/text of the choice option.
+        description:
+          type: string
+          description: Optional description for the choice.
       description: A choice option for creating/updating choice-based questions.
     Forms.Form:
       type: object
@@ -1551,8 +1507,8 @@ components:
     Forms.FormStatus:
       type: string
       enum:
-        - draft
-        - published
+        - DRAFT
+        - PUBLISHED
       description: 'The current status of form '
     Forms.FormVisibility:
       type: string
@@ -1584,70 +1540,13 @@ components:
         questions:
           type: array
           items:
-            $ref: '#/components/schemas/Forms.Question'
+            $ref: '#/components/schemas/Forms.QuestionResponse'
           description: The questions in the next section.
       description: The response for next section after completing current section.
-    Forms.Question:
-      type: object
-      required:
-        - id
-        - sectionId
-        - onChange
-        - required
-        - type
-        - title
-        - description
-        - order
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The question's unique identifier.
-        sectionId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The section's id that the question belongs to.
-        onChange:
-          type: boolean
-          description: Whether the question requires immediate server interaction.
-        required:
-          type: boolean
-          description: Whether the question is required to answer or not.
-        type:
-          allOf:
-            - $ref: '#/components/schemas/Forms.QuestionTypes'
-          description: The type of the question.
-        title:
-          type: string
-          description: What is the question.
-        description:
-          type: string
-          description: More details of this question.
-        order:
-          type: integer
-          format: int32
-          description: What is the number of this question in the form.
-        choices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Forms.Choice'
-          description: Available choices for single_choice and multiple_choice questions.
-        createdAt:
-          type: string
-          format: date-time
-          description: The creation timestamp of the question.
-        updatedAt:
-          type: string
-          format: date-time
-          description: The updated timestamp of the question.
-      description: The structure of a question.
     Forms.QuestionRequest:
       type: object
       required:
         - required
-        - onChange
         - type
         - title
         - description
@@ -1656,9 +1555,6 @@ components:
         required:
           type: boolean
           description: Whether the question is required to answer or not.
-        onChange:
-          type: boolean
-          description: Whether the question requires immediate server interaction.
         type:
           allOf:
             - $ref: '#/components/schemas/Forms.QuestionTypes'
@@ -1678,11 +1574,20 @@ components:
           items:
             $ref: '#/components/schemas/Forms.ChoiceOption'
           description: Available choice options for single_choice and multiple_choice questions.
+        sourceQuestionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: If set, choices are dynamically generated from answers to this question.
       description: The request body for creating/updating a question.
       examples:
         - required: true
-          onChange: true
-          type: multiple_choice
+          type: MULTIPLE_CHOICE
+          title: Program Match
+          description: Sort the following programs based on your preference.
+          order: 3
+          sourceQuestionId: d290f1ee-6c54-4b01-90e6-d701748f0851
+        - required: true
+          type: MULTIPLE_CHOICE
           title: Which team you want to join???
           description: Pick one of your favorite!!!
           order: 2
@@ -1691,20 +1596,74 @@ components:
             - name: Clustron Team
             - name: HPC Team
         - required: true
-          onChange: false
-          type: short_text
+          type: SHORT_TEXT
           title: What's your name?
           description: Please enter your name
-          order: 2
+          order: 1
+    Forms.QuestionResponse:
+      type: object
+      required:
+        - id
+        - sectionId
+        - required
+        - type
+        - title
+        - description
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question's unique identifier.
+        sectionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The section's id that the question belongs to.
+        required:
+          type: boolean
+          description: Whether the question is required to answer or not.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Forms.QuestionTypes'
+          description: The type of the question.
+        title:
+          type: string
+          description: What is the question.
+        description:
+          type: string
+          description: More details of this question.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.Choice'
+          description: Available choices for single_choice and multiple_choice questions.
+        sourceQuestionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: If set, choices are dynamically generated from answers to this question.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the question.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The updated timestamp of the question.
+      description: Response model for the detailed structure of a question.
     Forms.QuestionTypes:
       type: string
       enum:
-        - short_text
-        - long_text
-        - single_choice
-        - multiple_choice
-        - date
-        - upload_file
+        - SHORT_TEXT
+        - LONG_TEXT
+        - SINGLE_CHOICE
+        - MULTIPLE_CHOICE
+        - DROPDOWN
+        - DETAILED_MULTIPLE_CHOICE
+        - DATE
+        - UPLOAD_FILE
+        - LINEAR_SCALE
+        - RANKING
       description: The current types of question
     Forms.RecipientSelectionRequest:
       type: object
@@ -1773,8 +1732,8 @@ components:
     Forms.SectionProgress:
       type: string
       enum:
-        - draft
-        - submitted
+        - DRAFT
+        - SUBMITTED
       description: The current progress of a section
     Inbox.InboxFormMessage:
       type: object
@@ -1990,7 +1949,7 @@ components:
           format: date-time
           description: The last updated timestamp of the answer.
       description: Response model for a single answer in question answers view
-    Responses.AnswerRequest:
+    Responses.AnswerJSON:
       type: object
       required:
         - questionId
@@ -2017,7 +1976,7 @@ components:
       properties:
         question:
           allOf:
-            - $ref: '#/components/schemas/Forms.Question'
+            - $ref: '#/components/schemas/Forms.QuestionResponse'
           description: The question details.
         answers:
           type: array
@@ -2025,6 +1984,38 @@ components:
             $ref: '#/components/schemas/Responses.AnswerForQuestionResponse'
           description: All answers for this question.
       description: Response model for getting all answers for a specific question
+    Responses.AnswersRequest:
+      type: object
+      required:
+        - answers
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.AnswerJSON'
+          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
+      description: Request model for update or submit the form response.
+      examples:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              value: John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
+    Responses.AnswersRequestUpdate:
+      type: object
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.AnswerJSON'
+          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
+      description: Request model for update or submit the form response.
+      examples:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              value: John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
     Responses.CreateResponse:
       type: object
       required:
@@ -2041,11 +2032,8 @@ components:
         - id
         - progress
         - formId
-        - sectionId
         - submittedBy
         - questionAnswerPairs
-        - createdAt
-        - updatedAt
       properties:
         id:
           allOf:
@@ -2059,10 +2047,6 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form that this response belongs to.
-        sectionId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The current section ID.
         submittedBy:
           allOf:
             - $ref: '#/components/schemas/uuid'
@@ -2070,16 +2054,8 @@ components:
         questionAnswerPairs:
           type: array
           items:
-            $ref: '#/components/schemas/Responses.QuestionAnswerForGetResponse'
+            $ref: '#/components/schemas/Responses.PreviewSection'
           description: All questions with their answers for this response.
-        createdAt:
-          type: string
-          format: date-time
-          description: The creation timestamp of the response.
-        updatedAt:
-          type: string
-          format: date-time
-          description: The last updated timestamp of the response.
       description: Response model for getting a specific form response
     Responses.ListResponse:
       type: object
@@ -2097,20 +2073,52 @@ components:
             $ref: '#/components/schemas/Responses.ResponseJSON'
           description: All responses for this form.
       description: Response model for listing all responses of a form
-    Responses.QuestionAnswerForGetResponse:
+    Responses.ListSectionResponse:
       type: object
       required:
-        - questionId
+        - sections
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ResponseSections'
+          description: The section list of the response.
+      description: Response model for listing all sections of a response
+      examples:
+        - sections:
+            - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              title: Group Info
+            - id: 0f9e8d7c-6b5a-4321-0fed-cba987654321
+              title: Self Introduction
+    Responses.PreviewQuestion:
+      type: object
+      required:
+        - question
         - answer
       properties:
-        questionId:
+        question:
           allOf:
-            - $ref: '#/components/schemas/uuid'
+            - $ref: '#/components/schemas/Forms.QuestionResponse'
           description: The question details.
         answer:
           type: string
           description: The answer value.
-      description: Response model for a question with its answer
+      description: Model for a question with its answer in preview view
+    Responses.PreviewSection:
+      type: object
+      required:
+        - sectionTitle
+        - questionAnswerPairs
+      properties:
+        sectionTitle:
+          type: string
+          description: The section title.
+        questionAnswerPairs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.PreviewQuestion'
+          description: All questions with their answers in this section.
+      description: Model for a single section in preview view
     Responses.ResponseJSON:
       type: object
       required:
@@ -2139,8 +2147,8 @@ components:
     Responses.ResponseProgress:
       type: string
       enum:
-        - draft
-        - submitted
+        - DRAFT
+        - SUBMITTED
       description: The current progress of the response.
     Responses.ResponseSections:
       type: object
@@ -2155,21 +2163,7 @@ components:
         title:
           type: string
           description: Section title (e.g., 'Group Info').
-    Responses.UpdateRequest:
-      type: object
-      properties:
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.AnswerRequest'
-          description: Only the answers that are new or have been modified.
-      description: Request model for updating the form response
-      examples:
-        - answers:
-            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
-              value: John Doe
-            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
-              value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
+      description: Response model for a single section in response sections view
     Slug.History:
       type: object
       required:
