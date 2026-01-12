@@ -195,7 +195,7 @@ namespace CoreSystem.FormWorkflow {
     @body error: ProblemDetail;
   };
 
-  @doc("Update a node for a workflow")
+  @doc("Delete a node for a workflow")
   @route("/forms/{formId}/workflow/nodes/{nodeId}")
   @delete
   op deleteNode(@path formId: uuid, @path nodeId: uuid): {
