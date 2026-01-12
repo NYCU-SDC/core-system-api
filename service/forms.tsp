@@ -6,10 +6,21 @@ using OpenAPI;
 
 @tag("Forms")
 namespace CoreSystem.Forms {
+  @doc("The request body for uploading a cover image. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
+  model FormCoverUploadRequest {
+    coverImage: HttpPart<bytes>;
+  }
+
+  @doc("Response after uploading a cover image.")
+  model FormCoverUploadResponse {
+    @doc("The temporary full URL of the uploaded image.")
+    imageUrl: string;
+  }
   @doc("The request body for creating/updating a form.")
   @example(#{
     title: "Enter SDC Form",
     description: "If you want to join us, just fill in this form!",
+    messageAfterSubmission: "Thank you for your submission!",
   })
   model FormRequest {
     @doc("The title of the form.")
@@ -23,6 +34,24 @@ namespace CoreSystem.Forms {
 
     @doc("(Optional) Deadline for form completion.")
     deadline?: utcDateTime;
+
+    @doc("When the form is available to be filled.")
+    publishTime?: utcDateTime;
+
+    @doc("The message to show after user's submission.")
+    messageAfterSubmission: string;
+
+    @doc("The dressing of the form.")
+    dressing?: FormDressing;
+
+    @doc("The image path returned by the upload API.")
+    coverImage?: string;
+
+    @doc("The google sheet url this from's responses will be sent to.")
+    googleSheetUrl?: string;
+
+    @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+    visibility?: FormVisibility;
   }
 
   @doc("The structure of a form.")
@@ -51,11 +80,50 @@ namespace CoreSystem.Forms {
     @doc("(Optional) Deadline for form completion. If not specified, returns null.")
     deadline?: utcDateTime;
 
+    @doc("When the form is available to be filled.")
+    publishTime?: utcDateTime;
+
+    @doc("The message to show after user's submission.")
+    messageAfterSubmission: string;
+
+    @doc("The dressing of the form.")
+    dressing?: FormDressing;
+
+    @doc("The full URL to access the cover image.")
+    coverImage?: string;
+
+    @doc("The google sheet url this from's responses will be sent to.")
+    googleSheetUrl?: string;
+
+    @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+    visibility: FormVisibility;
+
     @doc("The creation timestamp of the form.")
     createdAt: utcDateTime;
 
     @doc("The last updated timestamp of the form")
     updatedAt: utcDateTime;
+  }
+
+  @doc("The appearance/dressing configuration for a form.")
+  @example(#{
+    color: "#0066cc",
+    headerFont: "LINESeedTW",
+    questionFont: "LINESeedTW",
+    textFont: "LINESeedTW",
+  })
+  model FormDressing {
+    @doc("Color in hex format (e.g., #0066cc)")
+    color?: string;
+
+    @doc("Header font id from https://font.emtech.cc/list")
+    headerFont?: string;
+
+    @doc("Question font id from https://font.emtech.cc/list")
+    questionFont?: string;
+
+    @doc("Text font id from https://font.emtech.cc/list")
+    textFont?: string;
   }
 
   @doc("A section within a form, grouping questions together.")
@@ -89,6 +157,15 @@ namespace CoreSystem.Forms {
   enum FormStatus {
     draft: "DRAFT",
     published: "PUBLISHED",
+  }
+
+  @doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+  enum FormVisibility {
+    @doc("Public: visible to all logged-in users")
+    public: "public",
+
+    @doc("Private: requires a direct link to access")
+    private: "private",
   }
 
   @doc("The current types of question")
@@ -229,6 +306,18 @@ namespace CoreSystem.Forms {
     sourceQuestionId?: uuid;
   }
 
+  @doc("The response for next section after completing current section.")
+  model NextSectionResponse {
+    @doc("The ID of the next section to navigate to.")
+    nextSectionId?: uuid;
+
+    @doc("If false, there is no next section, ready to submit.")
+    hasNext: boolean;
+
+    @doc("The questions in the next section.")
+    questions?: Question[];
+  }
+
   // form recipientUser
   @doc("The basic info of a user that can receive the form.")
   model RecipientUser {
@@ -249,6 +338,21 @@ namespace CoreSystem.Forms {
   @doc("The result of recipients selection (no duplicated).")
   model RecipientSelectionResponse {
     recipients: RecipientUser[];
+  }
+
+  @doc("Response after publishing a form.")
+  model FormPublishResponse {
+    @doc("The URL to access the published form.")
+    url: string;
+
+    @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
+    visibility: FormVisibility;
+  }
+
+  @doc("Response containing the Gmail address for Google Sheet permissions.")
+  model GoogleSheetEmailResponse {
+    @doc("The Gmail address that should be added to Google Sheet permissions so the system can modify the form.")
+    email: string;
   }
 
   @doc("Update an existing form by its unique identifier.")
@@ -303,6 +407,23 @@ namespace CoreSystem.Forms {
   @get
   op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
 
+  @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
+  @route("/forms/{id}/upload-cover")
+  @post
+  op uploadFormCoverImage(
+    @path id: uuid,
+    @header("content-type") contentType: "multipart/form-data",
+    @multipartBody body: FormCoverUploadRequest,
+  ): FormCoverUploadResponse;
+
+  @doc("Get the cover image binary data. Returns the image in WebP format.")
+  @route("/forms/{id}/cover")
+  @get
+  op getFormCoverImage(@path id: uuid): {
+    @header("content-type") contentType: "image/webp";
+    @body body: bytes;
+  };
+
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")
   @route("/forms/recipients/preview")
@@ -311,10 +432,16 @@ namespace CoreSystem.Forms {
     @body req: RecipientSelectionRequest,
   ): RecipientSelectionResponse;
 
-  @doc("Publish a form. Set status to 'published', compute recipients, update inbox threads.")
+  @doc("Publish a form. Set status to 'published'.")
   @route("/forms/{id}/publish")
   @post
-  op publishForm(@path id: uuid, @body req: RecipientSelectionRequest): {
+  op publishForm(@path id: uuid): {
     @statusCode statusCode: 200;
+    @body response: FormPublishResponse;
   };
+
+  @doc("Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.")
+  @route("/forms/google-sheet-email")
+  @get
+  op getGoogleSheetEmail(): GoogleSheetEmailResponse;
 }
