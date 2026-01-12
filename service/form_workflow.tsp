@@ -129,7 +129,7 @@ namespace CoreSystem.FormWorkflow {
 
   // API Endpoints
 
-  @doc("Get workflow for a form (backend/admin)")
+  @doc("Get workflow for a form")
   @route("/forms/{id}/workflow")
   @get
   op getWorkflow(@path id: uuid): {
@@ -140,7 +140,7 @@ namespace CoreSystem.FormWorkflow {
     @body error: NotFound;
   };
 
-  @doc("Update workflow for a form (backend/admin)")
+  @doc("Update workflow for a form")
   @route("/forms/{id}/workflow")
   @put
   op updateWorkflow(@path id: uuid, @body request: NodeRequest[]): {
@@ -154,7 +154,7 @@ namespace CoreSystem.FormWorkflow {
     @body error: ProblemDetail;
   };
 
-  @doc("Activate workflow for a form (backend/admin)")
+  @doc("Activate workflow for a form")
   @route("/forms/{id}/workflow/activate")
   @post
   op activateWorkflow(@path id: uuid, @body request: NodeRequest[]): {
