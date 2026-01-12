@@ -315,7 +315,7 @@ namespace CoreSystem.Forms {
     hasNext: boolean;
 
     @doc("The questions in the next section.")
-    questions?: Question[];
+    questions?: QuestionResponse[];
   }
 
   // form recipientUser
