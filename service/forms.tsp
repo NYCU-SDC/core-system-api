@@ -408,7 +408,7 @@ namespace CoreSystem.Forms {
   op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
-  @route("/forms/{id}/upload-cover")
+  @route("/forms/{id}/cover")
   @post
   op uploadFormCoverImage(
     @path id: uuid,
