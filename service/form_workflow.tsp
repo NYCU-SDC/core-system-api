@@ -91,7 +91,12 @@ namespace CoreSystem.FormWorkflow {
 
   @doc("Workflow node request model with linked list connections")
   model NodeRequest {
-    ...NodeStructure;
+    @doc("Unique identifier for the node.")
+    id: uuid;
+
+    @doc("The label for the node")
+    @example("開始表單")
+    label: string;
 
     @doc("The condition rule for the node, only for condition nodes")
     conditionRule?: ConditionRule;
