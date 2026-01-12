@@ -292,6 +292,30 @@ paths:
       tags:
         - Forms
   /api/forms/{id}/cover:
+    post:
+      operationId: Forms_uploadFormCoverImage
+      description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormCoverUploadResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
     get:
       operationId: Forms_getFormCoverImage
       description: Get the cover image binary data. Returns the image in WebP format.
@@ -329,31 +353,6 @@ paths:
                 $ref: '#/components/schemas/Forms.FormPublishResponse'
       tags:
         - Forms
-  /api/forms/{id}/upload-cover:
-    post:
-      operationId: Forms_uploadFormCoverImage
-      description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.FormCoverUploadResponse'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
