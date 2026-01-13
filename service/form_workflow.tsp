@@ -115,10 +115,6 @@ namespace CoreSystem.FormWorkflow {
   model NodeResponse {
     ...NodeStructure;
 
-    @doc("The section reference ID for the node, only for section nodes")
-    @example("f421cfc2-2b84-4da9-9629-011af609935a")
-    sectionRefId: uuid;
-
     @doc("The condition rule for the node, only for condition nodes")
     conditionRule: ConditionRule;
 
