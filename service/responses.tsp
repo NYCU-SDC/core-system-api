@@ -10,10 +10,6 @@ namespace CoreSystem.Responses {
     questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
     value: "John Doe",
   })
-  @example(#{
-    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-    value: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
-  })
   @doc("Request model for submitting an individual answer")
   model AnswerJSON {
     @doc("The question being answered.")
@@ -21,6 +17,21 @@ namespace CoreSystem.Responses {
 
     @doc("The answer value (format depends on questionType from questionId).")
     value: string;
+  }
+
+  @example(#{
+    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    avatar_url: "https://example.com/avatar.jpg",
+    username: "JohnDoe",
+  })
+  @doc("Request model for submitting an individual answer")
+  model OauthAnswerJSON {
+    @doc("The question being answered.")
+    questionId: uuid;
+
+    avatar_url: string;
+
+    username: string;
   }
 
   @doc("Request model for update or submit the form response.")
@@ -71,7 +82,6 @@ namespace CoreSystem.Responses {
     responses: ResponseJSON[];
   }
 
-
   @doc("Model for a question with its answer in preview view")
   model PreviewQuestion {
     @doc("The question details.")
@@ -91,7 +101,7 @@ namespace CoreSystem.Responses {
   }
 
   @doc("Response model for getting a specific form response")
-  model GetResponse {
+  model GetFormResponse {
     @doc("The response's unique identifier.")
     id: uuid;
 
@@ -101,11 +111,17 @@ namespace CoreSystem.Responses {
     @doc("The form that this response belongs to.")
     formId: uuid;
 
-    @doc("The user who submitted this response.")
-    submittedBy: uuid;
-
     @doc("All questions with their answers for this response.")
     questionAnswerPairs: PreviewSection[];
+  }
+
+  @doc("Response model for getting an answer of a specific question.")
+  model GetQuestionResponse {
+    @doc("The response's unique identifier.")
+    id: uuid;
+
+    @doc("A question with its answer for this response.")
+    questionAnswerPair: AnswerJSON | OauthAnswerJSON;
   }
 
   @doc("The current progress of the response.")
@@ -221,7 +237,18 @@ namespace CoreSystem.Responses {
   @get
   op getFormResponse(@path formId: uuid, @path responseId: uuid): {
     @statusCode statusCode: 200;
-    @body response: GetResponse;
+    @body response: GetFormResponse;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
+  };
+
+  @doc("Get a specific answer by question ID in the response.")
+  @route("/responses/{responseId}/questions/{questionId}")
+  @get
+  op getQuestionResponse(@path formId: uuid, @path responseId: uuid, @path questionId: uuid): {
+    @statusCode statusCode: 200;
+    @body response: GetQuestionResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;
