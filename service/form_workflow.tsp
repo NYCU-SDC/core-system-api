@@ -46,13 +46,9 @@ namespace CoreSystem.FormWorkflow {
     @example(ConditionSource.nonChoice)
     source: ConditionSource;
 
-    @doc("The node ID that contains the question to check against")
-    @example("engineering_dept")
-    nodeId: string;
-
     @doc("The question ID to check against")
     @example("9a843aa0-8451-4e3b-b6a0-8c0e994e9040")
-    key: uuid;
+    question: uuid;
 
     @doc("Regex pattern to match against (required for NON_CHOICE source)")
     @example("^([6-9]|[1-9][0-9]+)$")
