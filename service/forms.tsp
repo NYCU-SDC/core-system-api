@@ -122,6 +122,9 @@ namespace CoreSystem.Forms {
     
     @doc("Ranking/ordering items by preference")
     ranking: "RANKING",
+
+    @doc("OAuth account connection for external service authentication")
+    oauthConnect: "OAUTH_CONNECT",
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
