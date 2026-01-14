@@ -8,6 +8,7 @@ import "./service/forms.tsp";
 import "./service/responses.tsp";
 import "./service/inbox.tsp";
 import "./service/slug.tsp";
+import "./service/form_workflow.tsp";
 
 using Http;
 using Versioning;

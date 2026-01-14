@@ -410,6 +410,18 @@ namespace CoreSystem.Forms {
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/cover")
   @post
+  op submitSection(
+    @path formId: uuid,
+    @path responseId: uuid,
+    @path sectionId: uuid,
+  ): {
+    @statusCode statusCode: 200;
+    @body response: NextSectionResponse;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ProblemDetail;
+  };
+
   op uploadFormCoverImage(
     @path id: uuid,
     @header("content-type") contentType: "multipart/form-data",
