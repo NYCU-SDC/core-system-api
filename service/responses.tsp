@@ -204,18 +204,18 @@ namespace CoreSystem.Responses {
   };
 
   @doc("Submit all the answer in the form response.")
-  @route("/responses/{responseId}/submit")
+  @route("/responses/{id}/submit")
   @post
-  op submitFormResponse(@path responseId: uuid): {
+  op submitFormResponse(@path id: uuid): {
     @statusCode statusCode: 200;
     @body req: AnswersRequest
   };
 
   @doc("Update answers for the response.")
-  @route("/responses/{responseId}/answers")
+  @route("/responses/{id}/answers")
   @patch(#{implicitOptionality: true})
   op updateFormResponse(
-    @path responseId: uuid, 
+    @path id: uuid, 
     @body req: AnswersRequest
   ): {
     @statusCode statusCode: 200;
@@ -255,9 +255,9 @@ namespace CoreSystem.Responses {
   };
 
   @doc("List the form structure of the response.")
-  @route("/responses/{responseId}/sections")
+  @route("/responses/{id}/sections")
   @get
-  op listResponseSections(@path responseId: uuid): {
+  op listResponseSections(@path id: uuid): {
     @statusCode statusCode: 200;
     @body response: ListSectionResponse;
   } | {
