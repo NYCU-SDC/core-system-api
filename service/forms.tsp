@@ -204,20 +204,6 @@ namespace CoreSystem.Forms {
     oauthConnect: "OAUTH_CONNECT",
   }
 
-  @doc("A choice for creating/updating OAuth connect questions.")
-  model OauthConnectOption {
-    @doc("The external service name (e.g., 'Google', 'GitHub').")
-    serviceName: string;
-  }
-
-  @doc("A choice with ID for OAuth connect questions.")
-  model OauthConnect {
-    @doc("The unique identifier of the choice.")
-    id: uuid;
-
-    ...OauthConnectOption;
-  }
-
   @doc("A choice for creating/updating file upload questions.")
   model UploadFileOption {
     @doc("Allowed file types/extensions (e.g., ['pdf', 'docx']).")
@@ -301,7 +287,7 @@ namespace CoreSystem.Forms {
     @doc("More details of this question.")
     description: string;
     
-    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, ranking, and oauth questions.")
     choices?: Choice[];
     
     @doc("Available choice options for linear scale questions.")
@@ -309,9 +295,6 @@ namespace CoreSystem.Forms {
     
     @doc("Available options for file upload questions.")
     uploadFile?: UploadFile;
-
-    @doc("Available options for OAuth connect questions.")
-    oauthConnect?: OauthConnect;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
@@ -367,7 +350,7 @@ namespace CoreSystem.Forms {
     @doc("What is the number of this question in the form.")
     order: int32;
     
-    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, ranking, and oauth questions.")
     choices?: ChoiceOption[];
     
     @doc("Available choice options for linear scale questions.")
@@ -375,9 +358,6 @@ namespace CoreSystem.Forms {
 
     @doc("Available options for file upload questions.")
     uploadFile?: UploadFileOption; 
-
-    @doc("Available options for OAuth connect questions.")
-    oauthConnect?: OauthConnectOption;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
