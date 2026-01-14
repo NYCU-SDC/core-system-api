@@ -127,6 +127,42 @@ namespace CoreSystem.Forms {
     oauthConnect: "OAUTH_CONNECT",
   }
 
+  @doc("Options for OAuth connect questions.")
+  model OauthConnectOption {
+    @doc("The external service name (e.g., 'Google', 'GitHub').")
+    serviceName: string;
+  }
+
+  @doc("Options for file upload questions.")
+  model UploadFileOption {
+    @doc("Allowed file types/extensions (e.g., ['pdf', 'docx']).")
+    allowedFileTypes: string[];
+
+    @doc("Maximum number of files that can be uploaded.")
+    maxFileAmount: int32;
+
+    @doc("Maximum file size in megabytes.")
+    maxFileSizeMB: int32;
+  }
+
+  @doc("Options for linear scale questions.")
+  model LinearScaleOption {
+    @doc("Background icon for the linear scale option.")
+    icon: string;
+
+    @doc("Minimum value of the linear scale.")
+    min: int32;
+
+    @doc("Maximum value of the linear scale.")
+    max: int32;
+
+    @doc("Label for the minimum value.")
+    minValueLabel?: string;
+
+    @doc("Label for the maximum value.")
+    maxValueLabel?: string;
+  }
+
   @doc("A choice option for creating/updating choice-based questions.")
   model ChoiceOption {
     @doc("The name/text of the choice option.")
@@ -168,8 +204,17 @@ namespace CoreSystem.Forms {
     @doc("More details of this question.")
     description: string;
     
-    @doc("Available choices for single_choice and multiple_choice questions.")
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: Choice[];
+    
+    @doc("Available choice options for linear scale questions.")
+    linearScale?: LinearScaleOption;
+    
+    @doc("Available options for file upload questions.")
+    uploadFile?: UploadFileOption;
+
+    @doc("Available options for OAuth connect questions.")
+    oauthConnect?: OauthConnectOption;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
@@ -224,9 +269,15 @@ namespace CoreSystem.Forms {
 
     @doc("What is the number of this question in the form.")
     order: int32;
-
-    @doc("Available choice options for single_choice and multiple_choice questions.")
+    
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: ChoiceOption[];
+    
+    @doc("Available choice options for linear scale questions.")
+    linearScale?: LinearScaleOption;
+
+    @doc("Available options for file upload questions.")
+    uploadFile?: UploadFileOption; 
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
