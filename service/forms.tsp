@@ -232,6 +232,12 @@ namespace CoreSystem.Forms {
     sourceQuestionId?: uuid;
   }
 
+  @doc("Response model for listing all sections and questions in a form.")
+  model ListSectionsResponse {
+    sections: Section;
+    questions: QuestionResponse[];
+  }
+
   // form recipientUser
   @doc("The basic info of a user that can receive the form.")
   model RecipientUser {
@@ -278,9 +284,9 @@ namespace CoreSystem.Forms {
 
   // for form edit - question management
   @doc("Create a new question for a specific section.")
-  @route("/sections/{sectionId}/questions")
+  @route("/sections/{id}/questions")
   @post
-  op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
+  op createQuestion(@path id: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
     @body question: QuestionResponse;
   };
@@ -301,10 +307,10 @@ namespace CoreSystem.Forms {
     @statusCode statusCode: 204;
   };
 
-  @doc("List all the questions of a specific section.")
-  @route("/sections/{sectionId}/questions")
+  @doc("List all the questions of the sections in the form.")
+  @route("/forms/{id}/sections")
   @get
-  op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
+  op listSections(@path id: uuid): ListSectionsResponse[];
 
   // for form publish
   @doc("Preview recipients by orgIds/unitIds (no duplicated).")
