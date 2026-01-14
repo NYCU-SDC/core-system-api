@@ -54,10 +54,6 @@ namespace CoreSystem.FormWorkflow {
     @example("^([6-9]|[1-9][0-9]+)$")
     pattern?: string;
 
-    @doc("Regex flags (e.g., 'i' for case-insensitive, only for NON_CHOICE source)")
-    @example("ig")
-    flags?: string;
-
     @doc("Single choice option ID to match against (required for CHOICE source)")
     @example("f421cfc2-2b84-4da9-9629-011af609935a")
     choiceOptionId?: uuid;
