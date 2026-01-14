@@ -204,13 +204,21 @@ namespace CoreSystem.Forms {
     oauthConnect: "OAUTH_CONNECT",
   }
 
-  @doc("Options for OAuth connect questions.")
+  @doc("A choice for creating/updating OAuth connect questions.")
   model OauthConnectOption {
     @doc("The external service name (e.g., 'Google', 'GitHub').")
     serviceName: string;
   }
 
-  @doc("Options for file upload questions.")
+  @doc("A choice with ID for OAuth connect questions.")
+  model OauthConnect {
+    @doc("The unique identifier of the choice.")
+    id: uuid;
+
+    ...OauthConnectOption;
+  }
+
+  @doc("A choice for creating/updating file upload questions.")
   model UploadFileOption {
     @doc("Allowed file types/extensions (e.g., ['pdf', 'docx']).")
     allowedFileTypes: string[];
@@ -222,7 +230,15 @@ namespace CoreSystem.Forms {
     maxFileSizeMB: int32;
   }
 
-  @doc("Options for linear scale questions.")
+  @doc("A choice with ID for file upload questions.")
+  model UploadFile {
+    @doc("The unique identifier of the choice.")
+    id: uuid;
+
+    ...UploadFileOption;
+  }
+  
+  @doc("A choice for creating/updating linear scale questions.")
   model LinearScaleOption {
     @doc("Background icon for the linear scale option.")
     icon: string;
@@ -240,6 +256,14 @@ namespace CoreSystem.Forms {
     maxValueLabel?: string;
   }
 
+  @doc("A choice with ID for linear scale questions.")
+  model LinearScale {
+    @doc("The unique identifier of the choice.")
+    id: uuid;
+
+    ...LinearScaleOption;
+  }
+
   @doc("A choice option for creating/updating choice-based questions.")
   model ChoiceOption {
     @doc("The name/text of the choice option.")
@@ -254,11 +278,7 @@ namespace CoreSystem.Forms {
     @doc("The unique identifier of the choice.")
     id: uuid;
 
-    @doc("The name/text of the choice.")
-    name: string;
-
-    @doc("Optional description for the choice.")
-    description?: string;
+    ...ChoiceOption;
   }
 
   @doc("Response model for the detailed structure of a question.")
@@ -285,13 +305,13 @@ namespace CoreSystem.Forms {
     choices?: Choice[];
     
     @doc("Available choice options for linear scale questions.")
-    linearScale?: LinearScaleOption;
+    linearScale?: LinearScale;
     
     @doc("Available options for file upload questions.")
-    uploadFile?: UploadFileOption;
+    uploadFile?: UploadFile;
 
     @doc("Available options for OAuth connect questions.")
-    oauthConnect?: OauthConnectOption;
+    oauthConnect?: OauthConnect;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
@@ -355,6 +375,9 @@ namespace CoreSystem.Forms {
 
     @doc("Available options for file upload questions.")
     uploadFile?: UploadFileOption; 
+
+    @doc("Available options for OAuth connect questions.")
+    oauthConnect?: OauthConnectOption;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
@@ -453,7 +476,7 @@ namespace CoreSystem.Forms {
   @doc("List all the questions of the sections in the form.")
   @route("/forms/{id}/sections")
   @get
-  op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
+  op listQuestions(@path id: uuid): QuestionResponse[];
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/cover")
