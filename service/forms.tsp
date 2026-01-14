@@ -333,7 +333,7 @@ namespace CoreSystem.Forms {
   })
   @example(#{
     required: true,
-    type: QuestionTypes.multipleChoice,
+    type: QuestionTypes.detailedMultipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
     order: 2,
@@ -384,8 +384,34 @@ namespace CoreSystem.Forms {
   }
 
   @doc("Response model for listing all sections and questions in a form.")
+  @example(#{
+    section: #{
+      id: "eff59c94-cb72-45c9-9431-c0778613b806",
+      formId: "ee0741d2-17bb-49b8-ab8c-d11726390000",
+      title: "Group Info",
+      progress: SectionProgress.draft,
+      description: "Welcome to SDC, the Software Development Club!",
+    },
+    questions: #[
+      #{
+        id: "0f9e8d7c-6b5a-4321-0fed-cba987654321",
+        sectionId: "eff59c94-cb72-45c9-9431-c0778613b806",
+        required: true,
+        type: QuestionTypes.detailedMultipleChoice,
+        title: "Which team you want to join???",
+        description: "Pick one of your favorite!!!",
+        choices: #[
+          #{ id: "11111111-2222-3333-4444-555555555555", name: "Core System Team" },
+          #{ id: "66666666-7777-8888-9999-000000000000", name: "Clustron Team" },
+          #{ id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", name: "HPC Team" }
+        ],
+        createdAt: utcDateTime.fromISO("2024-01-01T12:00:00Z"),
+        updatedAt: utcDateTime.fromISO("2024-01-01T12:00:00Z"),
+      }
+    ],
+  })
   model ListSectionsResponse {
-    sections: Section;
+    section: Section;
     questions: QuestionResponse[];
   }
 
