@@ -199,6 +199,45 @@ namespace CoreSystem.Forms {
     
     @doc("Ranking/ordering items by preference")
     ranking: "RANKING",
+
+    @doc("OAuth account connection for external service authentication")
+    oauthConnect: "OAUTH_CONNECT",
+  }
+
+  @doc("Options for OAuth connect questions.")
+  model OauthConnectOption {
+    @doc("The external service name (e.g., 'Google', 'GitHub').")
+    serviceName: string;
+  }
+
+  @doc("Options for file upload questions.")
+  model UploadFileOption {
+    @doc("Allowed file types/extensions (e.g., ['pdf', 'docx']).")
+    allowedFileTypes: string[];
+
+    @doc("Maximum number of files that can be uploaded.")
+    maxFileAmount: int32;
+
+    @doc("Maximum file size in megabytes.")
+    maxFileSizeMB: int32;
+  }
+
+  @doc("Options for linear scale questions.")
+  model LinearScaleOption {
+    @doc("Background icon for the linear scale option.")
+    icon: string;
+
+    @doc("Minimum value of the linear scale.")
+    min: int32;
+
+    @doc("Maximum value of the linear scale.")
+    max: int32;
+
+    @doc("Label for the minimum value.")
+    minValueLabel?: string;
+
+    @doc("Label for the maximum value.")
+    maxValueLabel?: string;
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
@@ -242,8 +281,17 @@ namespace CoreSystem.Forms {
     @doc("More details of this question.")
     description: string;
     
-    @doc("Available choices for single_choice and multiple_choice questions.")
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: Choice[];
+    
+    @doc("Available choice options for linear scale questions.")
+    linearScale?: LinearScaleOption;
+    
+    @doc("Available options for file upload questions.")
+    uploadFile?: UploadFileOption;
+
+    @doc("Available options for OAuth connect questions.")
+    oauthConnect?: OauthConnectOption;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
@@ -298,24 +346,24 @@ namespace CoreSystem.Forms {
 
     @doc("What is the number of this question in the form.")
     order: int32;
-
-    @doc("Available choice options for single_choice and multiple_choice questions.")
+    
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: ChoiceOption[];
+    
+    @doc("Available choice options for linear scale questions.")
+    linearScale?: LinearScaleOption;
+
+    @doc("Available options for file upload questions.")
+    uploadFile?: UploadFileOption; 
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
   }
 
-  @doc("The response for next section after completing current section.")
-  model NextSectionResponse {
-    @doc("The ID of the next section to navigate to.")
-    nextSectionId?: uuid;
-
-    @doc("If false, there is no next section, ready to submit.")
-    hasNext: boolean;
-
-    @doc("The questions in the next section.")
-    questions?: QuestionResponse[];
+  @doc("Response model for listing all sections and questions in a form.")
+  model ListSectionsResponse {
+    sections: Section;
+    questions: QuestionResponse[];
   }
 
   // form recipientUser
@@ -379,9 +427,9 @@ namespace CoreSystem.Forms {
 
   // for form edit - question management
   @doc("Create a new question for a specific section.")
-  @route("/sections/{sectionId}/questions")
+  @route("/sections/{id}/questions")
   @post
-  op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
+  op createQuestion(@path id: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
     @body question: QuestionResponse;
   };
@@ -402,8 +450,8 @@ namespace CoreSystem.Forms {
     @statusCode statusCode: 204;
   };
 
-  @doc("List all the questions of a specific section.")
-  @route("/sections/{sectionId}/questions")
+  @doc("List all the questions of the sections in the form.")
+  @route("/forms/{id}/sections")
   @get
   op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
 
