@@ -476,7 +476,7 @@ namespace CoreSystem.Forms {
   @doc("List all the questions of the sections in the form.")
   @route("/forms/{id}/sections")
   @get
-  op listQuestions(@path id: uuid): QuestionResponse[];
+  op listQuestions(@path id: uuid): ListSectionsResponse[];
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/cover")
