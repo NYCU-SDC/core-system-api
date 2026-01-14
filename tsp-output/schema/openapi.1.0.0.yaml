@@ -11,6 +11,7 @@ tags:
   - name: Responses
   - name: Inbox
   - name: Slug
+  - name: Form Workflow
 paths:
   /api/auth/login/oauth/{provider}:
     get:
@@ -234,6 +235,75 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/workflow/nodes:
+    post:
+      operationId: FormWorkflow_createNode
+      description: Create a new node for a workflow
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormWorkflow.NodeStructure'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormWorkflow.CreateNodeRequest'
+  /api/forms/{formId}/workflow/nodes/{nodeId}:
+    delete:
+      operationId: FormWorkflow_deleteNode
+      description: Delete a node for a workflow
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
   /api/forms/{id}:
     put:
       operationId: Forms_updateForm
@@ -353,6 +423,108 @@ paths:
                 $ref: '#/components/schemas/Forms.FormPublishResponse'
       tags:
         - Forms
+  /api/forms/{id}/workflow:
+    get:
+      operationId: FormWorkflow_getWorkflow
+      description: Get workflow for a form
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+    put:
+      operationId: FormWorkflow_updateWorkflow
+      description: Update workflow for a form
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormWorkflow.NodeRequest'
+  /api/forms/{id}/workflow/activate:
+    post:
+      operationId: FormWorkflow_activateWorkflow
+      description: Activate workflow for a form
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormWorkflow.NodeRequest'
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
@@ -1198,7 +1370,7 @@ paths:
             $ref: '#/components/schemas/uuid'
         - name: responseId
           in: query
-          required: false
+          required: true
           schema:
             $ref: '#/components/schemas/uuid'
           explode: false
@@ -1304,6 +1476,164 @@ components:
         refreshToken:
           type: string
           description: The new refresh token.
+    FormWorkflow.ConditionRule:
+      type: object
+      required:
+        - source
+        - question
+        - pattern
+      properties:
+        source:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ConditionSource'
+          description: Source of data for the condition
+          examples:
+            - NON_CHOICE
+        question:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID to check against
+          examples:
+            - 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+        pattern:
+          type: string
+          format: regex
+          description: Regex pattern to match against. If source is NON_CHOICE, the regex is matched against the answer value. If source is CHOICE, the answer is an array of selected choice option IDs, and this regex is matched against each element; the condition passes if any element matches (e.g. use an exact-match UUID regex like ^<uuid>$).
+          examples:
+            - ^f421cfc2-2b84-4da9-9629-011af609935a$
+            - ^([6-9]|[1-9][0-9]+)$
+      description: Condition rule for condition nodes
+    FormWorkflow.ConditionSource:
+      type: string
+      enum:
+        - CHOICE
+        - NON_CHOICE
+      description: Data source for condition rules
+    FormWorkflow.CreateNodeRequest:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.CreateNodeRequestType'
+          description: Type of the node
+          examples:
+            - SECTION
+      description: Request body for creating a new node for a workflow
+      examples:
+        - type: SECTION
+    FormWorkflow.CreateNodeRequestType:
+      type: string
+      enum:
+        - SECTION
+        - CONDITION
+    FormWorkflow.NodeRequest:
+      type: object
+      required:
+        - id
+        - label
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier for the node.
+        label:
+          type: string
+          description: The label for the node
+          examples:
+            - 開始表單
+        conditionRule:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ConditionRule'
+          description: The condition rule for the node, only for condition nodes
+        next:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id for sequential flow (for start and section nodes)
+        nextTrue:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is true (for condition nodes)
+        nextFalse:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is false (for condition nodes)
+      description: Workflow node request model with linked list connections
+    FormWorkflow.NodeResponse:
+      type: object
+      required:
+        - id
+        - type
+        - label
+        - conditionRule
+        - next
+        - nextTrue
+        - nextFalse
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier for the node.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodeType'
+          description: Type of the node
+          examples:
+            - START
+        label:
+          type: string
+          description: The label for the node
+          examples:
+            - 開始表單
+        conditionRule:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ConditionRule'
+          description: The condition rule for the node, only for condition nodes
+        next:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id for sequential flow (for start and section nodes)
+        nextTrue:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is true (for condition nodes)
+        nextFalse:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is false (for condition nodes)
+      description: Workflow node response model with linked list connections
+    FormWorkflow.NodeStructure:
+      type: object
+      required:
+        - id
+        - type
+        - label
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier for the node.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodeType'
+          description: Type of the node
+          examples:
+            - START
+        label:
+          type: string
+          description: The label for the node
+          examples:
+            - 開始表單
+      description: Workflow node structure with linked list connections
+    FormWorkflow.NodeType:
+      type: string
+      enum:
+        - SECTION
+        - END
+        - START
+        - CONDITION
+      description: Node type enum for workflow nodes
     Forms.Choice:
       type: object
       required:
