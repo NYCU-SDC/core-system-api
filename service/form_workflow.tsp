@@ -50,13 +50,11 @@ namespace CoreSystem.FormWorkflow {
     @example("9a843aa0-8451-4e3b-b6a0-8c0e994e9040")
     question: uuid;
 
-    @doc("Regex pattern to match against (required for NON_CHOICE source)")
-    @example("^([6-9]|[1-9][0-9]+)$")
-    pattern?: string;
-
-    @doc("Single choice option ID to match against (required for CHOICE source)")
-    @example("f421cfc2-2b84-4da9-9629-011af609935a")
-    choiceOptionId?: uuid;
+    @doc("Regex pattern to match against. If source is NON_CHOICE, the regex is matched against the answer value. If source is CHOICE, the answer is an array of selected choice option IDs, and this regex is matched against each element; the condition passes if any element matches (e.g. use an exact-match UUID regex like ^<uuid>$).")
+    @format("regex")
+    @example("^([6-9]|[1-9][0-9]+)$") // non-choice source
+    @example("^f421cfc2-2b84-4da9-9629-011af609935a$") // choice source (any selected option ID equals this UUID)
+    pattern: string;
   }
 
   @doc("Workflow node structure with linked list connections")
