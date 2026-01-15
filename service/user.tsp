@@ -31,6 +31,17 @@ namespace CoreSystem.User {
     roles: Role[];
   }
 
+  model OnboardingRequest {
+    @doc("The user's username, can change, but must be unique across the system.")
+    username: string;
+
+    @minLength(4)
+    @maxLength(15)
+    @pattern("^\\w+$")
+    @doc("The user's nickname.")
+    name: string;
+  }
+
   @get
   @route("/users/me")
   @doc("Get the current user's information.")
@@ -47,11 +58,14 @@ namespace CoreSystem.User {
   @put
   @route("/users/onboarding")
   @doc("Update the current user's name.")
-  op updateUsername(@body name: string): {
+  op updateUsername(...OnboardingRequest): {
     @statusCode statusCode: 200;
     @body user: User;
   } | {
     @statusCode statusCode: 401;
     @body err: Unauthorized;
+  } | {
+    @statusCode statusCode: 409;
+    @body err: Conflict;
   };
 }

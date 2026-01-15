@@ -56,3 +56,11 @@ model NotFound {
   type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404";
   detail: string;
 }
+
+@error
+model Conflict {
+    title: "Conflict";
+    status: 409;
+    type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409";
+    detail: string;
+}
