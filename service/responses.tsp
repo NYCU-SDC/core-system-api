@@ -130,7 +130,7 @@ namespace CoreSystem.Responses {
     draft: "DRAFT",
 
     @doc("User has completed/passed this response.")
-    submitted: "SUBMITTED"
+    submitted: "SUBMITTED",
   }
 
   @doc("Response model for a single answer in question answers view")
@@ -174,10 +174,7 @@ namespace CoreSystem.Responses {
 
   @example(#{
     sections: #[
-      #{
-        id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        title: "Group Info",
-      },
+      #{ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890", title: "Group Info" },
       #{
         id: "0f9e8d7c-6b5a-4321-0fed-cba987654321",
         title: "Self Introduction",
@@ -208,16 +205,13 @@ namespace CoreSystem.Responses {
   @post
   op submitFormResponse(@path id: uuid): {
     @statusCode statusCode: 200;
-    @body req: AnswersRequest
+    @body req: AnswersRequest;
   };
 
   @doc("Update answers for the response.")
-  @route("/responses/{id}/answers")
-  @patch(#{implicitOptionality: true})
-  op updateFormResponse(
-    @path id: uuid, 
-    @body req: AnswersRequest
-  ): {
+  @route("/responses/{responseId}/answers")
+  @patch(#{ implicitOptionality: true })
+  op updateFormResponse(@path responseId: uuid, @body req: AnswersRequest): {
     @statusCode statusCode: 200;
   };
 
