@@ -65,7 +65,7 @@ namespace CoreSystem.User {
     @statusCode statusCode: 401;
     @body err: Unauthorized;
   } | {
-    @statusCode statusCode: 409;
-    @body err: Conflict;
+    @statusCode statusCode: 400;
+    @body err: BadRequest;
   };
 }

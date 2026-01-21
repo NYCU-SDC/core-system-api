@@ -58,9 +58,9 @@ model NotFound {
 }
 
 @error
-model Conflict {
-    title: "Conflict";
-    status: 409;
-    type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409";
+model BadRequest {
+    title: "Bad Request";
+    status: 400;
+    type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400";
     detail: string;
 }
