@@ -1454,6 +1454,38 @@ paths:
                 $ref: '#/components/schemas/Unauthorized'
       tags:
         - User
+  /api/users/onboarding:
+    put:
+      operationId: User_updateUsername
+      description: Update the current user's name.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User.User'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User.OnboardingRequest'
 components:
   schemas:
     Auth.OAuthProviders:
@@ -1476,6 +1508,28 @@ components:
         refreshToken:
           type: string
           description: The new refresh token.
+    BadRequest:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          enum:
+            - Bad Request
+        status:
+          type: number
+          enum:
+            - 400
+        type:
+          type: string
+          enum:
+            - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+        detail:
+          type: string
     FormWorkflow.ConditionRule:
       type: object
       required:
@@ -2879,6 +2933,21 @@ components:
         - in_progress
         - completed
       description: The completion status of the form for the user
+    User.OnboardingRequest:
+      type: object
+      required:
+        - username
+        - name
+      properties:
+        username:
+          type: string
+          description: The user's username, can change, but must be unique across the system.
+        name:
+          type: string
+          minLength: 4
+          maxLength: 15
+          pattern: ^\w+$
+          description: The user's nickname.
     User.Role:
       type: string
       enum:
@@ -2902,7 +2971,10 @@ components:
           description: The user's username, can change, but must be unique across the system.
         name:
           type: string
-          description: The user's name, usually the first and last name.
+          minLength: 4
+          maxLength: 15
+          pattern: ^\w+$
+          description: The user's nickname.
         avatarUrl:
           type: string
           description: Avatar URL of the user.
