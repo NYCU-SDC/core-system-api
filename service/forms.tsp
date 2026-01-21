@@ -280,13 +280,13 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
-    
+
     @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: Choice[];
-    
+
     @doc("Available choice options for linear scale questions.")
     linearScale?: LinearScaleOption;
-    
+
     @doc("Available options for file upload questions.")
     uploadFile?: UploadFileOption;
 
@@ -346,15 +346,15 @@ namespace CoreSystem.Forms {
 
     @doc("What is the number of this question in the form.")
     order: int32;
-    
+
     @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: ChoiceOption[];
-    
+
     @doc("Available choice options for linear scale questions.")
     linearScale?: LinearScaleOption;
 
     @doc("Available options for file upload questions.")
-    uploadFile?: UploadFileOption; 
+    uploadFile?: UploadFileOption;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
