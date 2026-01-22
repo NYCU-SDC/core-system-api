@@ -10,6 +10,10 @@ namespace CoreSystem.Responses {
     questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
     value: "John Doe",
   })
+  @example(#{
+    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    value: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
+  })
   @doc("Request model for submitting an individual answer")
   model AnswerJSON {
     @doc("The question being answered.")
@@ -240,7 +244,6 @@ namespace CoreSystem.Responses {
   @route("/responses/{responseId}/questions/{questionId}")
   @get
   op getQuestionResponse(
-    @path formId: uuid,
     @path responseId: uuid,
     @path questionId: uuid,
   ): {

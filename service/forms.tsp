@@ -204,16 +204,22 @@ namespace CoreSystem.Forms {
     oauthConnect: "OAUTH_CONNECT",
   }
 
-  @doc("Options for OAuth connect questions.")
-  model OauthConnectOption {
-    @doc("The external service name (e.g., 'Google', 'GitHub').")
-    serviceName: string;
-  }
 
+  enum allowedFileTypes{
+    pdf: "pdf",
+    docx: "docx",
+    png: "png",
+    jpg: "jpg",
+    jpeg: "jpeg",
+    gif: "gif",
+    txt: "txt",
+    csv: "csv",
+    xlsx: "xlsx",
+  }
   @doc("Options for file upload questions.")
   model UploadFileOption {
     @doc("Allowed file types/extensions (e.g., ['pdf', 'docx']).")
-    allowedFileTypes: string[];
+    allowedFileTypes: allowedFileTypes;
 
     @doc("Maximum number of files that can be uploaded.")
     maxFileAmount: int32;
@@ -291,7 +297,7 @@ namespace CoreSystem.Forms {
     uploadFile?: UploadFileOption;
 
     @doc("Available options for OAuth connect questions.")
-    oauthConnect?: OauthConnectOption;
+    oauthConnect?: CoreSystem.Auth.OAuthProviders;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
@@ -355,6 +361,9 @@ namespace CoreSystem.Forms {
 
     @doc("Available options for file upload questions.")
     uploadFile?: UploadFileOption;
+
+    @doc("Available options for OAuth connect questions.")
+    oauthConnect?: CoreSystem.Auth.OAuthProviders;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
