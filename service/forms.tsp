@@ -211,14 +211,13 @@ namespace CoreSystem.Forms {
     png: "png",
     jpg: "jpg",
     jpeg: "jpeg",
-    gif: "gif",
     txt: "txt",
     csv: "csv",
     xlsx: "xlsx",
   }
   @doc("Options for file upload questions.")
   model UploadFileOption {
-    @doc("Allowed file types/extensions (e.g., ['pdf', 'docx']).")
+    @doc("Allowed file types/extensions.")
     allowedFileTypes: allowedFileTypes;
 
     @doc("Maximum number of files that can be uploaded.")
