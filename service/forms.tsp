@@ -284,7 +284,7 @@ namespace CoreSystem.Forms {
   @doc("Options for file upload questions.")
   model UploadFileOption {
     @doc("Allowed file types/extensions.")
-    allowedFileTypes: allowedFileTypes;
+    allowedFileTypes: allowedFileTypes[];
 
     @doc("Maximum number of files that can be uploaded. Range: 1-10.")
     @minValue(1)
