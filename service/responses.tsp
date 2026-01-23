@@ -55,6 +55,18 @@ namespace CoreSystem.Responses {
     answers: AnswerJSON[];
   }
 
+  @doc("Request model for uploading files as answers to a specific question in a response.")
+  model QuestionFilesUploadRequest {
+    @doc("The file(s) being uploaded.")
+    files: HttpPart<bytes[]>;
+  }
+
+  @doc("Response model for the uploaded files")
+  model QuestionFilesUploadResponse {
+    @doc("The temporary full URLs of the uploaded files.")
+    fileUrls: string[];
+  }
+
   @doc("Response model for creating a form response")
   model CreateResponse {
     @doc("The response's unique identifier.")
@@ -212,11 +224,21 @@ namespace CoreSystem.Responses {
   };
 
   @doc("Update answers for the response.")
-  @route("/responses/{responseId}/answers")
+  @route("/responses/{id}/answers")
   @patch(#{ implicitOptionality: true })
-  op updateFormResponse(@path responseId: uuid, @body req: AnswersRequest): {
+  op updateFormResponse(@path id: uuid, @body req: AnswersRequest): {
     @statusCode statusCode: 200;
   };
+
+  @doc("Upload files as answers for a specific question in the response.")
+  @route("/responses/{responseId}/questions/{questionId}/files")
+  @post
+  op uploadQuestionFiles(
+    @path responseId: uuid,
+    @path questionId: uuid,
+    @header("content-type") contentType: "multipart/form-data",
+    @multipartBody body: QuestionFilesUploadRequest,
+  ): QuestionFilesUploadResponse;
 
   @doc("List all responses for a specific form.")
   @route("/forms/{formId}/responses")
