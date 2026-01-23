@@ -204,27 +204,95 @@ namespace CoreSystem.Forms {
     oauthConnect: "OAUTH_CONNECT",
   }
 
-
+  @doc("Allowed file types/extensions for file upload questions.")
   enum allowedFileTypes{
-    pdf: "pdf",
+    @doc("document")
+    txt: "txt",
+    md: "md",
+    doc: "doc",
     docx: "docx",
-    png: "png",
+    odt: "odt",
+    rtf: "rtf",
+
+    @doc("presentation")
+    ppt: "ppt",
+    pptx: "pptx",
+    odp: "odp",
+
+    @doc("spreadsheet")
+    xls: "xls",
+    xlsx: "xlsx",
+    ods: "ods",
+    csv: "csv",
+
+    @doc("vector graphics")
+    svg: "svg",
+    ai: "ai",
+    eps: "eps",
+
+    @doc("PDF")
+    pdf: "pdf",
+
+    @doc("image")
     jpg: "jpg",
     jpeg: "jpeg",
-    txt: "txt",
-    csv: "csv",
-    xlsx: "xlsx",
+    png: "png",
+    webp: "webp",
+    gif: "gif",
+    tiff: "tiff",
+    bmp: "bmp",
+    heic: "heic",
+    raw: "raw",
+
+    @doc("video")
+    mp4: "mp4",
+    webm: "webm",
+    mov: "mov",
+    mkv: "mkv",
+    avi: "avi",
+
+    @doc("audio")
+    mp3: "mp3",
+    wav: "wav",
+    m4a: "m4a",
+    aac: "aac",
+    ogg: "ogg",
+    flac: "flac",
+
+    @doc("archive")
+    zip: "zip",
   }
+
+  @doc("File size limit options for file uploads.")
+  enum FileSizeLimit {
+    @doc("1 MB")
+    oneMB: "1MB",
+
+    @doc("5 MB")
+    fiveMB: "5MB",
+
+    @doc("10 MB")
+    tenMB: "10MB",
+
+    @doc("100 MB")
+    hundredMB: "100MB",
+
+    @doc("1 GB")
+    oneGB: "1GB",
+  }
+
   @doc("Options for file upload questions.")
   model UploadFileOption {
     @doc("Allowed file types/extensions.")
     allowedFileTypes: allowedFileTypes;
 
-    @doc("Maximum number of files that can be uploaded.")
+    @doc("Maximum number of files that can be uploaded. Range: 1-10.")
+    @minValue(1)
+    @maxValue(10)
     maxFileAmount: int32;
 
-    @doc("Maximum file size in megabytes.")
-    maxFileSizeMB: int32;
+    @doc("Maximum file size limit.")
+    maxFileSizeLimit: FileSizeLimit;
   }
 
   @doc("Options for linear scale questions.")
@@ -293,7 +361,7 @@ namespace CoreSystem.Forms {
     linearScale?: LinearScaleOption;
 
     @doc("Available options for file upload questions.")
-    uploadFile?: UploadFileOption;
+    uploadFiles?: UploadFileOption[];
 
     @doc("Available options for OAuth connect questions.")
     oauthConnect?: CoreSystem.Auth.OAuthProviders;
@@ -359,7 +427,7 @@ namespace CoreSystem.Forms {
     linearScale?: LinearScaleOption;
 
     @doc("Available options for file upload questions.")
-    uploadFile?: UploadFileOption;
+    uploadFiles?: UploadFileOption[];
 
     @doc("Available options for OAuth connect questions.")
     oauthConnect?: CoreSystem.Auth.OAuthProviders;
@@ -462,10 +530,6 @@ namespace CoreSystem.Forms {
   @route("/forms/{id}/sections")
   @get
   op listSections(@path id: uuid): ListSectionsResponse[];
-  op listQuestions(
-    @path sectionId: uuid,
-    @query responseId: uuid,
-  ): QuestionResponse[];
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/cover")
