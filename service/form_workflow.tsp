@@ -139,9 +139,9 @@ namespace CoreSystem.FormWorkflow {
     @example(ValidationInfoType.graphValidationFailed)
     type: ValidationInfoType;
 
-    @doc("The ID of the node that caused the validation error, if applicable")
+    @doc("The ID of the node that caused the validation error")
     @example("b23f2668-c2dc-4213-88fe-eceedff46398")
-    nodeId?: uuid;
+    nodeId: uuid;
 
     @doc("Human-readable description of the validation error")
     @example("section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field")
