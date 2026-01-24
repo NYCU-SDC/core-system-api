@@ -205,7 +205,7 @@ namespace CoreSystem.Forms {
   }
 
   @doc("Allowed file types/extensions for file upload questions.")
-  enum allowedFileTypes{
+  enum allowedFileTypes {
     @doc("document")
     txt: "txt",
     md: "md",

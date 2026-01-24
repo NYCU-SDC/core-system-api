@@ -265,10 +265,7 @@ namespace CoreSystem.Responses {
   @doc("Get a specific answer by question ID in the response.")
   @route("/responses/{responseId}/questions/{questionId}")
   @get
-  op getQuestionResponse(
-    @path responseId: uuid,
-    @path questionId: uuid,
-  ): {
+  op getQuestionResponse(@path responseId: uuid, @path questionId: uuid): {
     @statusCode statusCode: 200;
     @body response: GetQuestionResponse;
   } | {
