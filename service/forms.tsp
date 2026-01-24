@@ -301,10 +301,10 @@ namespace CoreSystem.Forms {
     icon: string;
 
     @doc("Minimum value of the linear scale.")
-    min: int32;
+    minVal: int32;
 
     @doc("Maximum value of the linear scale.")
-    max: int32;
+    maxVal: int32;
 
     @doc("Label for the minimum value.")
     minValueLabel?: string;
