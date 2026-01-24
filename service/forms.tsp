@@ -367,7 +367,7 @@ namespace CoreSystem.Forms {
     oauthConnect?: CoreSystem.Auth.OAuthProviders;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
-    sourceQuestionId?: uuid;
+    sourceId?: uuid;
 
     @doc("The creation timestamp of the question.")
     createdAt: utcDateTime;
@@ -402,7 +402,7 @@ namespace CoreSystem.Forms {
     title: "Program Match",
     description: "Sort the following programs based on your preference.",
     order: 3,
-    sourceQuestionId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    sourceId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
   })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
@@ -433,7 +433,7 @@ namespace CoreSystem.Forms {
     oauthConnect?: CoreSystem.Auth.OAuthProviders;
 
     @doc("If set, choices are dynamically generated from answers to this question.")
-    sourceQuestionId?: uuid;
+    sourceId?: uuid;
   }
 
   @doc("Response model for listing all sections and questions in a form.")
