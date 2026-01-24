@@ -295,10 +295,10 @@ namespace CoreSystem.Forms {
     maxFileSizeLimit: FileSizeLimit;
   }
 
-  @doc("Options for linear scale questions.")
-  model LinearScaleOption {
+  @doc("Options for linear scale and rating questions.")
+  model ScaleOption {
     @doc("Background icon for the linear scale option.")
-    icon: string;
+    icon?: string;
 
     @doc("Minimum value of the linear scale.")
     minVal: int32;
@@ -357,8 +357,8 @@ namespace CoreSystem.Forms {
     @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: Choice[];
 
-    @doc("Available choice options for linear scale questions.")
-    linearScale?: LinearScaleOption;
+    @doc("Available options for linear scale and rating questions.")
+    scale?: ScaleOption;
 
     @doc("Available options for file upload questions.")
     uploadFiles?: UploadFileOption[];
@@ -423,8 +423,8 @@ namespace CoreSystem.Forms {
     @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: ChoiceOption[];
 
-    @doc("Available choice options for linear scale questions.")
-    linearScale?: LinearScaleOption;
+    @doc("Available options for linear scale and rating questions.")
+    scale?: ScaleOption;
 
     @doc("Available options for file upload questions.")
     uploadFiles?: UploadFileOption[];
