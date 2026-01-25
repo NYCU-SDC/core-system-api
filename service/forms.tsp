@@ -197,6 +197,9 @@ namespace CoreSystem.Forms {
     @doc("Linear scale/rating (1-5, 1-10, etc.)")
     linearScale: "LINEAR_SCALE",
 
+    @doc("Rating (e.g., star rating)")
+    rating: "RATING",
+
     @doc("Ranking/ordering items by preference")
     ranking: "RANKING",
 
