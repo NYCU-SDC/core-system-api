@@ -385,27 +385,124 @@ namespace CoreSystem.Forms {
     type: QuestionTypes.shortText,
     title: "What's your name?",
     description: "Please enter your name",
-    order: 1,
+    order: 1
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.longText,
+    title: "Tell us about yourself",
+    description: "Please share your background and experience",
+    order: 2
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.singleChoice,
+    title: "What's your preferred work location?",
+    description: "Choose one option",
+    order: 3,
+    choices: #[
+      #{ name: "Remote" },
+      #{ name: "On-site" },
+      #{ name: "Hybrid" }
+    ]
   })
   @example(#{
     required: true,
     type: QuestionTypes.multipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
-    order: 2,
+    order: 4,
     choices: #[
       #{ name: "Core System Team" },
       #{ name: "Clustron Team" },
       #{ name: "HPC Team" }
-    ],
+    ]
+  })
+  @example(#{
+    required: false,
+    type: QuestionTypes.dropdown,
+    title: "Select your experience level",
+    description: "Choose from the dropdown",
+    order: 5,
+    choices: #[
+      #{ name: "Beginner" },
+      #{ name: "Intermediate" },
+      #{ name: "Advanced" },
+      #{ name: "Expert" }
+    ]
   })
   @example(#{
     required: true,
-    type: QuestionTypes.multipleChoice,
+    type: QuestionTypes.detailedMultipleChoice,
+    title: "Which technologies are you familiar with?",
+    description: "Select all that apply",
+    order: 6,
+    choices: #[
+      #{ name: "TypeScript", description: "Modern programming language" },
+      #{ name: "React", description: "Frontend library" },
+      #{ name: "Node.js", description: "Backend runtime" }
+    ]
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.date,
+    title: "When will you graduate?",
+    description: "Please select your graduation date",
+    order: 7
+  })
+  @example(#{
+    required: false,
+    type: QuestionTypes.uploadFile,
+    title: "Upload your resume",
+    description: "Please upload your resume in PDF format",
+    order: 8,
+    uploadFiles: #[
+      #{
+        allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx],
+        maxFileAmount: 1,
+        maxFileSizeLimit: FileSizeLimit.tenMB
+      }
+    ]
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.linearScale,
+    title: "Rate your experience level (1-5)",
+    description: "How experienced are you?",
+    order: 9,
+    scale: #{
+      minVal: 1,
+      maxVal: 5,
+      minValueLabel: "No experience",
+      maxValueLabel: "Very experienced"
+    }
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.rating,
+    title: "How satisfied are you?",
+    description: "Rate your satisfaction level",
+    order: 10,
+    scale: #{
+      minVal: 1,
+      maxVal: 5
+    }
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.ranking,
     title: "Program Match",
     description: "Sort the following programs based on your preference.",
-    order: 3,
-    sourceId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    order: 11,
+    sourceId: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.oauthConnect,
+    title: "Connect your GitHub account",
+    description: "Link your GitHub account to verify your identity",
+    order: 12,
+    oauthConnect: CoreSystem.Auth.OAuthProviders.github
   })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
