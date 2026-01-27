@@ -1,5 +1,5 @@
 {
-	"name": "@nycu-sdc/core-system-api-sdk",
+	"name": "@nycu-sdc/core-system-sdk",
 	"version": "0.1.0",
 	"description": "Auto-generated SDK from TypeSpec / OpenAPI",
 	"private": false,
