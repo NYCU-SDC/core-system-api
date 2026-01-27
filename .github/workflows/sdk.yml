@@ -36,15 +36,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate OpenAPI
-        run: |
-          pnpm tsp compile ./typespec/main.tsp \
-            --emit @typespec/openapi3 \
-            --output-dir ./openapi
+        run: pnpm compile
 
       - name: Generate SDK
-        run: |
-          rm -rf packages/sdk/src/generated
-          pnpm generate:sdk
+        run: pnpm generate:sdk
 
       - name: Build SDK
         working-directory: packages/sdk
