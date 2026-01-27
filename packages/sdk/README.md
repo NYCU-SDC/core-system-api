@@ -2,8 +2,6 @@
 
 Type-safe SDK generated from TypeSpec / OpenAPI.
 
-Type-safe SDK generated from TypeSpec / OpenAPI.
-
 > ⚠️ This package is **auto-generated**.  
 > Do not edit source files manually.
 
