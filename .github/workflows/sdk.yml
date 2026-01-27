@@ -36,14 +36,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate OpenAPI
-        run: pnpm compile
+        run: pnpm compile:openapi
 
       - name: Generate SDK
-        run: pnpm generate:sdk
+        run: pnpm build:sdk
 
       - name: Build SDK
-        working-directory: packages/sdk
-        run: pnpm build
+        run: pnpm compile:sdk
 
       - name: Bump version (patch)
         working-directory: packages/sdk
