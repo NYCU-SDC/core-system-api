@@ -1,0 +1,17 @@
+{
+	"name": "@nycu-sdc/core-system-api-sdk",
+	"version": "0.1.0",
+	"description": "Auto-generated SDK from TypeSpec / OpenAPI",
+	"private": false,
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

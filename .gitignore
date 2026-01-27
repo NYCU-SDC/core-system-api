@@ -10,3 +10,6 @@ dist/
 
 # Dependency directories
 node_modules/
+
+# Orval generated files
+packages/sdk/src/
