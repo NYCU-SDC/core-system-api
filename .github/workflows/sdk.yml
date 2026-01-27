@@ -4,16 +4,14 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*"
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
   packages: write
 
 jobs:
-  build-and-release:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +29,10 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      - name: Install dependencies
+      - name: Install deps
         run: pnpm install --frozen-lockfile
 
       - name: Generate OpenAPI
@@ -43,15 +43,23 @@ jobs:
 
       - name: Generate SDK
         run: |
-          rm -rf packages/sdk/src
+          rm -rf packages/sdk/src/generated
           pnpm generate:sdk
 
       - name: Build SDK
         working-directory: packages/sdk
         run: pnpm build
 
-      - name: Publish to npm
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Bump version (patch)
         working-directory: packages/sdk
         run: |
-          pnpm publish --access public --no-git-checks
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm version patch
+
+      - name: Push version commit & tag
+        run: git push --follow-tags
+
+      - name: Publish to npm
+        working-directory: packages/sdk
+        run: pnpm publish --access public --no-git-checks
