@@ -8,25 +8,26 @@ on:
       - "v*"
 
 permissions:
-  contents: write
+  id-token: write
+  contents: read
   packages: write
 
 jobs:
-  release-sdk:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -34,30 +35,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # ---------- TypeSpec → OpenAPI ----------
-      - name: Generate OpenAPI from TypeSpec
+      - name: Generate OpenAPI
         run: |
           pnpm tsp compile ./typespec/main.tsp \
             --emit @typespec/openapi3 \
             --output-dir ./openapi
 
-      # ---------- OpenAPI → SDK ----------
-      - name: Generate SDK from OpenAPI
+      - name: Generate SDK
         run: |
           rm -rf packages/sdk/src
           pnpm generate:sdk
 
-      # ---------- Build SDK ----------
       - name: Build SDK
         working-directory: packages/sdk
-        run: |
-          pnpm build
+        run: pnpm build
 
-      # ---------- Publish ----------
-      - name: Publish SDK to npm
+      - name: Publish to npm
         if: startsWith(github.ref, 'refs/tags/v')
         working-directory: packages/sdk
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           pnpm publish --access public --no-git-checks
