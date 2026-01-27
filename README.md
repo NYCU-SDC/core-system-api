@@ -72,7 +72,17 @@ The output files will be in `tsp-output/schema/openapi.yaml`. You can preview us
 -   [Prism](https://prismjs.com/) - For API documentation preview and testing. Run `pnpm start` and open <http://localhost:4010>.
 -   [Yaak](https://yaak.app/) - Import the `yaak` folder.
 
-## Publish SDK
+## SDK
+
+### Build
+
+```bash
+pnpm compile
+pnpm generate:sdk
+pnpm build:sdk
+```
+
+### Publish
 
 ```bash
 git checkout main

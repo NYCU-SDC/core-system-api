@@ -9,11 +9,6 @@ module.exports = {
 			enumGenerationType: "enum",
 			clean: true,
 			prettier: true
-		},
-		override: {
-			formData: {
-				file: "File"
-			}
 		}
 	}
 };

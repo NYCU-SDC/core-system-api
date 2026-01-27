@@ -7,13 +7,14 @@
 	"type": "module",
 	"packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34",
 	"scripts": {
-		"build": "pnpm run format && pnpm run compile && pnpm run yaak",
+		"build": "pnpm run compile && pnpm run yaak",
 		"format": "tsp format **/*.tsp",
-		"compile": "tsp compile .",
+		"compile": "tsp compile . && node scripts/patch-openapi.js",
 		"clean": "rm -rf tsp-output yaak",
 		"start": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0",
 		"yaak": "node scripts/generate-yaak.js",
-		"generate:sdk": "orval --config orval.config.js"
+		"generate:sdk": "orval --config orval.config.js",
+		"build:sdk": "pnpm --filter @nycu-sdc/core-system-sdk run build"
 	},
 	"devDependencies": {
 		"@stoplight/prism-cli": "^5.14.2",
