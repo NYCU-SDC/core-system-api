@@ -3,7 +3,7 @@
 		"target": "ES2019",
 		"lib": ["ES2019", "DOM"],
 		"module": "ESNext",
-		"moduleResolution": "Bundler",
+		"moduleResolution": "Node16",
 
 		"rootDir": "src",
 		"outDir": "dist",
