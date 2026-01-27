@@ -1,19 +1,30 @@
 {
 	"compilerOptions": {
+		/* 語言 / Runtime */
 		"target": "ES2019",
 		"lib": ["ES2019", "DOM"],
-		"module": "ESNext",
-		"moduleResolution": "Node16",
+		"useDefineForClassFields": true,
 
+		/* Module */
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+
+		/* 輸出 */
 		"rootDir": "src",
 		"outDir": "dist",
-
 		"declaration": true,
 		"declarationMap": true,
 		"emitDeclarationOnly": false,
+		"sourceMap": true,
 
+		/* 型別嚴謹度 */
 		"strict": true,
-		"skipLibCheck": true
+		"exactOptionalPropertyTypes": true,
+		"noUncheckedIndexedAccess": true,
+
+		/* DX / 穩定性 */
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
 	},
 	"include": ["src"]
 }

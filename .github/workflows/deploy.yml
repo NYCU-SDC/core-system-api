@@ -30,14 +30,13 @@ jobs:
       - name: Build Open API
         run: pnpm compile:openapi
 
-      - name: Copy OpenAPI spec and Swagger UI
+      - name: Copy OpenAPI spec
         run: |
-          mkdir -p dist/tsp-output/schema
-          cp tsp-output/schema/openapi.1.0.0.yaml dist/tsp-output/schema/openapi.1.0.0.yaml
-          cp swagger.html dist/swagger.html
+          mkdir -p website/tsp-output/schema
+          cp tsp-output/schema/openapi.1.0.0.yaml website/tsp-output/schema/openapi.1.0.0.yaml
 
       - name: Generate Redocly and Swagger UI
-        run: pnpm build:docs
+        run: pnpm build:redocly
 
       - name: Generate Typedoc documentation
         run: |
@@ -49,4 +48,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./website

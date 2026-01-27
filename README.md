@@ -92,10 +92,10 @@ Starts a Prism mock server on `http://0.0.0.0:4010` using the compiled OpenAPI s
 ### Build Documentation
 
 ```bash
-pnpm build:docs
+pnpm build:redocly
 ```
 
-Builds static HTML documentation using Redocly. Output will be in `dist/index.html`.
+Builds static HTML documentation using Redocly. Output will be in `website/index.html`.
 
 > **Note:** You must run `pnpm compile:openapi` and install with `pnpm i` before building documentation.
 
@@ -105,7 +105,7 @@ Builds static HTML documentation using Redocly. Output will be in `dist/index.ht
 pnpm build:typedoc
 ```
 
-Generates TypeDoc documentation for the SDK. Output will be in `dist/sdk`.
+Generates TypeDoc documentation for the SDK. Output will be in `website/sdk`.
 
 > **Note:** You must run `pnpm compile:sdk` and install with `pnpm i` before building TypeDoc.
 
@@ -125,9 +125,9 @@ The compiled OpenAPI specification will be in `tsp-output/schema/openapi.1.0.0.y
 
 ### Preview Tools
 
-- **Scalar** - Open [dist/index.html](https://nycu-sdc.github.io/core-system-api/) in your browser
-- **Swagger UI** - Open [dist/swagger.html](https://nycu-sdc.github.io/core-system-api/swagger.html) in your browser
-- **Redoc** - Open [dist/sdk/index.html](https://nycu-sdc.github.io/core-system-api/sdk) in your browser
+- **Scalar** - Open [website/index.html](https://nycu-sdc.github.io/core-system-api/) in your browser
+- **Swagger UI** - Open [website/swagger.html](https://nycu-sdc.github.io/core-system-api/swagger.html) in your browser
+- **Redoc** - Open [website/sdk/index.html](https://nycu-sdc.github.io/core-system-api/sdk) in your browser
 - **Prism Mock Server** - Run `pnpm start:mock` and visit <http://localhost:4010>
 - **Yaak** - Import the `yaak` folder into [Yaak](https://yaak.app/)
 

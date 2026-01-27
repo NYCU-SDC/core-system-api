@@ -6,10 +6,17 @@ yaak/
 
 # Default TypeSpec output
 tsp-output/
-dist/
+
+# Generated documentation
+website/tsp-output/
+website/sdk/
+website/redocly/
 
 # Dependency directories
 node_modules/
 
 # Orval generated files
 packages/sdk/src/generated/
+
+# Built SDK package
+packages/sdk/dist/

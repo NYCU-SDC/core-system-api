@@ -23,14 +23,14 @@
     </head>
     <body>
         <div style="padding: 20px; background-color: #f5f5f5; border-bottom: 1px solid #ddd;">
-            <a href="redocly/" style="text-decoration: none; color: #0066cc; font-weight: 700;">View Redocly Documentation</a>
+            <a href="../redocly" style="text-decoration: none; color: #0066cc; font-weight: 700;">View Redocly Documentation</a>
         </div>
         <div id="swagger-ui"></div>
         <script src="https://unpkg.com/swagger-ui-dist@latest/swagger-ui-bundle.js" crossorigin></script>
         <script>
             window.onload = () => {
                 window.ui = SwaggerUIBundle({
-                    url: "tsp-output/schema/openapi.1.0.0.yaml",
+                    url: "../tsp-output/schema/openapi.1.0.0.yaml",
                     dom_id: "#swagger-ui",
                 });
             };

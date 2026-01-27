@@ -14,8 +14,8 @@
 		"build:sdk": "orval --config orval.config.js",
 		"compile:sdk": "pnpm --filter @nycu-sdc/core-system-sdk run build",
 		"start:mock": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0",
-		"build:docs": "redocly build-docs tsp-output/schema/openapi.1.0.0.yaml --output dist/index.html",
-		"build:typedoc": "typedoc --entryPoints packages/sdk/src/index.ts --out dist/sdk --tsconfig packages/sdk/tsconfig.json --plugin typedoc-rhineai-theme"
+		"build:redocly": "redocly build-docs tsp-output/schema/openapi.1.0.0.yaml --output website/redocly/index.html",
+		"build:typedoc": "typedoc --entryPoints packages/sdk/src/index.ts --out website/sdk --tsconfig packages/sdk/tsconfig.json --plugin typedoc-rhineai-theme"
 	},
 	"dependencies": {
 		"@redocly/cli": "^2.15.0",
