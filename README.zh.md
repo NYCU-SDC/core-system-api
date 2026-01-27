@@ -71,3 +71,12 @@ pnpm clean
 -   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - 直接打開底下的 [swagger.html](swagger.html) 檔案即可。
 -   [Prism](https://prismjs.com/) - 用於 API 文件的預覽和測試。執行 `pnpm start` 後，打開 <http://localhost:4010> 即可。
 - [Yaak](https://yaak.app/) - 匯入資料夾 `yaak`
+
+## 發佈 SDK
+
+```bash
+git checkout main
+git pull
+git tag v0.1.0
+git push origin v0.1.0
+```

@@ -71,3 +71,12 @@ The output files will be in `tsp-output/schema/openapi.yaml`. You can preview us
 -   [Swagger UI](https://nycu-sdc.github.io/core-system-api/) - Just open the [swagger.html](swagger.html) file below.
 -   [Prism](https://prismjs.com/) - For API documentation preview and testing. Run `pnpm start` and open <http://localhost:4010>.
 -   [Yaak](https://yaak.app/) - Import the `yaak` folder.
+
+## Publish SDK
+
+```bash
+git checkout main
+git pull
+git tag v0.1.0
+git push origin v0.1.0
+```
