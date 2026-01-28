@@ -2,6 +2,18 @@ openapi: 3.1.0
 info:
   title: Core System API
   version: 1.0.0
+  description: |-
+    ## Pages
+    - [API Documentation (Redocly)](redocly/)
+    - [API Documentation (Swagger UI)](swagger/)
+    - [SDK Documentation (TypeDoc)](sdk/)
+  termsOfService: https://sdc.nycu.club/terms
+  contact:
+    name: NYCU Software Development Club
+    email: contact@sdc.nycu.club
+    url: https://github.com/NYCU-SDC/core-system-api
+  license:
+    name: Apache-2.0
 tags:
   - name: Healthz
   - name: Auth
@@ -1842,7 +1854,9 @@ components:
     Forms.FormCoverUploadRequest:
       type: object
       properties:
-        coverImage: {}
+        coverImage:
+          type: string
+          format: binary
       required:
         - coverImage
     Forms.FormCoverUploadResponse:
