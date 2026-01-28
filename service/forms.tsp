@@ -185,7 +185,7 @@ namespace CoreSystem.Forms {
     @doc("Single choice with dropdown select")
     dropdown: "DROPDOWN",
 
-    @doc("Multiple choice with detailed checkboxes (more spacing/styling)")
+    @doc("Multiple choice with descriptions")
     detailedMultipleChoice: "DETAILED_MULTIPLE_CHOICE",
 
     @doc("Date picker")
