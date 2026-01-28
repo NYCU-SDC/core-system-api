@@ -53,4 +53,12 @@ namespace CoreSystem.Auth {
   } | {
     @statusCode statusCode: 404;
   };
+
+  @route("/auth/logout")
+  @post
+  op logout(): {
+    @statusCode statusCode: 200;
+  } | {
+    @statusCode statusCode: 401;
+  };
 }
