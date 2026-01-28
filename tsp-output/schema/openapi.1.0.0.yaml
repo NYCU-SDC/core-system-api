@@ -56,6 +56,17 @@ paths:
           description: The server cannot find the requested resource.
       tags:
         - Auth
+  /api/auth/logout:
+    post:
+      operationId: Auth_logout
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '401':
+          description: Access is unauthorized.
+      tags:
+        - Auth
   /api/auth/refresh/{refreshToken}:
     post:
       operationId: Auth_refreshToken
