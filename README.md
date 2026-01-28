@@ -2,6 +2,44 @@
 
 Core System API defined using TypeSpec
 
+```mermaid
+flowchart TD
+    A[pnpm clean<br/>Clean Generated Files]
+
+    B[Write TypeSpec]
+    C[pnpm format<br/>Prettier Formatting]
+
+    D[compile:openapi<br/>Generate OpenAPI]
+    E[patch-openapi.js<br/>Fix Type / Description]
+    F[Official OpenAPI Spec]
+    %% From TypeSpec to OpenAPI
+    A --> B --> C --> D --> E --> F
+
+    %% Mock
+    F --> M[Prism Mock Server<br/>pnpm start:mock]
+
+    %% Docs generation from OpenAPI
+    F --> S[Swagger UI]
+    F --> T[Scala]
+    F --> Y[Yaak Collection<br/>build:yaak]
+		F --> R[Redocly<br/>build:redocly]
+
+    %% SDK generation
+    F --> O[orval Generate SDK<br/>build:sdk]
+    O --> CSDK[pnpm compile:sdk]
+    CSDK --> NPM[Publish to npm]
+    NPM --> FE[Frontend Repo<br/>Install Usage]
+
+    %% SDK docs
+    O --> TDOC[TypeDoc<br/>SDK Documentation build:typedoc]
+
+    %% Deploy
+    R --> GH[GitHub Pages]
+    S --> GH
+    T --> GH
+    TDOC --> GH
+```
+
 ## Dependencies
 
 Please install [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) first.
