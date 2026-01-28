@@ -205,6 +205,9 @@ namespace CoreSystem.Forms {
 
     @doc("OAuth account connection for external service authentication")
     oauthConnect: "OAUTH_CONNECT",
+
+    @doc("Hyperlink is a type of short text question.")
+    hyperlink: "HYPERLINK",
   }
 
   @doc("Allowed file types/extensions for file upload questions.")
