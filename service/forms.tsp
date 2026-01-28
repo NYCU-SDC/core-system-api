@@ -364,7 +364,7 @@ namespace CoreSystem.Forms {
     scale?: ScaleOption;
 
     @doc("Available options for file upload questions.")
-    uploadFiles?: UploadFileOption[];
+    uploadFile?: UploadFileOption;
 
     @doc("Available options for OAuth connect questions.")
     oauthConnect?: CoreSystem.Auth.OAuthProviders;
@@ -456,13 +456,11 @@ namespace CoreSystem.Forms {
     title: "Upload your resume",
     description: "Please upload your resume in PDF format",
     order: 8,
-    uploadFiles: #[
-      #{
+    uploadFile: #{
         allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx],
         maxFileAmount: 1,
         maxFileSizeLimit: FileSizeLimit.tenMB
       }
-    ]
   })
   @example(#{
     required: true,
@@ -484,6 +482,7 @@ namespace CoreSystem.Forms {
     description: "Rate your satisfaction level",
     order: 10,
     scale: #{
+      icon: "star",
       minVal: 1,
       maxVal: 5
     }
@@ -527,7 +526,7 @@ namespace CoreSystem.Forms {
     scale?: ScaleOption;
 
     @doc("Available options for file upload questions.")
-    uploadFiles?: UploadFileOption[];
+    uploadFile?: UploadFileOption;
 
     @doc("Available options for OAuth connect questions.")
     oauthConnect?: CoreSystem.Auth.OAuthProviders;
