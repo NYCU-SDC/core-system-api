@@ -45,7 +45,7 @@ Compiles TypeSpec files to OpenAPI specification and applies patches. Output wil
 pnpm build:yaak
 ```
 
-Generates Yaak API collection from the OpenAPI specification. 
+Generates Yaak API collection from the OpenAPI specification.
 
 > **Note:** You must run `pnpm compile:openapi` before building Yaak collection.
 

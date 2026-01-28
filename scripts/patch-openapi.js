@@ -7,48 +7,46 @@ const spec = yaml.load(readFileSync(OPENAPI_PATH, "utf8"));
 
 // Patch OpenAPI spec
 spec.info = {
-  ...spec.info,
-  description: `
+	...spec.info,
+	description: `
 ## Pages
 - [API Documentation (Redocly)](redocly/)
 - [API Documentation (Swagger UI)](swagger/)
 - [SDK Documentation (TypeDoc)](sdk/)
 `.trim(),
 
-  termsOfService: "https://sdc.nycu.club/terms",
+	termsOfService: "https://sdc.nycu.club/terms",
 
-  contact: {
-    name: "NYCU Software Development Club",
-    email: "contact@sdc.nycu.club",
-    url: "https://github.com/NYCU-SDC/core-system-api",
-  },
+	contact: {
+		name: "NYCU Software Development Club",
+		email: "contact@sdc.nycu.club",
+		url: "https://github.com/NYCU-SDC/core-system-api"
+	},
 
-  license: {
-    name: "Apache-2.0",
-  },
+	license: {
+		name: "Apache-2.0"
+	}
 };
 
 // Patch OpenAPI spec
 const upload = spec.paths?.["/forms/{id}/cover"]?.post;
 
 if (upload?.requestBody?.content) {
-  const original =
-    upload.requestBody.content["application/json"] ??
-    upload.requestBody.content[Object.keys(upload.requestBody.content)[0]];
+	const original = upload.requestBody.content["application/json"] ?? upload.requestBody.content[Object.keys(upload.requestBody.content)[0]];
 
-  upload.requestBody.content = {
-    "multipart/form-data": original,
-  };
+	upload.requestBody.content = {
+		"multipart/form-data": original
+	};
 }
 
 // Force coverImage to be binary format
 const schema = spec.components?.schemas?.["Forms.FormCoverUploadRequest"];
 
 if (schema?.properties?.coverImage) {
-  schema.properties.coverImage = {
-    type: "string",
-    format: "binary",
-  };
+	schema.properties.coverImage = {
+		type: "string",
+		format: "binary"
+	};
 }
 
 writeFileSync(OPENAPI_PATH, yaml.dump(spec, { lineWidth: -1 }), "utf8");
