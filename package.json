@@ -1,28 +1,38 @@
 {
-    "name": "core-system-api",
-    "version": "1.0.0",
-    "description": "Core System API defined using TypeSpec",
-    "author": "NYCU SDC",
-    "private": false,
-    "type": "module",
-    "packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34",
-    "scripts": {
-        "build": "pnpm run format && pnpm run compile && pnpm run yaak",
-        "format": "tsp format **/*.tsp",
-        "compile": "tsp compile .",
-        "clean": "rm -rf tsp-output yaak",
-        "start": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0",
-        "yaak": "node scripts/generate-yaak.js"
-    },
-    "devDependencies": {
-        "@stoplight/prism-cli": "^5.14.2",
-        "@typespec/compiler": "^1.4.0",
-        "@typespec/http": "^1.4.0",
-        "@typespec/openapi3": "^1.4.0",
-        "@typespec/rest": "^0.74.0",
-        "@typespec/versioning": "^0.74.0"
-    },
-    "dependencies": {
-        "js-yaml": "^4.1.0"
-    }
+	"name": "core-system-api",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Core System API defined using TypeSpec",
+	"author": "NYCU SDC",
+	"type": "module",
+	"scripts": {
+		"build:redocly": "redocly build-docs tsp-output/schema/openapi.1.0.0.yaml --output website/redocly/index.html",
+		"build:sdk": "orval --config orval.config.js",
+		"build:typedoc": "typedoc --entryPoints packages/sdk/src/index.ts --out website/sdk --tsconfig packages/sdk/tsconfig.json --plugin typedoc-rhineai-theme",
+		"build:yaak": "node scripts/generate-yaak.js",
+		"clean": "rm -rf tsp-output yaak packages/sdk/src/generated packages/sdk/docs",
+		"compile:openapi": "tsp compile . && node scripts/patch-openapi.js",
+		"compile:sdk": "pnpm --filter @nycu-sdc/core-system-sdk run build",
+		"format": "prettier --write .",
+		"start:mock": "pnpm exec prism mock tsp-output/schema/openapi.1.0.0.yaml --port 4010 --host 0.0.0.0"
+	},
+	"dependencies": {
+		"@redocly/cli": "^2.15.0",
+		"orval": "^8.1.0",
+		"typedoc": "^0.28.16",
+		"typedoc-rhineai-theme": "^1.2.0"
+	},
+	"devDependencies": {
+		"@stoplight/prism-cli": "^5.14.2",
+		"@typespec/compiler": "^1.4.0",
+		"@typespec/http": "^1.4.0",
+		"@typespec/openapi3": "^1.4.0",
+		"@typespec/rest": "^0.74.0",
+		"@typespec/versioning": "^0.74.0",
+		"js-yaml": "^4.1.0",
+		"prettier": "^3.8.1",
+		"prettier-plugin-organize-imports": "^4.3.0",
+		"prettier-plugin-packagejson": "^3.0.0"
+	},
+	"packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34"
 }

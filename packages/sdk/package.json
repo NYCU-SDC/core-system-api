@@ -1,0 +1,28 @@
+{
+	"name": "@nycu-sdc/core-system-sdk",
+	"version": "0.1.4",
+	"private": false,
+	"description": "Auto-generated SDK from TypeSpec / OpenAPI",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/NYCU-SDC/core-system-api.git",
+		"directory": "packages/sdk"
+	},
+	"license": "Apache-2.0",
+	"author": {
+		"name": "NYCU SDC",
+		"email": "contact@sdc.nycu.club",
+		"url": "https://sdc.nycu.club"
+	},
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

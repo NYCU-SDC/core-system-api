@@ -1,0 +1,59 @@
+name: Release SDK
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate OpenAPI
+        run: pnpm compile:openapi
+
+      - name: Generate SDK
+        run: pnpm build:sdk
+
+      - name: Build SDK
+        run: pnpm compile:sdk
+
+      - name: Bump version (patch)
+        working-directory: packages/sdk
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm version patch
+
+      - name: Push version commit & tag
+        run: git push --follow-tags
+
+      - name: Publish to npm
+        working-directory: packages/sdk
+        run: pnpm publish --access public --no-git-checks

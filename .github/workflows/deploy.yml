@@ -1,52 +1,51 @@
 name: Deploy API docs
 
 on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-    deploy:
-        name: Deploy API docs
-        runs-on: ubuntu-latest
-        permissions:
-          contents: write
-        steps:
-            - name: Checkout repo
-              uses: actions/checkout@v4
+  deploy:
+    name: Deploy API docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 22
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-            - name: Build
-              run: |
-                  pnpm build
+      - name: Build Open API
+        run: pnpm compile:openapi
 
-            - name: Generate Redocly and Swagger UI
-              run: |
-                  npm i -g @redocly/cli@latest
-                  redocly build-docs tsp-output/schema/openapi.1.0.0.yaml --output redocly.html
+      - name: Copy OpenAPI spec
+        run: |
+          mkdir -p website/tsp-output/schema
+          cp tsp-output/schema/openapi.1.0.0.yaml website/tsp-output/schema/openapi.1.0.0.yaml
 
-            - name: Move files
-              run: |
-                  mkdir -p publish/tsp-output/schema
-                  mv tsp-output/schema/openapi.1.0.0.yaml publish/tsp-output/schema/openapi.1.0.0.yaml
-                  mv index.html publish/index.html
-                  mv swagger.html publish/swagger.html
-                  mkdir -p publish/redocly
-                  mv redocly.html publish/redocly/index.html
+      - name: Generate Redocly and Swagger UI
+        run: pnpm build:redocly
 
-            - name: Deploy to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v4
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./publish
+      - name: Generate Typedoc documentation
+        run: |
+          pnpm build:sdk
+          pnpm compile:sdk
+          pnpm build:typedoc
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website
