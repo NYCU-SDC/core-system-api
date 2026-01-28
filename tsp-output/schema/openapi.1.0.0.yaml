@@ -439,9 +439,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+                $ref: '#/components/schemas/FormWorkflow.GetWorkflowResponse'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -1582,6 +1580,23 @@ components:
       enum:
         - SECTION
         - CONDITION
+    FormWorkflow.GetWorkflowResponse:
+      type: object
+      required:
+        - workflow
+        - info
+      properties:
+        workflow:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+          description: Array of workflow nodes
+        info:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormWorkflow.ValidationInfo'
+          description: Array of validation information/errors for the workflow
+      description: Response model for getting a workflow, includes workflow nodes and validation info
     FormWorkflow.NodeRequest:
       type: object
       required:
@@ -1688,6 +1703,39 @@ components:
         - START
         - CONDITION
       description: Node type enum for workflow nodes
+    FormWorkflow.ValidationInfo:
+      type: object
+      required:
+        - type
+        - nodeId
+        - message
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ValidationInfoType'
+          description: The type/category of validation error
+          examples:
+            - graph_validation_failed
+        nodeId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The ID of the node that caused the validation error
+          examples:
+            - b23f2668-c2dc-4213-88fe-eceedff46398
+        message:
+          type: string
+          description: Human-readable description of the validation error
+          examples:
+            - section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field
+      description: Validation information for workflow validation errors
+    FormWorkflow.ValidationInfoType:
+      type: string
+      enum:
+        - workflow_validation_failed
+        - graph_validation_failed
+        - node_validation_failed
+        - unknown
+      description: Validation info type enum for workflow validation errors
     Forms.Choice:
       type: object
       required:
