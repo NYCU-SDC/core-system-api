@@ -137,9 +137,6 @@ namespace CoreSystem.Forms {
     @doc("Section title (e.g., 'Group Info').")
     title: string;
 
-    @doc("The progress of this section.")
-    progress: SectionProgress;
-
     @doc("Section description.")
     description?: string;
   }
@@ -162,10 +159,10 @@ namespace CoreSystem.Forms {
   @doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
   enum FormVisibility {
     @doc("Public: visible to all logged-in users")
-    public: "public",
+    public: "PUBLIC",
 
     @doc("Private: requires a direct link to access")
-    private: "private",
+    private: "PRIVATE",
   }
 
   @doc("The current types of question")
@@ -185,7 +182,7 @@ namespace CoreSystem.Forms {
     @doc("Single choice with dropdown select")
     dropdown: "DROPDOWN",
 
-    @doc("Multiple choice with detailed checkboxes (more spacing/styling)")
+    @doc("Multiple choice with descriptions")
     detailedMultipleChoice: "DETAILED_MULTIPLE_CHOICE",
 
     @doc("Date picker")
@@ -197,8 +194,126 @@ namespace CoreSystem.Forms {
     @doc("Linear scale/rating (1-5, 1-10, etc.)")
     linearScale: "LINEAR_SCALE",
 
+    @doc("Rating (e.g., star rating)")
+    rating: "RATING",
+
     @doc("Ranking/ordering items by preference")
     ranking: "RANKING",
+
+    @doc("OAuth account connection for external service authentication")
+    oauthConnect: "OAUTH_CONNECT",
+
+    @doc("Hyperlink is a type of short text question.")
+    hyperlink: "HYPERLINK",
+  }
+
+  @doc("Allowed file types/extensions for file upload questions.")
+  enum allowedFileTypes {
+    @doc("document")
+    txt: "TXT",
+    md: "MD",
+    doc: "DOC",
+    docx: "DOCX",
+    odt: "ODT",
+    rtf: "RTF",
+
+    @doc("presentation")
+    ppt: "PPT",
+    pptx: "PPTX",
+    odp: "ODP",
+
+    @doc("spreadsheet")
+    xls: "XLS",
+    xlsx: "XLSX",
+    ods: "ODS",
+    csv: "CSV",
+
+    @doc("vector graphics")
+    svg: "SVG",
+    ai: "AI",
+    eps: "EPS",
+
+    @doc("PDF")
+    pdf: "PDF",
+
+    @doc("image")
+    jpg: "JPG",
+    jpeg: "JPEG",
+    png: "PNG",
+    webp: "WEBP",
+    gif: "GIF",
+    tiff: "TIFF",
+    bmp: "BMP",
+    heic: "HEIC",
+    raw: "RAW",
+
+    @doc("video")
+    mp4: "MP4",
+    webm: "WEBM",
+    mov: "MOV",
+    mkv: "MKV",
+    avi: "AVI",
+
+    @doc("audio")
+    mp3: "MP3",
+    wav: "WAV",
+    m4a: "M4A",
+    aac: "AAC",
+    ogg: "OGG",
+    flac: "FLAC",
+
+    @doc("archive")
+    zip: "ZIP",
+  }
+
+  @doc("File size limit options for file uploads.")
+  enum FileSizeLimit {
+    @doc("1 MB")
+    oneMB: "1_MB",
+
+    @doc("5 MB")
+    fiveMB: "5_MB",
+
+    @doc("10 MB")
+    tenMB: "10_MB",
+
+    @doc("100 MB")
+    hundredMB: "100_MB",
+
+    @doc("1 GB")
+    oneGB: "1_GB",
+  }
+
+  @doc("Options for file upload questions.")
+  model UploadFileOption {
+    @doc("Allowed file types/extensions.")
+    allowedFileTypes: allowedFileTypes[];
+
+    @doc("Maximum number of files that can be uploaded. Range: 1-10.")
+    @minValue(1)
+    @maxValue(10)
+    maxFileAmount: int32;
+
+    @doc("Maximum file size limit.")
+    maxFileSizeLimit: FileSizeLimit;
+  }
+
+  @doc("Options for linear scale and rating questions.")
+  model ScaleOption {
+    @doc("Background icon for the linear scale option.")
+    icon?: string;
+
+    @doc("Minimum value of the linear scale.")
+    minVal: int32;
+
+    @doc("Maximum value of the linear scale.")
+    maxVal: int32;
+
+    @doc("Label for the minimum value.")
+    minValueLabel?: string;
+
+    @doc("Label for the maximum value.")
+    maxValueLabel?: string;
   }
 
   @doc("A choice option for creating/updating choice-based questions.")
@@ -242,11 +357,20 @@ namespace CoreSystem.Forms {
     @doc("More details of this question.")
     description: string;
 
-    @doc("Available choices for single_choice and multiple_choice questions.")
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: Choice[];
 
+    @doc("Available options for linear scale and rating questions.")
+    scale?: ScaleOption;
+
+    @doc("Available options for file upload questions.")
+    uploadFile?: UploadFileOption;
+
+    @doc("Available options for OAuth connect questions.")
+    oauthConnect?: CoreSystem.Auth.OAuthProviders;
+
     @doc("If set, choices are dynamically generated from answers to this question.")
-    sourceQuestionId?: uuid;
+    sourceId?: uuid;
 
     @doc("The creation timestamp of the question.")
     createdAt: utcDateTime;
@@ -261,27 +385,123 @@ namespace CoreSystem.Forms {
     type: QuestionTypes.shortText,
     title: "What's your name?",
     description: "Please enter your name",
-    order: 1,
+    order: 1
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.longText,
+    title: "Tell us about yourself",
+    description: "Please share your background and experience",
+    order: 2
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.singleChoice,
+    title: "What's your preferred work location?",
+    description: "Choose one option",
+    order: 3,
+    choices: #[
+      #{ name: "Remote" },
+      #{ name: "On-site" },
+      #{ name: "Hybrid" }
+    ]
   })
   @example(#{
     required: true,
     type: QuestionTypes.multipleChoice,
     title: "Which team you want to join???",
     description: "Pick one of your favorite!!!",
-    order: 2,
+    order: 4,
     choices: #[
       #{ name: "Core System Team" },
       #{ name: "Clustron Team" },
       #{ name: "HPC Team" }
-    ],
+    ]
+  })
+  @example(#{
+    required: false,
+    type: QuestionTypes.dropdown,
+    title: "Select your experience level",
+    description: "Choose from the dropdown",
+    order: 5,
+    choices: #[
+      #{ name: "Beginner" },
+      #{ name: "Intermediate" },
+      #{ name: "Advanced" },
+      #{ name: "Expert" }
+    ]
   })
   @example(#{
     required: true,
-    type: QuestionTypes.multipleChoice,
+    type: QuestionTypes.detailedMultipleChoice,
+    title: "Which technologies are you familiar with?",
+    description: "Select all that apply",
+    order: 6,
+    choices: #[
+      #{ name: "TypeScript", description: "Modern programming language" },
+      #{ name: "React", description: "Frontend library" },
+      #{ name: "Node.js", description: "Backend runtime" }
+    ]
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.date,
+    title: "When will you graduate?",
+    description: "Please select your graduation date",
+    order: 7
+  })
+  @example(#{
+    required: false,
+    type: QuestionTypes.uploadFile,
+    title: "Upload your resume",
+    description: "Please upload your resume in PDF format",
+    order: 8,
+    uploadFile: #{
+        allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx],
+        maxFileAmount: 1,
+        maxFileSizeLimit: FileSizeLimit.tenMB
+      }
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.linearScale,
+    title: "Rate your experience level (1-5)",
+    description: "How experienced are you?",
+    order: 9,
+    scale: #{
+      minVal: 1,
+      maxVal: 5,
+      minValueLabel: "No experience",
+      maxValueLabel: "Very experienced"
+    }
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.rating,
+    title: "How satisfied are you?",
+    description: "Rate your satisfaction level",
+    order: 10,
+    scale: #{
+      icon: "star",
+      minVal: 1,
+      maxVal: 5
+    }
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.ranking,
     title: "Program Match",
     description: "Sort the following programs based on your preference.",
-    order: 3,
-    sourceQuestionId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    order: 11,
+    sourceId: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+  })
+  @example(#{
+    required: true,
+    type: QuestionTypes.oauthConnect,
+    title: "Connect your GitHub account",
+    description: "Link your GitHub account to verify your identity",
+    order: 12,
+    oauthConnect: CoreSystem.Auth.OAuthProviders.github
   })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
@@ -299,23 +519,26 @@ namespace CoreSystem.Forms {
     @doc("What is the number of this question in the form.")
     order: int32;
 
-    @doc("Available choice options for single_choice and multiple_choice questions.")
+    @doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
     choices?: ChoiceOption[];
 
+    @doc("Available options for linear scale and rating questions.")
+    scale?: ScaleOption;
+
+    @doc("Available options for file upload questions.")
+    uploadFile?: UploadFileOption;
+
+    @doc("Available options for OAuth connect questions.")
+    oauthConnect?: CoreSystem.Auth.OAuthProviders;
+
     @doc("If set, choices are dynamically generated from answers to this question.")
-    sourceQuestionId?: uuid;
+    sourceId?: uuid;
   }
 
-  @doc("The response for next section after completing current section.")
-  model NextSectionResponse {
-    @doc("The ID of the next section to navigate to.")
-    nextSectionId?: uuid;
-
-    @doc("If false, there is no next section, ready to submit.")
-    hasNext: boolean;
-
-    @doc("The questions in the next section.")
-    questions?: QuestionResponse[];
+  @doc("Response model for listing all sections and questions in a form.")
+  model ListSectionsResponse {
+    sections: Section;
+    questions: QuestionResponse[];
   }
 
   // form recipientUser
@@ -379,9 +602,9 @@ namespace CoreSystem.Forms {
 
   // for form edit - question management
   @doc("Create a new question for a specific section.")
-  @route("/sections/{sectionId}/questions")
+  @route("/sections/{id}/questions")
   @post
-  op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
+  op createQuestion(@path id: uuid, @body q: QuestionRequest): {
     @statusCode statusCode: 201;
     @body question: QuestionResponse;
   };
@@ -402,13 +625,10 @@ namespace CoreSystem.Forms {
     @statusCode statusCode: 204;
   };
 
-  @doc("List all the questions of a specific section.")
-  @route("/sections/{sectionId}/questions")
+  @doc("List all the questions of the sections in the form.")
+  @route("/forms/{id}/sections")
   @get
-  op listQuestions(
-    @path sectionId: uuid,
-    @query responseId: uuid,
-  ): QuestionResponse[];
+  op listSections(@path id: uuid): ListSectionsResponse[];
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/cover")

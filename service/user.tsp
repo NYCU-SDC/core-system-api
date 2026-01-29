@@ -5,7 +5,7 @@ using Http;
 @tag("User")
 namespace CoreSystem.User {
   enum Role {
-    user: "user",
+    user: "USER",
   }
 
   model User {

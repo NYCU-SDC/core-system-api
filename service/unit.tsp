@@ -78,8 +78,8 @@ namespace CoreSystem.Unit {
 
   @doc("The completion status of the form for the user")
   enum UserFormStatus {
-    in_progress: "in_progress",
-    completed: "completed",
+    in_progress: "IN_PROGRESS",
+    completed: "COMPLETED",
   }
 
   @doc("Response model for listing user forms with status")
