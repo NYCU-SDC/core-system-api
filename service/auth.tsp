@@ -7,8 +7,8 @@ using OpenAPI;
 @tag("Auth")
 namespace CoreSystem.Auth {
   enum OAuthProviders {
-    google: "google",
-    github: "github",
+    google: "GOOGLE",
+    github: "GITHUB",
   }
 
   model RefreshToken {

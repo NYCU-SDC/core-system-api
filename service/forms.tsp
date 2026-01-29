@@ -159,10 +159,10 @@ namespace CoreSystem.Forms {
   @doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
   enum FormVisibility {
     @doc("Public: visible to all logged-in users")
-    public: "public",
+    public: "PUBLIC",
 
     @doc("Private: requires a direct link to access")
-    private: "private",
+    private: "PRIVATE",
   }
 
   @doc("The current types of question")
@@ -210,78 +210,78 @@ namespace CoreSystem.Forms {
   @doc("Allowed file types/extensions for file upload questions.")
   enum allowedFileTypes {
     @doc("document")
-    txt: "txt",
-    md: "md",
-    doc: "doc",
-    docx: "docx",
-    odt: "odt",
-    rtf: "rtf",
+    txt: "TXT",
+    md: "MD",
+    doc: "DOC",
+    docx: "DOCX",
+    odt: "ODT",
+    rtf: "RTF",
 
     @doc("presentation")
-    ppt: "ppt",
-    pptx: "pptx",
-    odp: "odp",
+    ppt: "PPT",
+    pptx: "PPTX",
+    odp: "ODP",
 
     @doc("spreadsheet")
-    xls: "xls",
-    xlsx: "xlsx",
-    ods: "ods",
-    csv: "csv",
+    xls: "XLS",
+    xlsx: "XLSX",
+    ods: "ODS",
+    csv: "CSV",
 
     @doc("vector graphics")
-    svg: "svg",
-    ai: "ai",
-    eps: "eps",
+    svg: "SVG",
+    ai: "AI",
+    eps: "EPS",
 
     @doc("PDF")
-    pdf: "pdf",
+    pdf: "PDF",
 
     @doc("image")
-    jpg: "jpg",
-    jpeg: "jpeg",
-    png: "png",
-    webp: "webp",
-    gif: "gif",
-    tiff: "tiff",
-    bmp: "bmp",
-    heic: "heic",
-    raw: "raw",
+    jpg: "JPG",
+    jpeg: "JPEG",
+    png: "PNG",
+    webp: "WEBP",
+    gif: "GIF",
+    tiff: "TIFF",
+    bmp: "BMP",
+    heic: "HEIC",
+    raw: "RAW",
 
     @doc("video")
-    mp4: "mp4",
-    webm: "webm",
-    mov: "mov",
-    mkv: "mkv",
-    avi: "avi",
+    mp4: "MP4",
+    webm: "WEBM",
+    mov: "MOV",
+    mkv: "MKV",
+    avi: "AVI",
 
     @doc("audio")
-    mp3: "mp3",
-    wav: "wav",
-    m4a: "m4a",
-    aac: "aac",
-    ogg: "ogg",
-    flac: "flac",
+    mp3: "MP3",
+    wav: "WAV",
+    m4a: "M4A",
+    aac: "AAC",
+    ogg: "OGG",
+    flac: "FLAC",
 
     @doc("archive")
-    zip: "zip",
+    zip: "ZIP",
   }
 
   @doc("File size limit options for file uploads.")
   enum FileSizeLimit {
     @doc("1 MB")
-    oneMB: "1MB",
+    oneMB: "1_MB",
 
     @doc("5 MB")
-    fiveMB: "5MB",
+    fiveMB: "5_MB",
 
     @doc("10 MB")
-    tenMB: "10MB",
+    tenMB: "10_MB",
 
     @doc("100 MB")
-    hundredMB: "100MB",
+    hundredMB: "100_MB",
 
     @doc("1 GB")
-    oneGB: "1GB",
+    oneGB: "1_GB",
   }
 
   @doc("Options for file upload questions.")
