@@ -155,6 +155,9 @@ namespace CoreSystem.Responses {
     @doc("The section title.")
     sectionTitle: string;
 
+    @doc("The answering progress of this section.")
+    progress: SectionProgress;
+
     @doc("All questions with their answers in this section.")
     questionAnswerPairs: PreviewQuestion[];
   }
