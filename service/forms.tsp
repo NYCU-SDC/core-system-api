@@ -137,9 +137,6 @@ namespace CoreSystem.Forms {
     @doc("Section title (e.g., 'Group Info').")
     title: string;
 
-    @doc("The progress of this section.")
-    progress: SectionProgress;
-
     @doc("Section description.")
     description?: string;
   }

@@ -8,11 +8,11 @@ using OpenAPI;
 namespace CoreSystem.Responses {
   @example(#{
     questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
-    value: "John Doe",
+    value: #["John Doe"],
   })
   @example(#{
     questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-    value: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
+    value: #["f421cfc2-2b84-4da9-9629-011af609935a", "2ca86a6d-7735-4f17-8676-29b4724b524f"],
   })
   @doc("Request model for submitting an individual answer")
   model AnswerJSON {
@@ -20,7 +20,40 @@ namespace CoreSystem.Responses {
     questionId: uuid;
 
     @doc("The answer value (format depends on questionType from questionId).")
-    value: string;
+    value: string[];
+  }
+
+  @example(#{
+    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    value: 4,
+  })
+  @doc("Request model for submitting an individual scale answer")
+  model ScaleAnswerJSON {
+    @doc("The question being answered.")
+    questionId: uuid;
+
+    @doc("The answer value for scale question.")
+    value: int32;
+  }
+
+  @example(#{
+    questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    provider: CoreSystem.Auth.OAuthProviders.google,
+    callback: "https://example.com/oauth/callback",
+  })
+  @doc("Request model for initiating an OAuth answer")
+  model OauthAnswerRequest {
+    @doc("The question being answered.")
+    questionId: uuid;
+
+    @doc("The OAuth provider to use.")
+    provider: CoreSystem.Auth.OAuthProviders;
+
+    @doc("The callback URL for the OAuth flow.")
+    callback: string;
+
+    @doc("The redirect URL after OAuth completion.")
+    redirect?: string;
   }
 
   @example(#{
@@ -28,12 +61,15 @@ namespace CoreSystem.Responses {
     avatar_url: "https://example.com/avatar.jpg",
     username: "JohnDoe",
   })
-  @doc("Request model for submitting an individual answer")
+  @doc("Response model for an OAuth answer")
   model OauthAnswerJSON {
     @doc("The question being answered.")
     questionId: uuid;
 
+    @doc("The avatar URL from the OAuth provider.")
     avatar_url: string;
+
+    @doc("The username from the OAuth provider.")
     username: string;
   }
 
@@ -42,17 +78,22 @@ namespace CoreSystem.Responses {
     answers: #[
       #{
         questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
-        value: "John Doe",
+        value: #["John Doe"],
       },
       #{
         questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-        value: "f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f",
+        value: 4,
+      },
+      #{
+        questionId: "3c3cd5f5-82d2-589c-af47-627fbd7c47d4",
+        provider: CoreSystem.Auth.OAuthProviders.google,
+        callback: "https://example.com/oauth/callback",
       }
-    ],
+    ]
   })
   model AnswersRequest {
     @doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
-    answers: AnswerJSON[];
+    answers: (AnswerJSON | ScaleAnswerJSON | OauthAnswerRequest)[];
   }
 
   @doc("Request model for uploading files as answers to a specific question in a response.")
@@ -102,7 +143,7 @@ namespace CoreSystem.Responses {
     @doc("The question details.")
     question: CoreSystem.Forms.QuestionResponse;
 
-    @doc("The answer value.")
+    @doc("The formatted answer value for display.")
     answer: string;
   }
 
@@ -135,8 +176,8 @@ namespace CoreSystem.Responses {
     @doc("The response's unique identifier.")
     id: uuid;
 
-    @doc("A question with its answer for this response.")
-    questionAnswerPair: AnswerJSON | OauthAnswerJSON;
+    @doc("A question with its answer for this response. The type depends on the question type.")
+    questionAnswerPair: AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON;
   }
 
   @doc("The current progress of the response.")
@@ -149,7 +190,7 @@ namespace CoreSystem.Responses {
   }
 
   @doc("Response model for a single answer in question answers view")
-  model AnswerForQuestionResponse {
+  model AnswerResponse {
     @doc("The answer's unique identifier.")
     id: uuid;
 
@@ -159,8 +200,8 @@ namespace CoreSystem.Responses {
     @doc("The user who submitted this answer.")
     submittedBy: uuid;
 
-    @doc("The answer value.")
-    value: string;
+    @doc("The answer data. Type depends on the question type.")
+    answer: AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON;
 
     @doc("The creation timestamp of the answer.")
     createdAt: utcDateTime;
@@ -170,12 +211,12 @@ namespace CoreSystem.Responses {
   }
 
   @doc("Response model for getting all answers for a specific question")
-  model AnswersForQuestionResponse {
+  model AnswersResponse {
     @doc("The question details.")
     question: CoreSystem.Forms.QuestionResponse;
 
     @doc("All answers for this question.")
-    answers: AnswerForQuestionResponse[];
+    answers: AnswerResponse[];
   }
 
   @doc("Response model for a single section in response sections view")
@@ -185,14 +226,31 @@ namespace CoreSystem.Responses {
 
     @doc("Section title (e.g., 'Group Info').")
     title: string;
+
+    @doc("The answering progress of this section.")
+    progress: SectionProgress;
+  }
+
+  @doc("The current progress of a section")
+  enum SectionProgress {
+    @doc("User hasn't started or not finished.")
+    draft: "DRAFT",
+
+    @doc("User has completed/passed this response.")
+    submitted: "SUBMITTED",
   }
 
   @example(#{
     sections: #[
-      #{ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890", title: "Group Info" },
+      #{ 
+        id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        title: "Group Info",
+        progress: SectionProgress.submitted 
+      },
       #{
         id: "0f9e8d7c-6b5a-4321-0fed-cba987654321",
         title: "Self Introduction",
+        progress: SectionProgress.draft,
       }
     ],
   })
@@ -220,7 +278,9 @@ namespace CoreSystem.Responses {
   @post
   op submitFormResponse(@path id: uuid): {
     @statusCode statusCode: 200;
-    @body req: AnswersRequest;
+  } | {
+    @statusCode statusCode: 404;
+    @body error: NotFound;
   };
 
   @doc("Update answers for the response.")
@@ -251,7 +311,7 @@ namespace CoreSystem.Responses {
     @body error: NotFound;
   };
 
-  @doc("Get a specific response by ID.")
+  @doc("Get the preview answer by response ID.")
   @route("/forms/{formId}/responses/{responseId}")
   @get
   op getFormResponse(@path formId: uuid, @path responseId: uuid): {
