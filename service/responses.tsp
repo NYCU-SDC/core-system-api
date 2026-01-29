@@ -144,7 +144,10 @@ namespace CoreSystem.Responses {
     question: CoreSystem.Forms.QuestionResponse;
 
     @doc("The formatted answer value for display.")
-    answer: string;
+    displayValue: string;
+
+    @doc("The structured answer data for submission. Null if not answered yet.")
+    answerData?: AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON;
   }
 
   @doc("Model for a single section in preview view")
@@ -276,7 +279,7 @@ namespace CoreSystem.Responses {
   @doc("Submit all the answer in the form response.")
   @route("/responses/{id}/submit")
   @post
-  op submitFormResponse(@path id: uuid): {
+  op submitFormResponse(@path id: uuid, @body req: AnswersRequest): {
     @statusCode statusCode: 200;
   } | {
     @statusCode statusCode: 404;
