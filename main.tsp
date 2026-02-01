@@ -14,7 +14,11 @@ using Http;
 using Versioning;
 
 @service(#{ title: "Core System API" })
-@server("https://dev.core-system.sdc.nycu.club", "Core System server endpoint")
+
+@server("https://dev.core-system.sdc.nycu.club", "Dev server")
+@server("https://mock.core-system.sdc.nycu.club", "Mock server")
+@server("http://127.0.0.1:4010", "Local Prism mock")
+
 @versioned(Versions)
 @route("/api")
 namespace CoreSystem;
