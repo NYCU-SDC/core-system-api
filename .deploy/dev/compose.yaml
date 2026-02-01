@@ -1,0 +1,17 @@
+name: core-system-mock
+
+services:
+  mock:
+    image: nycusdc/core-system-mock:latest
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.core-system-mock.rule=Host(`mock.core-system.sdc.nycu.club`)"
+      - "traefik.http.routers.core-system-mock.entrypoints=websecure"
+      - "traefik.http.routers.core-system-mock.tls=true"
+      - "traefik.http.routers.core-system-mock.tls.certresolver=cloudflare"
+
+networks:
+  traefik:
+    external: true

@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -17,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -25,6 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          registry-url: https://registry.npmjs.org
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
@@ -38,16 +44,76 @@ jobs:
       - name: Build SDK
         run: pnpm compile:sdk
 
-      - name: Bump version (patch)
+      - name: Determine release mode
+        id: mode
+        run: |
+          TAG_AT_HEAD=$(git describe --tags --exact-match 2>/dev/null || true)
+
+          if [ -z "$TAG_AT_HEAD" ]; then
+            echo "mode=snapshot" >> $GITHUB_OUTPUT
+          else
+            echo "mode=release" >> $GITHUB_OUTPUT
+            echo "tag=$TAG_AT_HEAD" >> $GITHUB_OUTPUT
+          fi
+
+      # Snapshot flow (PR -> main)
+      - name: Bump patch if needed
+        if: steps.mode.outputs.mode == 'snapshot'
         working-directory: packages/sdk
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          npm version patch
 
-      - name: Push version commit & tag
-        run: git push --follow-tags
+          LAST_TAG=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname | head -n 1)
+          LAST_VERSION=${LAST_TAG#v}
 
-      - name: Publish to npm
+
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$CURRENT_VERSION" = "$LAST_VERSION" ]; then
+            npm version patch --no-git-tag-version
+            git add package.json
+            git commit -m "chore(sdk): bump patch version [skip ci]"
+            git push
+          else
+            echo "Version already bumped, skip"
+          fi
+
+      - name: Publish snapshot
+        if: steps.mode.outputs.mode == 'snapshot'
         working-directory: packages/sdk
-        run: pnpm publish --access public --no-git-checks
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          HASH=$(git rev-parse --short HEAD)
+          SNAPSHOT_VERSION="${BASE_VERSION}-snapshot-${HASH}"
+
+          npm version "$SNAPSHOT_VERSION" --no-git-tag-version
+          pnpm publish --access public --tag snapshot --no-git-checks
+
+      # Release flow (tag on main)
+      - name: Validate tag version
+        if: steps.mode.outputs.mode == 'release'
+        working-directory: packages/sdk
+        run: |
+          TAG_VERSION=${{ steps.mode.outputs.tag }}
+          TAG_VERSION=${TAG_VERSION#v}
+
+          PKG_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "❌ Tag version does not match package.json"
+            exit 1
+          fi
+
+      - name: Publish release
+        if: steps.mode.outputs.mode == 'release'
+        working-directory: packages/sdk
+        run: |
+          pnpm publish --access public --no-git-checks
+
+      - name: GitHub Release
+        if: steps.mode.outputs.mode == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.mode.outputs.tag }}
+          prerelease: false
