@@ -1,4 +1,4 @@
-name: Deploy API docs
+name: Deploy API docs and mock server
 
 on:
   push:
@@ -7,11 +7,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy API docs
+  Docs:
+    name: Build & publish OpenAPI
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -27,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build Open API
+      - name: Build OpenAPI
         run: pnpm compile:openapi
 
       - name: Copy OpenAPI spec
@@ -35,10 +36,10 @@ jobs:
           mkdir -p website/tsp-output/schema
           cp tsp-output/schema/openapi.1.0.0.yaml website/tsp-output/schema/openapi.1.0.0.yaml
 
-      - name: Generate Redocly and Swagger UI
+      - name: Build Redocly / Swagger
         run: pnpm build:redocly
 
-      - name: Generate Typedoc documentation
+      - name: Build SDK & Typedoc
         run: |
           pnpm build:sdk
           pnpm compile:sdk
@@ -49,3 +50,40 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website
+
+  Deploy:
+    name: Restart mock server
+    needs: Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger n8n Deploy Webhook
+        run: |
+          curl --location --fail-with-body --request POST 'https://webhook.sdc.nycu.club/webhook/deploy' \
+            --header 'Content-Type: application/json' \
+            --header "x-deploy-token: ${{ secrets.N8N_DEPLOY_TOKEN }}" \
+            --data-raw '{
+              "source": {
+                "title": "Core System API Mock",
+                "repo": "${{ github.repository }}",
+                "branch": "${{ github.ref_name }}",
+                "commit": "${{ github.sha }}"
+              },
+              "method": "deploy",
+              "metadata": {
+                "environment": "dev",
+                "component": "mock"
+              },
+              "post": {
+                "notify_discord": {
+                  "enable": true,
+                  "channel": "core-system-activity"
+                },
+                "setup_domain": {
+                  "enable": true,
+                  "title": "Endpoint",
+                  "name": "mock.core-system.sdc.nycu.club",
+                  "value": "default-eng-deploy:internal"
+                }
+              }
+            }'
