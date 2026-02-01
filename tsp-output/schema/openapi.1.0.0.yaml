@@ -3069,6 +3069,12 @@ components:
       type: string
       format: uuid
 servers:
+  - url: http://127.0.0.1:4010
+    description: Local Prism mock
+    variables: {}
+  - url: https://mock.core-system.sdc.nycu.club
+    description: Mock server
+    variables: {}
   - url: https://dev.core-system.sdc.nycu.club
-    description: Core System server endpoint
+    description: Dev server
     variables: {}
