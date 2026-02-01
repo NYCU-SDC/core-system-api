@@ -8,22 +8,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  Lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
   Docs:
-    name: Deploy API docs
+    name: Build & publish OpenAPI
     runs-on: ubuntu-latest
-    needs: Lint
     permissions:
       contents: write
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -39,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build Open API
+      - name: Build OpenAPI
         run: pnpm compile:openapi
 
       - name: Copy OpenAPI spec
@@ -47,10 +37,10 @@ jobs:
           mkdir -p website/tsp-output/schema
           cp tsp-output/schema/openapi.1.0.0.yaml website/tsp-output/schema/openapi.1.0.0.yaml
 
-      - name: Generate Redocly and Swagger UI
+      - name: Build Redocly / Swagger
         run: pnpm build:redocly
 
-      - name: Generate Typedoc documentation
+      - name: Build SDK & Typedoc
         run: |
           pnpm build:sdk
           pnpm compile:sdk
@@ -61,36 +51,12 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website
-  Build-Mock-Image:
-    name: Build Mock Server Image
-    runs-on: ubuntu-latest
-    needs: Lint
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
-          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-
-      - uses: docker/build-push-action@v6
-        with:
-          file: Dockerfile.mock
-          push: true
-          tags: |
-            nycusdc/core-system-mock:latest
-            nycusdc/core-system-mock:${{ github.sha }}
   Deploy:
-    needs: Build-Mock-Image
+    name: Restart mock server
+    needs: Docs
     runs-on: ubuntu-latest
+
     steps:
       - name: Trigger n8n Deploy Webhook
         run: |
