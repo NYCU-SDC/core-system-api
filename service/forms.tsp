@@ -47,7 +47,7 @@ namespace CoreSystem.Forms {
     @doc("The image path returned by the upload API.")
     coverImage?: string;
 
-    @doc("The google sheet url this from's responses will be sent to.")
+    @doc("The google sheet url this form's responses will be sent to.")
     googleSheetUrl?: string;
 
     @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
@@ -92,7 +92,7 @@ namespace CoreSystem.Forms {
     @doc("The full URL to access the cover image.")
     coverImage?: string;
 
-    @doc("The google sheet url this from's responses will be sent to.")
+    @doc("The google sheet url this form's responses will be sent to.")
     googleSheetUrl?: string;
 
     @doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
@@ -355,6 +355,27 @@ namespace CoreSystem.Forms {
     email: string;
   }
 
+  @doc("Request body for verifying a Google Sheet URL.")
+  model GoogleSheetVerifyRequest {
+    @doc("The Google Sheet URL provided by user.")
+    googleSheetUrl: string;
+  }
+
+  @doc("Verification result for the given Google Sheet URL.")
+  model GoogleSheetVerifyResponse {
+    @doc("Indicates whether the Google Sheet URL is valid and accessible.")
+    isValid: boolean;
+  }
+
+  @doc("A font definition used in form dressing.")
+  model Font {
+    @doc("The unique identifier of the font.")
+    id: string;
+
+    @doc("The display name of the font.")
+    name: string;
+  }
+
   @doc("Update an existing form by its unique identifier.")
   @route("/forms/{id}")
   @put
@@ -444,7 +465,17 @@ namespace CoreSystem.Forms {
   };
 
   @doc("Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.")
-  @route("/forms/google-sheet-email")
+  @route("/forms/google-sheet/email")
   @get
   op getGoogleSheetEmail(): GoogleSheetEmailResponse;
+
+  @doc("Verify the Google Sheet URL and whether the system can access it.")
+  @route("/forms/google-sheet/verify")
+  @post
+  op verifyGoogleSheet(@body req: GoogleSheetVerifyRequest): GoogleSheetVerifyResponse;
+
+  @doc("Get available fonts list for forms dressing.")
+  @route("/forms/fonts")
+  @get
+  op getFormFonts(): Font[];
 }
