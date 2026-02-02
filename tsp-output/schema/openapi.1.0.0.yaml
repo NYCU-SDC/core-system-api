@@ -3003,8 +3003,9 @@ components:
     Unit.UserFormStatus:
       type: string
       enum:
-        - in_progress
-        - completed
+        - NOT_STARTED
+        - IN_PROGRESS
+        - COMPLETED
       description: The completion status of the form for the user
     User.OnboardingRequest:
       type: object
