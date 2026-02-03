@@ -19,6 +19,17 @@ namespace CoreSystem.Responses {
     @doc("The question being answered.")
     questionId: uuid;
 
+    @doc("The type of the question being answered.")
+    questionType: CoreSystem.Forms.QuestionType.shortText | 
+      CoreSystem.Forms.QuestionType.longText | 
+      CoreSystem.Forms.QuestionType.singleChoice | 
+      CoreSystem.Forms.QuestionType.multipleChoice | 
+      CoreSystem.Forms.QuestionType.dropdown | 
+      CoreSystem.Forms.QuestionType.detailedMultipleChoice | 
+      CoreSystem.Forms.QuestionType.date | 
+      CoreSystem.Forms.QuestionType.ranking | 
+      CoreSystem.Forms.QuestionType.hyperlink;
+
     @doc("The answer value (format depends on questionType from questionId).")
     value: string[];
   }
@@ -31,6 +42,9 @@ namespace CoreSystem.Responses {
   model ScaleAnswerJSON {
     @doc("The question being answered.")
     questionId: uuid;
+
+    @doc("The type of the scale question being answered.")
+    questionType: CoreSystem.Forms.QuestionType.LinearScale | CoreSystem.Forms.QuestionType.Rating;
 
     @doc("The answer value for scale question.")
     value: int32;
@@ -45,6 +59,9 @@ namespace CoreSystem.Responses {
   model OauthAnswerRequest {
     @doc("The question being answered.")
     questionId: uuid;
+
+    @doc("The type of the question being answered.")
+    questionType: CoreSystem.Forms.QuestionType.OAUTH_CONNECT;
 
     @doc("The OAuth provider to use.")
     provider: CoreSystem.Auth.OAuthProviders;
@@ -78,14 +95,17 @@ namespace CoreSystem.Responses {
     answers: #[
       #{
         questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
+        questionType: CoreSystem.Forms.QuestionType.shortText,
         value: #["John Doe"],
       },
       #{
         questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+        questionType: CoreSystem.Forms.QuestionType.LinearScale,
         value: 4,
       },
       #{
         questionId: "3c3cd5f5-82d2-589c-af47-627fbd7c47d4",
+        questionType: CoreSystem.Forms.QuestionType.OAUTH_CONNECT,
         provider: CoreSystem.Auth.OAuthProviders.google,
         callback: "https://example.com/oauth/callback",
       }
