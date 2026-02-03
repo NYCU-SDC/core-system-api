@@ -118,6 +118,45 @@ namespace CoreSystem.FormWorkflow {
     nextFalse: uuid;
   }
 
+  @doc("Validation info type enum for workflow validation errors")
+  enum ValidationInfoType {
+    @doc("Workflow-level validation failed")
+    workflowValidationFailed: "workflow_validation_failed",
+
+    @doc("Graph structure validation failed")
+    graphValidationFailed: "graph_validation_failed",
+
+    @doc("Individual node validation failed")
+    nodeValidationFailed: "node_validation_failed",
+
+    @doc("Unknown validation error")
+    unknownError: "unknown",
+  }
+
+  @doc("Validation information for workflow validation errors")
+  model ValidationInfo {
+    @doc("The type/category of validation error")
+    @example(ValidationInfoType.graphValidationFailed)
+    type: ValidationInfoType;
+
+    @doc("The ID of the node that caused the validation error")
+    @example("b23f2668-c2dc-4213-88fe-eceedff46398")
+    nodeId: uuid;
+
+    @doc("Human-readable description of the validation error")
+    @example("section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field")
+    message: string;
+  }
+
+  @doc("Response model for getting a workflow, includes workflow nodes and validation info")
+  model GetWorkflowResponse {
+    @doc("Array of workflow nodes")
+    workflow: NodeResponse[];
+
+    @doc("Array of validation information/errors for the workflow")
+    info: ValidationInfo[];
+  }
+
   // API Endpoints
 
   @doc("Get workflow for a form")
@@ -125,7 +164,7 @@ namespace CoreSystem.FormWorkflow {
   @get
   op getWorkflow(@path id: uuid): {
     @statusCode statusCode: 200;
-    @body response: NodeResponse[];
+    @body response: GetWorkflowResponse;
   } | {
     @statusCode statusCode: 404;
     @body error: NotFound;

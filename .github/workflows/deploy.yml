@@ -1,52 +1,89 @@
-name: Deploy API docs
+name: Deploy API docs and mock server
 
 on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-    deploy:
-        name: Deploy API docs
-        runs-on: ubuntu-latest
-        permissions:
-          contents: write
-        steps:
-            - name: Checkout repo
-              uses: actions/checkout@v4
+  Docs:
+    name: Build & publish OpenAPI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 22
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
-            - name: Build
-              run: |
-                  pnpm build
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-            - name: Generate Redocly and Swagger UI
-              run: |
-                  npm i -g @redocly/cli@latest
-                  redocly build-docs tsp-output/schema/openapi.1.0.0.yaml --output redocly.html
+      - name: Build OpenAPI
+        run: pnpm compile:openapi
 
-            - name: Move files
-              run: |
-                  mkdir -p publish/tsp-output/schema
-                  mv tsp-output/schema/openapi.1.0.0.yaml publish/tsp-output/schema/openapi.1.0.0.yaml
-                  mv index.html publish/index.html
-                  mv swagger.html publish/swagger.html
-                  mkdir -p publish/redocly
-                  mv redocly.html publish/redocly/index.html
+      - name: Copy OpenAPI spec
+        run: |
+          mkdir -p website/tsp-output/schema
+          cp tsp-output/schema/openapi.1.0.0.yaml website/tsp-output/schema/openapi.1.0.0.yaml
 
-            - name: Deploy to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v4
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./publish
+      - name: Build Redocly / Swagger
+        run: pnpm build:redocly
+
+      - name: Build SDK & Typedoc
+        run: |
+          pnpm build:sdk
+          pnpm compile:sdk
+          pnpm build:typedoc
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website
+
+  Deploy:
+    name: Restart mock server
+    needs: Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger n8n Deploy Webhook
+        run: |
+          curl --location --fail-with-body --request POST 'https://webhook.sdc.nycu.club/webhook/deploy' \
+            --header 'Content-Type: application/json' \
+            --header "x-deploy-token: ${{ secrets.N8N_DEPLOY_TOKEN }}" \
+            --data-raw '{
+              "source": {
+                "title": "Core System API Mock",
+                "repo": "${{ github.repository }}",
+                "branch": "${{ github.ref_name }}",
+                "commit": "${{ github.sha }}"
+              },
+              "method": "deploy",
+              "metadata": {
+                "environment": "dev",
+                "component": "mock"
+              },
+              "post": {
+                "notify_discord": {
+                  "enable": true,
+                  "channel": "core-system-activity"
+                },
+                "setup_domain": {
+                  "enable": true,
+                  "title": "Endpoint",
+                  "name": "mock.core-system.sdc.nycu.club",
+                  "value": "default-eng-deploy:internal"
+                }
+              }
+            }'

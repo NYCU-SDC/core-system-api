@@ -1,0 +1,18 @@
+name: core-system-mock
+
+services:
+  mock:
+    image: stoplight/prism:5.14.3
+    command: ["mock", "https://nycu-sdc.github.io/core-system-api/tsp-output/schema/openapi.1.0.0.yaml", "--host", "0.0.0.0", "--port", "4010"]
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.core-system-mock-dev.rule=Host(`mock.core-system.sdc.nycu.club`)"
+      - "traefik.http.routers.core-system-mock-dev.entrypoints=websecure"
+      - "traefik.http.routers.core-system-mock-dev.tls=true"
+      - "traefik.http.routers.core-system-mock-dev.tls.certresolver=cloudflare"
+
+networks:
+  traefik:
+    external: true
