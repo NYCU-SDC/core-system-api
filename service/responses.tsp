@@ -182,8 +182,8 @@ namespace CoreSystem.Responses {
     @doc("The response's unique identifier.")
     id: uuid;
 
-    @doc("A question with its answer for this response. The type depends on the question type.")
-    questionAnswerPair: AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON;
+    @doc("A question with its answer for this response..")
+    questionAnswerPair: AnswerJSON;
   }
 
   @doc("The current progress of the response.")
