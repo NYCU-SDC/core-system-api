@@ -58,7 +58,7 @@ namespace CoreSystem.Responses {
 
   @example(#{
     questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-    avatar_url: "https://example.com/avatar.jpg",
+    avatarUrl: "https://example.com/avatar.jpg",
     username: "JohnDoe",
   })
   @doc("Response model for an OAuth answer")
