@@ -8,10 +8,12 @@ using OpenAPI;
 namespace CoreSystem.Responses {
   @example(#{
     questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
+    questionType: CoreSystem.Forms.QuestionTypes.shortText,
     value: #["John Doe"],
   })
   @example(#{
     questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    questionType: CoreSystem.Forms.QuestionTypes.multipleChoice,
     value: #["f421cfc2-2b84-4da9-9629-011af609935a", "2ca86a6d-7735-4f17-8676-29b4724b524f"],
   })
   @doc("Request model for submitting an individual answer")
@@ -20,15 +22,15 @@ namespace CoreSystem.Responses {
     questionId: uuid;
 
     @doc("The type of the question being answered.")
-    questionType: CoreSystem.Forms.QuestionType.shortText | 
-      CoreSystem.Forms.QuestionType.longText | 
-      CoreSystem.Forms.QuestionType.singleChoice | 
-      CoreSystem.Forms.QuestionType.multipleChoice | 
-      CoreSystem.Forms.QuestionType.dropdown | 
-      CoreSystem.Forms.QuestionType.detailedMultipleChoice | 
-      CoreSystem.Forms.QuestionType.date | 
-      CoreSystem.Forms.QuestionType.ranking | 
-      CoreSystem.Forms.QuestionType.hyperlink;
+    questionType: CoreSystem.Forms.QuestionTypes.shortText | 
+      CoreSystem.Forms.QuestionTypes.longText | 
+      CoreSystem.Forms.QuestionTypes.singleChoice | 
+      CoreSystem.Forms.QuestionTypes.multipleChoice | 
+      CoreSystem.Forms.QuestionTypes.dropdown | 
+      CoreSystem.Forms.QuestionTypes.detailedMultipleChoice | 
+      CoreSystem.Forms.QuestionTypes.date | 
+      CoreSystem.Forms.QuestionTypes.ranking | 
+      CoreSystem.Forms.QuestionTypes.hyperlink;
 
     @doc("The answer value (format depends on questionType from questionId).")
     value: string[];
@@ -36,6 +38,7 @@ namespace CoreSystem.Responses {
 
   @example(#{
     questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    questionType: CoreSystem.Forms.QuestionTypes.linearScale,
     value: 4,
   })
   @doc("Request model for submitting an individual scale answer")
@@ -44,7 +47,7 @@ namespace CoreSystem.Responses {
     questionId: uuid;
 
     @doc("The type of the scale question being answered.")
-    questionType: CoreSystem.Forms.QuestionType.LinearScale | CoreSystem.Forms.QuestionType.Rating;
+    questionType: CoreSystem.Forms.QuestionTypes.linearScale | CoreSystem.Forms.QuestionTypes.rating;
 
     @doc("The answer value for scale question.")
     value: int32;
@@ -52,6 +55,7 @@ namespace CoreSystem.Responses {
 
   @example(#{
     questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+    questionType: CoreSystem.Forms.QuestionTypes.oauthConnect,
     provider: CoreSystem.Auth.OAuthProviders.google,
     callback: "https://example.com/oauth/callback",
   })
@@ -61,7 +65,7 @@ namespace CoreSystem.Responses {
     questionId: uuid;
 
     @doc("The type of the question being answered.")
-    questionType: CoreSystem.Forms.QuestionType.OAUTH_CONNECT;
+    questionType: CoreSystem.Forms.QuestionTypes.oauthConnect;
 
     @doc("The OAuth provider to use.")
     provider: CoreSystem.Auth.OAuthProviders;
@@ -75,7 +79,7 @@ namespace CoreSystem.Responses {
 
   @example(#{
     questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-    avatarUrl: "https://example.com/avatar.jpg",
+    avatar_url: "https://example.com/avatar.jpg",
     username: "JohnDoe",
   })
   @doc("Response model for an OAuth answer")
@@ -95,17 +99,17 @@ namespace CoreSystem.Responses {
     answers: #[
       #{
         questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
-        questionType: CoreSystem.Forms.QuestionType.shortText,
+        questionType: CoreSystem.Forms.QuestionTypes.shortText,
         value: #["John Doe"],
       },
       #{
         questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-        questionType: CoreSystem.Forms.QuestionType.LinearScale,
+        questionType: CoreSystem.Forms.QuestionTypes.linearScale,
         value: 4,
       },
       #{
         questionId: "3c3cd5f5-82d2-589c-af47-627fbd7c47d4",
-        questionType: CoreSystem.Forms.QuestionType.OAUTH_CONNECT,
+        questionType: CoreSystem.Forms.QuestionTypes.oauthConnect,
         provider: CoreSystem.Auth.OAuthProviders.google,
         callback: "https://example.com/oauth/callback",
       }
@@ -161,7 +165,7 @@ namespace CoreSystem.Responses {
   @doc("Model for a question with its answer in preview view")
   model PreviewQuestion {
     @doc("The question details.")
-    question: CoreSystem.Forms.QuestionResponse;
+    question: Forms.QuestionResponse;
 
     @doc("The formatted answer value for display.")
     displayValue: string;
@@ -197,6 +201,14 @@ namespace CoreSystem.Responses {
     questionAnswerPairs: PreviewSection[];
   }
 
+  @example(#{
+    id: "a269d06a-5f41-4d1f-a0a1-3d4007ffd633",
+    questionAnswerPair: #{
+        questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
+        questionType: CoreSystem.Forms.QuestionTypes.ranking,
+        value: #["Full Stack Intro Training", "Full Stack Advanced Training"]
+    } 
+  })
   @doc("Response model for getting an answer of a specific question.")
   model GetQuestionResponse {
     @doc("The response's unique identifier.")
