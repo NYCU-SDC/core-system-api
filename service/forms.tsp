@@ -248,6 +248,12 @@ namespace CoreSystem.Forms {
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
 
+    @doc("Minimum allowed date for date type questions (Unix timestamp in milliseconds). Optional - if not set, no minimum restriction.")
+    minDate?: int64;
+
+    @doc("Maximum allowed date for date type questions (Unix timestamp in milliseconds). Optional - if not set, no maximum restriction.")
+    maxDate?: int64;
+
     @doc("The creation timestamp of the question.")
     createdAt: utcDateTime;
 
@@ -283,6 +289,22 @@ namespace CoreSystem.Forms {
     order: 3,
     sourceQuestionId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
   })
+  @example(#{
+    required: true,
+    type: QuestionTypes.date,
+    title: "When is your birthday?",
+    description: "Please select your date of birth",
+    order: 4,
+    minDate: 315532800000,
+    maxDate: 1735689600000,
+  })
+  @example(#{
+    required: false,
+    type: QuestionTypes.date,
+    title: "Preferred interview date",
+    description: "Choose any date you prefer (no restrictions)",
+    order: 5,
+  })
   model QuestionRequest {
     @doc("Whether the question is required to answer or not.")
     required: boolean;
@@ -304,6 +326,12 @@ namespace CoreSystem.Forms {
 
     @doc("If set, choices are dynamically generated from answers to this question.")
     sourceQuestionId?: uuid;
+
+    @doc("Minimum allowed date for date type questions (Unix timestamp in milliseconds). Optional - if not set, no minimum restriction.")
+    minDate?: int64;
+
+    @doc("Maximum allowed date for date type questions (Unix timestamp in milliseconds). Optional - if not set, no maximum restriction.")
+    maxDate?: int64;
   }
 
   @doc("The response for next section after completing current section.")
