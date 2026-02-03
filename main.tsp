@@ -14,7 +14,11 @@ using Http;
 using Versioning;
 
 @service(#{ title: "Core System API" })
-@server("https://dev.core-system.sdc.nycu.club", "Core System server endpoint")
+
+@server("https://dev.core-system.sdc.nycu.club", "Dev server")
+@server("https://mock.core-system.sdc.nycu.club", "Mock server")
+@server("http://127.0.0.1:4010", "Local Prism mock")
+
 @versioned(Versions)
 @route("/api")
 namespace CoreSystem;
@@ -56,4 +60,12 @@ model NotFound {
   status: 404;
   type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404";
   detail: string;
+}
+
+@error
+model BadRequest {
+    title: "Bad Request";
+    status: 400;
+    type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400";
+    detail: string;
 }

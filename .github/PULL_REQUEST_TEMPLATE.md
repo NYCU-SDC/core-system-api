@@ -1,7 +1,9 @@
 ## Type of changes
+
 - Feature/Fix/Docs/Refactor/CI/Test/Chore
 
 ## Purpose
+
 - Add XXX
 - Resolve issue #XXX
 
