@@ -206,7 +206,7 @@ paths:
   /api/forms/{formId}/responses/{responseId}:
     get:
       operationId: Responses_getFormResponse
-      description: Get a specific response by ID.
+      description: Get the preview answer by response ID.
       parameters:
         - name: formId
           in: path
@@ -224,7 +224,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses.GetResponse'
+                $ref: '#/components/schemas/Responses.GetFormResponse'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -444,6 +444,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Forms.FormPublishResponse'
+      tags:
+        - Forms
+  /api/forms/{id}/sections:
+    get:
+      operationId: Forms_listSections
+      description: List all the questions of the sections in the form.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.ListSectionsResponse'
       tags:
         - Forms
   /api/forms/{id}/workflow:
@@ -1290,12 +1311,12 @@ paths:
                   $ref: '#/components/schemas/Unit.Unit'
       tags:
         - Unit
-  /api/responses/{responseId}/answers:
+  /api/responses/{id}/answers:
     patch:
       operationId: Responses_updateFormResponse
       description: Update answers for the response.
       parameters:
-        - name: responseId
+        - name: id
           in: path
           required: true
           schema:
@@ -1311,12 +1332,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Responses.AnswersRequestUpdate'
-  /api/responses/{responseId}/sections:
+  /api/responses/{id}/sections:
     get:
       operationId: Responses_listResponseSections
       description: List the form structure of the response.
       parameters:
-        - name: responseId
+        - name: id
           in: path
           required: true
           schema:
@@ -1336,12 +1357,44 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
-  /api/responses/{responseId}/submit:
+  /api/responses/{id}/submit:
     post:
       operationId: Responses_submitFormResponse
       description: Submit all the answer in the form response.
       parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswersRequest'
+  /api/responses/{responseId}/questions/{questionId}:
+    get:
+      operationId: Responses_getQuestionResponse
+      description: Get a specific answer by question ID in the response.
+      parameters:
         - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
           in: path
           required: true
           schema:
@@ -1352,15 +1405,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses.AnswersRequest'
+                $ref: '#/components/schemas/Responses.GetQuestionResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
-  /api/sections/{sectionId}/questions:
+  /api/responses/{responseId}/questions/{questionId}/files:
+    post:
+      operationId: Responses_uploadQuestionFiles
+      description: Upload files as answers for a specific question in the response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.QuestionFilesUploadResponse'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Responses.QuestionFilesUploadRequest'
+            encoding:
+              files:
+                contentType: application/json
+  /api/sections/{id}/questions:
     post:
       operationId: Forms_createQuestion
       description: Create a new question for a specific section.
       parameters:
-        - name: sectionId
+        - name: id
           in: path
           required: true
           schema:
@@ -1380,32 +1472,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Forms.QuestionRequest'
-    get:
-      operationId: Forms_listQuestions
-      description: List all the questions of a specific section.
-      parameters:
-        - name: sectionId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-        - name: responseId
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-          explode: false
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Forms.QuestionResponse'
-      tags:
-        - Forms
   /api/sections/{sectionId}/questions/{questionId}:
     put:
       operationId: Forms_updateQuestion
@@ -1512,7 +1578,8 @@ components:
     Auth.OAuthProviders:
       type: string
       enum:
-        - google
+        - GOOGLE
+        - GITHUB
     Auth.RefreshToken:
       type: object
       required:
@@ -1788,6 +1855,15 @@ components:
           type: string
           description: Optional description for the choice.
       description: A choice option for creating/updating choice-based questions.
+    Forms.FileSizeLimit:
+      type: string
+      enum:
+        - 1_MB
+        - 5_MB
+        - 10_MB
+        - 100_MB
+        - 1_GB
+      description: File size limit options for file uploads.
     Forms.Form:
       type: object
       required:
@@ -1969,8 +2045,8 @@ components:
     Forms.FormVisibility:
       type: string
       enum:
-        - public
-        - private
+        - PUBLIC
+        - PRIVATE
       description: The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
     Forms.GoogleSheetEmailResponse:
       type: object
@@ -1981,24 +2057,19 @@ components:
           type: string
           description: The Gmail address that should be added to Google Sheet permissions so the system can modify the form.
       description: Response containing the Gmail address for Google Sheet permissions.
-    Forms.NextSectionResponse:
+    Forms.ListSectionsResponse:
       type: object
       required:
-        - hasNext
+        - sections
+        - questions
       properties:
-        nextSectionId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The ID of the next section to navigate to.
-        hasNext:
-          type: boolean
-          description: If false, there is no next section, ready to submit.
+        sections:
+          $ref: '#/components/schemas/Forms.Section'
         questions:
           type: array
           items:
             $ref: '#/components/schemas/Forms.QuestionResponse'
-          description: The questions in the next section.
-      description: The response for next section after completing current section.
+      description: Response model for listing all sections and questions in a form.
     Forms.QuestionRequest:
       type: object
       required:
@@ -2029,28 +2100,118 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Forms.ChoiceOption'
-          description: Available choice options for single_choice and multiple_choice questions.
-        sourceQuestionId:
+          description: Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.
+        scale:
+          allOf:
+            - $ref: '#/components/schemas/Forms.ScaleOption'
+          description: Available options for linear scale and rating questions.
+        uploadFile:
+          allOf:
+            - $ref: '#/components/schemas/Forms.UploadFileOption'
+          description: Available options for file upload questions.
+        oauthConnect:
+          allOf:
+            - $ref: '#/components/schemas/Auth.OAuthProviders'
+          description: Available options for OAuth connect questions.
+        sourceId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: If set, choices are dynamically generated from answers to this question.
       description: The request body for creating/updating a question.
       examples:
         - required: true
-          type: MULTIPLE_CHOICE
+          type: OAUTH_CONNECT
+          title: Connect your GitHub account
+          description: Link your GitHub account to verify your identity
+          order: 12
+          oauthConnect: GITHUB
+        - required: true
+          type: RANKING
           title: Program Match
           description: Sort the following programs based on your preference.
-          order: 3
-          sourceQuestionId: d290f1ee-6c54-4b01-90e6-d701748f0851
+          order: 11
+          sourceId: d290f1ee-6c54-4b01-90e6-d701748f0851
+        - required: true
+          type: RATING
+          title: How satisfied are you?
+          description: Rate your satisfaction level
+          order: 10
+          scale:
+            icon: star
+            minVal: 1
+            maxVal: 5
+        - required: true
+          type: LINEAR_SCALE
+          title: Rate your experience level (1-5)
+          description: How experienced are you?
+          order: 9
+          scale:
+            minVal: 1
+            maxVal: 5
+            minValueLabel: No experience
+            maxValueLabel: Very experienced
+        - required: false
+          type: UPLOAD_FILE
+          title: Upload your resume
+          description: Please upload your resume in PDF format
+          order: 8
+          uploadFile:
+            allowedFileTypes:
+              - PDF
+              - DOC
+              - DOCX
+            maxFileAmount: 1
+            maxFileSizeLimit: 10_MB
+        - required: true
+          type: DATE
+          title: When will you graduate?
+          description: Please select your graduation date
+          order: 7
+        - required: true
+          type: DETAILED_MULTIPLE_CHOICE
+          title: Which technologies are you familiar with?
+          description: Select all that apply
+          order: 6
+          choices:
+            - name: TypeScript
+              description: Modern programming language
+            - name: React
+              description: Frontend library
+            - name: Node.js
+              description: Backend runtime
+        - required: false
+          type: DROPDOWN
+          title: Select your experience level
+          description: Choose from the dropdown
+          order: 5
+          choices:
+            - name: Beginner
+            - name: Intermediate
+            - name: Advanced
+            - name: Expert
         - required: true
           type: MULTIPLE_CHOICE
           title: Which team you want to join???
           description: Pick one of your favorite!!!
-          order: 2
+          order: 4
           choices:
             - name: Core System Team
             - name: Clustron Team
             - name: HPC Team
+        - required: true
+          type: SINGLE_CHOICE
+          title: What's your preferred work location?
+          description: Choose one option
+          order: 3
+          choices:
+            - name: Remote
+            - name: On-site
+            - name: Hybrid
+        - required: true
+          type: LONG_TEXT
+          title: Tell us about yourself
+          description: Please share your background and experience
+          order: 2
         - required: true
           type: SHORT_TEXT
           title: What's your name?
@@ -2093,8 +2254,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Forms.Choice'
-          description: Available choices for single_choice and multiple_choice questions.
-        sourceQuestionId:
+          description: Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.
+        scale:
+          allOf:
+            - $ref: '#/components/schemas/Forms.ScaleOption'
+          description: Available options for linear scale and rating questions.
+        uploadFile:
+          allOf:
+            - $ref: '#/components/schemas/Forms.UploadFileOption'
+          description: Available options for file upload questions.
+        oauthConnect:
+          allOf:
+            - $ref: '#/components/schemas/Auth.OAuthProviders'
+          description: Available options for OAuth connect questions.
+        sourceId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: If set, choices are dynamically generated from answers to this question.
@@ -2119,7 +2292,10 @@ components:
         - DATE
         - UPLOAD_FILE
         - LINEAR_SCALE
+        - RATING
         - RANKING
+        - OAUTH_CONNECT
+        - HYPERLINK
       description: The current types of question
     Forms.RecipientSelectionRequest:
       type: object
@@ -2158,13 +2334,36 @@ components:
         name:
           type: string
       description: The basic info of a user that can receive the form.
+    Forms.ScaleOption:
+      type: object
+      required:
+        - minVal
+        - maxVal
+      properties:
+        icon:
+          type: string
+          description: Background icon for the linear scale option.
+        minVal:
+          type: integer
+          format: int32
+          description: Minimum value of the linear scale.
+        maxVal:
+          type: integer
+          format: int32
+          description: Maximum value of the linear scale.
+        minValueLabel:
+          type: string
+          description: Label for the minimum value.
+        maxValueLabel:
+          type: string
+          description: Label for the maximum value.
+      description: Options for linear scale and rating questions.
     Forms.Section:
       type: object
       required:
         - id
         - formId
         - title
-        - progress
       properties:
         id:
           allOf:
@@ -2177,10 +2376,6 @@ components:
         title:
           type: string
           description: Section title (e.g., 'Group Info').
-        progress:
-          allOf:
-            - $ref: '#/components/schemas/Forms.SectionProgress'
-          description: The progress of this section.
         description:
           type: string
           description: Section description.
@@ -2191,6 +2386,71 @@ components:
         - DRAFT
         - SUBMITTED
       description: The current progress of a section
+    Forms.UploadFileOption:
+      type: object
+      required:
+        - allowedFileTypes
+        - maxFileAmount
+        - maxFileSizeLimit
+      properties:
+        allowedFileTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.allowedFileTypes'
+          description: Allowed file types/extensions.
+        maxFileAmount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+          description: 'Maximum number of files that can be uploaded. Range: 1-10.'
+        maxFileSizeLimit:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FileSizeLimit'
+          description: Maximum file size limit.
+      description: Options for file upload questions.
+    Forms.allowedFileTypes:
+      type: string
+      enum:
+        - TXT
+        - MD
+        - DOC
+        - DOCX
+        - ODT
+        - RTF
+        - PPT
+        - PPTX
+        - ODP
+        - XLS
+        - XLSX
+        - ODS
+        - CSV
+        - SVG
+        - AI
+        - EPS
+        - PDF
+        - JPG
+        - JPEG
+        - PNG
+        - WEBP
+        - GIF
+        - TIFF
+        - BMP
+        - HEIC
+        - RAW
+        - MP4
+        - WEBM
+        - MOV
+        - MKV
+        - AVI
+        - MP3
+        - WAV
+        - M4A
+        - AAC
+        - OGG
+        - FLAC
+        - ZIP
+      description: Allowed file types/extensions for file upload questions.
     Inbox.InboxFormMessage:
       type: object
       required:
@@ -2371,13 +2631,70 @@ components:
           type: string
           description: The problem's detail.
       description: Problem represents a problem detail as defined in RFC 7807
-    Responses.AnswerForQuestionResponse:
+    Responses.AnswerJSON:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - SHORT_TEXT
+            - type: string
+              enum:
+                - LONG_TEXT
+            - type: string
+              enum:
+                - SINGLE_CHOICE
+            - type: string
+              enum:
+                - MULTIPLE_CHOICE
+            - type: string
+              enum:
+                - DROPDOWN
+            - type: string
+              enum:
+                - DETAILED_MULTIPLE_CHOICE
+            - type: string
+              enum:
+                - DATE
+            - type: string
+              enum:
+                - RANKING
+            - type: string
+              enum:
+                - HYPERLINK
+          description: The type of the question being answered.
+        value:
+          type: array
+          items:
+            type: string
+          description: The answer value (format depends on questionType from questionId).
+      description: Request model for submitting an individual answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: MULTIPLE_CHOICE
+          value:
+            - f421cfc2-2b84-4da9-9629-011af609935a
+            - 2ca86a6d-7735-4f17-8676-29b4724b524f
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          questionType: SHORT_TEXT
+          value:
+            - John Doe
+    Responses.AnswerResponse:
       type: object
       required:
         - id
         - responseId
         - submittedBy
-        - value
+        - answer
         - createdAt
         - updatedAt
       properties:
@@ -2393,9 +2710,12 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The user who submitted this answer.
-        value:
-          type: string
-          description: The answer value.
+        answer:
+          anyOf:
+            - $ref: '#/components/schemas/Responses.AnswerJSON'
+            - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
+            - $ref: '#/components/schemas/Responses.OauthAnswerJSON'
+          description: The answer data. Type depends on the question type.
         createdAt:
           type: string
           format: date-time
@@ -2405,26 +2725,59 @@ components:
           format: date-time
           description: The last updated timestamp of the answer.
       description: Response model for a single answer in question answers view
-    Responses.AnswerJSON:
+    Responses.AnswersRequest:
       type: object
       required:
-        - questionId
-        - value
+        - answers
       properties:
-        questionId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The question being answered.
-        value:
-          type: string
-          description: The answer value (format depends on questionType from questionId).
-      description: Request model for submitting an individual answer
+        answers:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Responses.AnswerJSON'
+              - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
+              - $ref: '#/components/schemas/Responses.OauthAnswerRequest'
+          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
+      description: Request model for update or submit the form response.
       examples:
-        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
-          value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
-        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
-          value: John Doe
-    Responses.AnswersForQuestionResponse:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value:
+                - John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              questionType: LINEAR_SCALE
+              value: 4
+            - questionId: 3c3cd5f5-82d2-589c-af47-627fbd7c47d4
+              questionType: OAUTH_CONNECT
+              provider: GOOGLE
+              callback: https://example.com/oauth/callback
+    Responses.AnswersRequestUpdate:
+      type: object
+      properties:
+        answers:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Responses.AnswerJSON'
+              - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
+              - $ref: '#/components/schemas/Responses.OauthAnswerRequest'
+          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
+      description: Request model for update or submit the form response.
+      examples:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value:
+                - John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              questionType: LINEAR_SCALE
+              value: 4
+            - questionId: 3c3cd5f5-82d2-589c-af47-627fbd7c47d4
+              questionType: OAUTH_CONNECT
+              provider: GOOGLE
+              callback: https://example.com/oauth/callback
+    Responses.AnswersResponse:
       type: object
       required:
         - question
@@ -2437,41 +2790,9 @@ components:
         answers:
           type: array
           items:
-            $ref: '#/components/schemas/Responses.AnswerForQuestionResponse'
+            $ref: '#/components/schemas/Responses.AnswerResponse'
           description: All answers for this question.
       description: Response model for getting all answers for a specific question
-    Responses.AnswersRequest:
-      type: object
-      required:
-        - answers
-      properties:
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.AnswerJSON'
-          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
-      description: Request model for update or submit the form response.
-      examples:
-        - answers:
-            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
-              value: John Doe
-            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
-              value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
-    Responses.AnswersRequestUpdate:
-      type: object
-      properties:
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.AnswerJSON'
-          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
-      description: Request model for update or submit the form response.
-      examples:
-        - answers:
-            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
-              value: John Doe
-            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
-              value: f421cfc2-2b84-4da9-9629-011af609935a;2ca86a6d-7735-4f17-8676-29b4724b524f
     Responses.CreateResponse:
       type: object
       required:
@@ -2482,13 +2803,12 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: The response's unique identifier.
       description: Response model for creating a form response
-    Responses.GetResponse:
+    Responses.GetFormResponse:
       type: object
       required:
         - id
         - progress
         - formId
-        - submittedBy
         - questionAnswerPairs
       properties:
         id:
@@ -2503,16 +2823,35 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form that this response belongs to.
-        submittedBy:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who submitted this response.
         questionAnswerPairs:
           type: array
           items:
             $ref: '#/components/schemas/Responses.PreviewSection'
           description: All questions with their answers for this response.
       description: Response model for getting a specific form response
+    Responses.GetQuestionResponse:
+      type: object
+      required:
+        - id
+        - questionAnswerPair
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        questionAnswerPair:
+          allOf:
+            - $ref: '#/components/schemas/Responses.AnswerJSON'
+          description: A question with its answer for this response..
+      description: Response model for getting an answer of a specific question.
+      examples:
+        - id: a269d06a-5f41-4d1f-a0a1-3d4007ffd633
+          questionAnswerPair:
+            questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+            questionType: RANKING
+            value:
+              - Full Stack Intro Training
+              - Full Stack Advanced Training
     Responses.ListResponse:
       type: object
       required:
@@ -2544,37 +2883,127 @@ components:
         - sections:
             - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
               title: Group Info
+              progress: SUBMITTED
             - id: 0f9e8d7c-6b5a-4321-0fed-cba987654321
               title: Self Introduction
+              progress: DRAFT
+    Responses.OauthAnswerJSON:
+      type: object
+      required:
+        - questionId
+        - avatar_url
+        - username
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        avatar_url:
+          type: string
+          description: The avatar URL from the OAuth provider.
+        username:
+          type: string
+          description: The username from the OAuth provider.
+      description: Response model for an OAuth answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          avatar_url: https://example.com/avatar.jpg
+          username: JohnDoe
+    Responses.OauthAnswerRequest:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - provider
+        - callback
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          type: string
+          enum:
+            - OAUTH_CONNECT
+          description: The type of the question being answered.
+        provider:
+          allOf:
+            - $ref: '#/components/schemas/Auth.OAuthProviders'
+          description: The OAuth provider to use.
+        callback:
+          type: string
+          description: The callback URL for the OAuth flow.
+        redirect:
+          type: string
+          description: The redirect URL after OAuth completion.
+      description: Request model for initiating an OAuth answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: OAUTH_CONNECT
+          provider: GOOGLE
+          callback: https://example.com/oauth/callback
     Responses.PreviewQuestion:
       type: object
       required:
         - question
-        - answer
+        - displayValue
       properties:
         question:
           allOf:
             - $ref: '#/components/schemas/Forms.QuestionResponse'
           description: The question details.
-        answer:
+        displayValue:
           type: string
-          description: The answer value.
+          description: The formatted answer value for display.
+        answerData:
+          anyOf:
+            - $ref: '#/components/schemas/Responses.AnswerJSON'
+            - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
+            - $ref: '#/components/schemas/Responses.OauthAnswerJSON'
+          description: The structured answer data for submission. Null if not answered yet.
       description: Model for a question with its answer in preview view
     Responses.PreviewSection:
       type: object
       required:
         - sectionTitle
+        - progress
         - questionAnswerPairs
       properties:
         sectionTitle:
           type: string
           description: The section title.
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.SectionProgress'
+          description: The answering progress of this section.
         questionAnswerPairs:
           type: array
           items:
             $ref: '#/components/schemas/Responses.PreviewQuestion'
           description: All questions with their answers in this section.
       description: Model for a single section in preview view
+    Responses.QuestionFilesUploadRequest:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+            contentEncoding: base64
+          description: The file(s) being uploaded.
+      required:
+        - files
+    Responses.QuestionFilesUploadResponse:
+      type: object
+      required:
+        - fileUrls
+      properties:
+        fileUrls:
+          type: array
+          items:
+            type: string
+          description: The temporary full URLs of the uploaded files.
+      description: Response model for the uploaded files
     Responses.ResponseJSON:
       type: object
       required:
@@ -2611,6 +3040,7 @@ components:
       required:
         - id
         - title
+        - progress
       properties:
         id:
           allOf:
@@ -2619,7 +3049,46 @@ components:
         title:
           type: string
           description: Section title (e.g., 'Group Info').
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.SectionProgress'
+          description: The answering progress of this section.
       description: Response model for a single section in response sections view
+    Responses.ScaleAnswerJSON:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - LINEAR_SCALE
+            - type: string
+              enum:
+                - RATING
+          description: The type of the scale question being answered.
+        value:
+          type: integer
+          format: int32
+          description: The answer value for scale question.
+      description: Request model for submitting an individual scale answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: LINEAR_SCALE
+          value: 4
+    Responses.SectionProgress:
+      type: string
+      enum:
+        - DRAFT
+        - SUBMITTED
+      description: The current progress of a section
     Slug.History:
       type: object
       required:
@@ -3025,7 +3494,7 @@ components:
     User.Role:
       type: string
       enum:
-        - user
+        - USER
     User.User:
       type: object
       required:
