@@ -8,6 +8,7 @@ using OpenAPI;
 namespace CoreSystem.Auth {
   enum OAuthProviders {
     google: "GOOGLE",
+    github: "GITHUB",
     nycu: "NYCU",
   }
 
@@ -27,7 +28,10 @@ namespace CoreSystem.Auth {
   op loginGoogle(
     @doc("The OAuth2 provider to use for login.")
     @path
-    provider: OAuthProviders,
+    provider: OptionalProperties<PickProperties<
+        OAuthProviders,
+        "google" | "nycu"
+      >>;
 
     @doc("The callback URL of the OAuth2 login. [See details](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)")
     @query
