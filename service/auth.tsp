@@ -12,6 +12,11 @@ namespace CoreSystem.Auth {
     nycu: "NYCU",
   }
 
+  enum OAuthLoginProviders {
+    google: "GOOGLE",
+    nycu: "NYCU",
+  }
+
   model RefreshToken {
     @doc("The access token and formatted as JWT")
     accessToken: string;
@@ -28,10 +33,7 @@ namespace CoreSystem.Auth {
   op loginGoogle(
     @doc("The OAuth2 provider to use for login.")
     @path
-    provider: OptionalProperties<PickProperties<
-        OAuthProviders,
-        "google" | "nycu"
-      >>;
+    provider: OAuthLoginProviders;
 
     @doc("The callback URL of the OAuth2 login. [See details](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)")
     @query
