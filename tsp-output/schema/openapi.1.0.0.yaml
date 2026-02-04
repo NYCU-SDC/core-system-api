@@ -34,7 +34,7 @@ paths:
           required: true
           description: The OAuth2 provider to use for login.
           schema:
-            $ref: '#/components/schemas/Auth.OAuthProviders'
+            $ref: '#/components/schemas/Auth.OAuthLoginProviders'
         - name: c
           in: query
           required: true
@@ -1575,11 +1575,17 @@ paths:
               $ref: '#/components/schemas/User.OnboardingRequest'
 components:
   schemas:
+    Auth.OAuthLoginProviders:
+      type: string
+      enum:
+        - GOOGLE
+        - NYCU
     Auth.OAuthProviders:
       type: string
       enum:
         - GOOGLE
         - GITHUB
+        - NYCU
     Auth.RefreshToken:
       type: object
       required:
