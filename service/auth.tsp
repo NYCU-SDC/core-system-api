@@ -8,7 +8,7 @@ using OpenAPI;
 namespace CoreSystem.Auth {
   enum OAuthProviders {
     google: "GOOGLE",
-    github: "GITHUB",
+    nycu: "NYCU",
   }
 
   model RefreshToken {
