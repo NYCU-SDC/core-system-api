@@ -104,7 +104,23 @@ paths:
                   $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
-  /api/forms/google-sheet-email:
+  /api/forms/fonts:
+    get:
+      operationId: Forms_getFormFonts
+      description: Get available fonts list for forms dressing.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Font'
+      tags:
+        - Forms
+  /api/forms/google-sheet/email:
     get:
       operationId: Forms_getGoogleSheetEmail
       description: Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.
@@ -118,6 +134,26 @@ paths:
                 $ref: '#/components/schemas/Forms.GoogleSheetEmailResponse'
       tags:
         - Forms
+  /api/forms/google-sheet/verify:
+    post:
+      operationId: Forms_verifyGoogleSheet
+      description: Verify the Google Sheet URL and whether the system can access it.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.GoogleSheetVerifyResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.GoogleSheetVerifyRequest'
   /api/forms/me:
     get:
       operationId: Unit_listFormsOfCurrentUser
@@ -1870,6 +1906,19 @@ components:
         - 100_MB
         - 1_GB
       description: File size limit options for file uploads.
+    Forms.Font:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the font.
+        name:
+          type: string
+          description: The display name of the font.
+      description: A font definition used in form dressing.
     Forms.Form:
       type: object
       required:
@@ -1930,7 +1979,7 @@ components:
           description: The full URL to access the cover image.
         googleSheetUrl:
           type: string
-          description: The google sheet url this from's responses will be sent to.
+          description: The google sheet url this form's responses will be sent to.
         visibility:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
@@ -2032,7 +2081,7 @@ components:
           description: The image path returned by the upload API.
         googleSheetUrl:
           type: string
-          description: The google sheet url this from's responses will be sent to.
+          description: The google sheet url this form's responses will be sent to.
         visibility:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
@@ -2063,6 +2112,24 @@ components:
           type: string
           description: The Gmail address that should be added to Google Sheet permissions so the system can modify the form.
       description: Response containing the Gmail address for Google Sheet permissions.
+    Forms.GoogleSheetVerifyRequest:
+      type: object
+      required:
+        - googleSheetUrl
+      properties:
+        googleSheetUrl:
+          type: string
+          description: The Google Sheet URL provided by user.
+      description: Request body for verifying a Google Sheet URL.
+    Forms.GoogleSheetVerifyResponse:
+      type: object
+      required:
+        - isValid
+      properties:
+        isValid:
+          type: boolean
+          description: Indicates whether the Google Sheet URL is valid and accessible.
+      description: Verification result for the given Google Sheet URL.
     Forms.ListSectionsResponse:
       type: object
       required:
