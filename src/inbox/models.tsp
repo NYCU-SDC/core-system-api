@@ -3,9 +3,7 @@ import "@typespec/openapi3";
 
 using Http;
 using OpenAPI;
-using CoreSystem.Forms;
 
-@tag("Inbox")
 namespace CoreSystem.Inbox {
   @doc("The structure of a user inbox message.")
   model UserInboxMessage {
@@ -27,7 +25,7 @@ namespace CoreSystem.Inbox {
     message: InboxFormMessage;
 
     @doc("The full content of inbox_message.")
-    content?: Form;
+    content?: CoreSystem.Forms.Form;
 
     ...UserInboxMessageFilters;
   }
@@ -78,56 +76,6 @@ namespace CoreSystem.Inbox {
     @doc("The last updated timestamp of the inbox message.")
     updatedAt: utcDateTime;
   }
-
-  @doc("Get all the preview of the inbox messages with pagination.")
-  @route("/inbox")
-  @get
-  @list
-  op getInboxMessages(
-    @query isRead?: boolean = false,
-    @query isStarred?: boolean = false,
-    @query isArchived?: boolean = false,
-    @query search?: string,
-    @query unitIds?: uuid[],
-    @query @pageIndex page?: int32 = 1,
-    @query @pageSize size?: int32 = 10,
-  ): {
-    @statusCode statusCode: 200;
-    @body body: {
-      @pageItems items: UserInboxMessage[];
-      totalPages: int32;
-      totalItems: int32;
-      currentPage: int32;
-      pageSize: int32;
-      hasNextPage: boolean;
-    };
-  } | errorResponse;
-
-  @doc("Get the user inbox message by its unique identifier.")
-  @route("/inbox/{id}")
-  @get
-  op getInboxMessage(@path id: uuid): {
-    @statusCode statusCode: 200;
-    @body body: UserInboxMessageDetail;
-  } | errorResponse;
-
-  @doc("Update flags for the user inbox message.")
-  @route("/inbox/{id}")
-  @put
-  op updateInboxMessageFlag(
-    @path id: uuid,
-
-    @example(#{ isRead: false, isStarred: true, isArchived: false })
-    @body
-    body: {
-      isRead?: boolean = false;
-      isStarred?: boolean = false;
-      isArchived?: boolean = false;
-    },
-  ): {
-    @statusCode statusCode: 200;
-    @body body: UserInboxMessage;
-  } | errorResponse;
 
   alias errorResponse = {
     @statusCode statusCode: 401;
