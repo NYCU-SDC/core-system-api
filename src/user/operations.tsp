@@ -1,5 +1,3 @@
-import "@typespec/http";
-
 using Http;
 
 @tag("User")

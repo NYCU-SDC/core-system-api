@@ -1,191 +1,180 @@
-import "@typespec/http";
-import "@typespec/openapi3";
-
 using Http;
-using OpenAPI;
 
 @tag("Unit")
 namespace CoreSystem.Unit {
-  // --- CRUD Operations for Orgs and Units ---
-  @get
-  @route("/orgs/{slug}/units")
-  @doc("List all units, optionally filtered by parent organization ID")
-  op listOrgSubUnits(
-    @path slug: string,
+	// --- CRUD Operations for Orgs and Units ---
+	@get
+	@route("/orgs/{slug}/units")
+	@doc("List all units, optionally filtered by parent organization ID")
+	op listOrgSubUnits(
+		@path slug: string,
 
-    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
-    @query
-    parentId?: uuid,
-  ): Unit[];
+		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
+		@query
+		parentId?: uuid,
+	): Unit[];
 
-  @get
-  @route("/orgs/{slug}/units/{id}/subunits")
-  @doc("List all units, optionally filtered by parent unit ID")
-  op listUnitSubUnits(
-    @path slug: string,
-    @path id: uuid,
+	@get
+	@route("/orgs/{slug}/units/{id}/subunits")
+	@doc("List all units, optionally filtered by parent unit ID")
+	op listUnitSubUnits(
+		@path slug: string,
+		@path id: uuid,
 
-    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
-    @query
-    parentId?: uuid,
-  ): Unit[];
+		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
+		@query
+		parentId?: uuid,
+	): Unit[];
 
-  @get
-  @route("/orgs/{slug}/unit-ids")
-  @doc("List all unit IDs, optionally filtered by parent organization ID")
-  op listOrgSubUnitIds(
-    @path slug: string,
+	@get
+	@route("/orgs/{slug}/unit-ids")
+	@doc("List all unit IDs, optionally filtered by parent organization ID")
+	op listOrgSubUnitIds(
+		@path slug: string,
 
-    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
-    @query
-    parentId?: uuid,
-  ): uuid[];
+		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
+		@query
+		parentId?: uuid,
+	): uuid[];
 
-  @get
-  @route("/orgs/{slug}/units/{id}/subunit-ids")
-  @doc("List all unit IDs, optionally filtered by parent unit ID")
-  op listUnitSubUnitIds(
-    @path slug: string,
-    @path id: uuid,
+	@get
+	@route("/orgs/{slug}/units/{id}/subunit-ids")
+	@doc("List all unit IDs, optionally filtered by parent unit ID")
+	op listUnitSubUnitIds(
+		@path slug: string,
+		@path id: uuid,
 
-    @doc("The parent unit ID used to filter subunits by their parent-child relationship")
-    @query
-    parentId?: uuid,
-  ): uuid[];
+		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
+		@query
+		parentId?: uuid,
+	): uuid[];
 
-  @get
-  @route("/orgs")
-  @doc("Get all organizations")
-  op getAllOrganizations(): Organization[];
+	@get
+	@route("/orgs")
+	@doc("Get all organizations")
+	op getAllOrganizations(): Organization[];
 
-  @get
-  @route("/orgs/me")
-  @doc("List all organizations of current user")
-  op listOrganizationsOfCurrentUser(): Organization[];
+	@get
+	@route("/orgs/me")
+	@doc("List all organizations of current user")
+	op listOrganizationsOfCurrentUser(): Organization[];
 
-  @get
-  @route("/orgs/{slug}")
-  @doc("Get a specific unit with the slug of its organization by its unique identifier")
-  op getOrgById(@path slug: string): Organization;
+	@get
+	@route("/orgs/{slug}")
+	@doc("Get a specific unit with the slug of its organization by its unique identifier")
+	op getOrgById(@path slug: string): Organization;
 
-  @get
-  @route("/orgs/{slug}/units/{id}")
-  @doc("Get a specific unit with the slug of its organization by its unique identifier")
-  op getUnitById(@path slug: string, @path id: uuid): Unit;
+	@get
+	@route("/orgs/{slug}/units/{id}")
+	@doc("Get a specific unit with the slug of its organization by its unique identifier")
+	op getUnitById(@path slug: string, @path id: uuid): Unit;
 
-  @post
-  @route("/orgs")
-  @doc("Create a new organization")
-  op createOrg(@body Request: CreateOrgRequest): {
-    @statusCode statusCode: 201;
-    @body organization: Organization;
-  };
+	@post
+	@route("/orgs")
+	@doc("Create a new organization")
+	op createOrg(@body Request: CreateOrgRequest): {
+		@statusCode statusCode: 201;
+		@body organization: Organization;
+	};
 
-  @post
-  @route("/orgs/{slug}/units")
-  @doc("Create a new unit")
-  op createUnit(@path slug: string, @body Request: CreateUnitRequest): {
-    @statusCode statusCode: 201;
-    @body unit: Unit;
-  };
+	@post
+	@route("/orgs/{slug}/units")
+	@doc("Create a new unit")
+	op createUnit(@path slug: string, @body Request: CreateUnitRequest): {
+		@statusCode statusCode: 201;
+		@body unit: Unit;
+	};
 
-  @put
-  @route("/orgs/{slug}")
-  @doc("Update an existing unit or organization by its unique identifier")
-  op updateOrg(
-    @path slug: string,
-    @body Request: UpdateOrgRequest,
-  ): Organization;
+	@put
+	@route("/orgs/{slug}")
+	@doc("Update an existing unit or organization by its unique identifier")
+	op updateOrg(@path slug: string, @body Request: UpdateOrgRequest): Organization;
 
-  @put
-  @route("/orgs/{slug}/units/{id}")
-  @doc("Update an existing unit or organization by its unique identifier")
-  op updateUnit(
-    @path slug: string,
-    @path id: uuid,
-    @body Request: UpdateUnitRequest,
-  ): Unit;
+	@put
+	@route("/orgs/{slug}/units/{id}")
+	@doc("Update an existing unit or organization by its unique identifier")
+	op updateUnit(@path slug: string, @path id: uuid, @body Request: UpdateUnitRequest): Unit;
 
-  @delete
-  @route("/orgs/{slug}")
-  @doc("Delete a specific organization by its unique identifier")
-  op deleteOrg(@path slug: string): {
-    @statusCode statusCode: 204;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: string;
-  };
+	@delete
+	@route("/orgs/{slug}")
+	@doc("Delete a specific organization by its unique identifier")
+	op deleteOrg(@path slug: string): {
+		@statusCode statusCode: 204;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: string;
+	};
 
-  @delete
-  @route("/orgs/{slug}/units/{id}")
-  @doc("Delete a specific unit of an organization by its unique identifier")
-  op deleteUnit(@path slug: string, @path id: uuid): {
-    @statusCode statusCode: 204;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: string;
-  };
+	@delete
+	@route("/orgs/{slug}/units/{id}")
+	@doc("Delete a specific unit of an organization by its unique identifier")
+	op deleteUnit(@path slug: string, @path id: uuid): {
+		@statusCode statusCode: 204;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: string;
+	};
 
-  // --- Parent-Child CRUD ---
-  @post
-  @route("/orgs/relations")
-  @doc("Create a new parent-child relationship between units by linking them")
-  op addParentChild(@body Request: ParentChildRequest): {
-    @statusCode statusCode: 201;
-    @body parentChild: ParentChild;
-  };
+	// --- Parent-Child CRUD ---
+	@post
+	@route("/orgs/relations")
+	@doc("Create a new parent-child relationship between units by linking them")
+	op addParentChild(@body Request: ParentChildRequest): {
+		@statusCode statusCode: 201;
+		@body parentChild: ParentChild;
+	};
 
-  @delete
-  @route("/orgs/relations/child-id/{child_id}")
-  @doc("Remove a parent-child relationship between units by unlinking them")
-  op removeParentChild(@path child_id: uuid): {
-    @statusCode statusCode: 204;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: string;
-  };
+	@delete
+	@route("/orgs/relations/child-id/{child_id}")
+	@doc("Remove a parent-child relationship between units by unlinking them")
+	op removeParentChild(@path child_id: uuid): {
+		@statusCode statusCode: 204;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: string;
+	};
 
-  // --- Member CRUD ---
-  @post
-  @route("/orgs/{slug}/members")
-  @doc("Add a member to an organization")
-  op addOrgMember(@path slug: string, @body Request: OrgMemberRequest): {
-    @statusCode statusCode: 201;
-    @body orgMember: OrgMemberResponse;
-  };
+	// --- Member CRUD ---
+	@post
+	@route("/orgs/{slug}/members")
+	@doc("Add a member to an organization")
+	op addOrgMember(@path slug: string, @body Request: OrgMemberRequest): {
+		@statusCode statusCode: 201;
+		@body orgMember: OrgMemberResponse;
+	};
 
-  @get
-  @route("/orgs/{slug}/members")
-  @doc("List all members of an organization")
-  op listOrgMembers(@path slug: string): CoreSystem.User.User[];
+	@get
+	@route("/orgs/{slug}/members")
+	@doc("List all members of an organization")
+	op listOrgMembers(@path slug: string): CoreSystem.User.User[];
 
-  @delete
-  @route("/orgs/{slug}/members/{member_id}")
-  @doc("Remove an organization-member relationship")
-  op removeOrgMember(@path slug: string, @path member_id: uuid): {
-    @statusCode statusCode: 204;
-  } | {
-    @statusCode statusCode: 404;
-    @body error: string;
-  };
+	@delete
+	@route("/orgs/{slug}/members/{member_id}")
+	@doc("Remove an organization-member relationship")
+	op removeOrgMember(@path slug: string, @path member_id: uuid): {
+		@statusCode statusCode: 204;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: string;
+	};
 
-  // --- Creation and List forms under Organization ---
-  @doc("Create a new form under an organization.")
-  @route("/orgs/{slug}/forms")
-  @post
-  op createOrgForm(@path slug: string, @body createFormRequest: CoreSystem.Forms.FormRequest): {
-    @statusCode statusCode: 201;
-    @body form: CoreSystem.Forms.Form;
-  };
+	// --- Creation and List forms under Organization ---
+	@doc("Create a new form under an organization.")
+	@route("/orgs/{slug}/forms")
+	@post
+	op createOrgForm(@path slug: string, @body createFormRequest: CoreSystem.Forms.FormRequest): {
+		@statusCode statusCode: 201;
+		@body form: CoreSystem.Forms.Form;
+	};
 
-  @doc("List forms under a specific organization.")
-  @route("/orgs/{slug}/forms")
-  @get
-  op listFormsByOrg(@path slug: string): CoreSystem.Forms.Form[];
+	@doc("List forms under a specific organization.")
+	@route("/orgs/{slug}/forms")
+	@get
+	op listFormsByOrg(@path slug: string): CoreSystem.Forms.Form[];
 
-  // --- Current User Forms ---
-  @doc("List all forms of current user")
-  @route("/forms/me")
-  @get
-  op listFormsOfCurrentUser(): UserForm[];
+	// --- Current User Forms ---
+	@doc("List all forms of current user")
+	@route("/forms/me")
+	@get
+	op listFormsOfCurrentUser(): UserForm[];
 }
