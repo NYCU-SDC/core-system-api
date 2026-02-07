@@ -1,14 +1,65 @@
 import "@typespec/http";
 import "@typespec/versioning";
-import "./service/healthz.tsp";
-import "./service/auth.tsp";
-import "./service/user.tsp";
-import "./service/unit.tsp";
-import "./service/forms.tsp";
-import "./service/responses.tsp";
-import "./service/inbox.tsp";
-import "./service/slug.tsp";
-import "./service/form_workflow.tsp";
+
+// ═════════════════════════════════════════════════
+// === Basic Models ===
+// ═════════════════════════════════════════════════
+import "./src/models.tsp";
+import "./src/errors/models.tsp";
+
+// ═════════════════════════════════════════════════
+// === Auth ===
+// ═════════════════════════════════════════════════
+import "./src/auth/models.tsp";
+import "./src/auth/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === User ===
+// ═════════════════════════════════════════════════
+import "./src/user/models.tsp";
+import "./src/user/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Forms ===
+// ═════════════════════════════════════════════════
+import "./src/forms/models.tsp";
+import "./src/forms/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Unit ===
+// ═════════════════════════════════════════════════
+import "./src/unit/models.tsp";
+import "./src/unit/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Responses ===
+// ═════════════════════════════════════════════════
+import "./src/responses/models.tsp";
+import "./src/responses/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Inbox ===
+// ═════════════════════════════════════════════════
+import "./src/inbox/models.tsp";
+import "./src/inbox/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Slug ===
+// ═════════════════════════════════════════════════
+import "./src/slug/models.tsp";
+import "./src/slug/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Form Workflow ===
+// ═════════════════════════════════════════════════
+import "./src/form_workflow/models.tsp";
+import "./src/form_workflow/operations.tsp";
+
+// ═════════════════════════════════════════════════
+// === Healthz ===
+// ═════════════════════════════════════════════════
+import "./src/healthz/models.tsp";
+import "./src/healthz/operations.tsp";
 
 using Http;
 using Versioning;
@@ -25,47 +76,4 @@ namespace CoreSystem;
 
 enum Versions {
   v1: "1.0.0",
-}
-
-@format("uuid")
-scalar uuid extends string;
-
-@error
-@doc("Problem represents a problem detail as defined in RFC 7807")
-model ProblemDetail {
-  @doc("The problem's title.")
-  title: string;
-
-  @doc("The problem's status code.")
-  status: integer;
-
-  @doc("Type indicates the URI that identifies the problem type, we use an MDN URI here.")
-  type: string;
-
-  @doc("The problem's detail.")
-  detail: string;
-}
-
-@error
-model Unauthorized {
-  title: "Unauthorized";
-  status: 401;
-  type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401";
-  detail: string;
-}
-
-@error
-model NotFound {
-  title: "Not Found";
-  status: 404;
-  type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404";
-  detail: string;
-}
-
-@error
-model BadRequest {
-    title: "Bad Request";
-    status: 400;
-    type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400";
-    detail: string;
 }
