@@ -2,6 +2,7 @@ using Http;
 
 @tag("Form Workflow")
 namespace CoreSystem.FormWorkflow {
+	@summary("Get Workflow")
 	@doc("Get workflow for a form")
 	@route("/forms/{id}/workflow")
 	@get
@@ -13,6 +14,7 @@ namespace CoreSystem.FormWorkflow {
 		@body error: NotFound;
 	};
 
+	@summary("Update Workflow")
 	@doc("Update workflow for a form")
 	@route("/forms/{id}/workflow")
 	@put
@@ -27,6 +29,7 @@ namespace CoreSystem.FormWorkflow {
 		@body error: ProblemDetail;
 	};
 
+	@summary("Activate Workflow")
 	@doc("Activate workflow for a form")
 	@route("/forms/{id}/workflow/activate")
 	@post
@@ -40,6 +43,7 @@ namespace CoreSystem.FormWorkflow {
 		@body error: ProblemDetail;
 	};
 
+	@summary("Create Workflow Node")
 	@doc("Create a new node for a workflow")
 	@route("/forms/{formId}/workflow/nodes")
 	@post
@@ -54,6 +58,7 @@ namespace CoreSystem.FormWorkflow {
 		@body error: ProblemDetail;
 	};
 
+	@summary("Delete Workflow Node")
 	@doc("Delete a node for a workflow")
 	@route("/forms/{formId}/workflow/nodes/{nodeId}")
 	@delete

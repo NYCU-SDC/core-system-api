@@ -2,6 +2,7 @@ using Http;
 
 @tag("Inbox")
 namespace CoreSystem.Inbox {
+	@summary("List Inbox Messages")
 	@doc("Get all the preview of the inbox messages with pagination.")
 	@route("/inbox")
 	@get
@@ -26,6 +27,7 @@ namespace CoreSystem.Inbox {
 		};
 	} | errorResponse;
 
+	@summary("Get Inbox Message")
 	@doc("Get the user inbox message by its unique identifier.")
 	@route("/inbox/{id}")
 	@get
@@ -34,6 +36,7 @@ namespace CoreSystem.Inbox {
 		@body body: UserInboxMessageDetail;
 	} | errorResponse;
 
+	@summary("Update Inbox Message Flags")
 	@doc("Update flags for the user inbox message.")
 	@route("/inbox/{id}")
 	@put

@@ -2,6 +2,7 @@ using Http;
 
 @tag("Responses")
 namespace CoreSystem.Responses {
+	@summary("Create Form Response")
 	@doc("Create a new response of a form.")
 	@route("/forms/{formId}/responses")
 	@post
@@ -13,6 +14,7 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Submit Form Response")
 	@doc("Submit all the answer in the form response.")
 	@route("/responses/{id}/submit")
 	@post
@@ -23,6 +25,7 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Update Form Response")
 	@doc("Update answers for the response.")
 	@route("/responses/{id}/answers")
 	@patch(#{ implicitOptionality: true })
@@ -30,6 +33,7 @@ namespace CoreSystem.Responses {
 		@statusCode statusCode: 200;
 	};
 
+	@summary("Upload Question Files")
 	@doc("Upload files as answers for a specific question in the response.")
 	@route("/responses/{responseId}/questions/{questionId}/files")
 	@post
@@ -40,6 +44,7 @@ namespace CoreSystem.Responses {
 		@multipartBody body: QuestionFilesUploadRequest,
 	): QuestionFilesUploadResponse;
 
+	@summary("List Form Responses")
 	@doc("List all responses for a specific form.")
 	@route("/forms/{formId}/responses")
 	@get
@@ -51,6 +56,7 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Get Form Response")
 	@doc("Get the preview answer by response ID.")
 	@route("/forms/{formId}/responses/{responseId}")
 	@get
@@ -62,6 +68,7 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Get Question Response")
 	@doc("Get a specific answer by question ID in the response.")
 	@route("/responses/{responseId}/questions/{questionId}")
 	@get
@@ -73,6 +80,7 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("List Response Sections")
 	@doc("List the form structure of the response.")
 	@route("/responses/{id}/sections")
 	@get
@@ -84,6 +92,7 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Delete Form Response")
 	@doc("Delete a response and all its associated data.")
 	@route("/forms/{formId}/responses/{responseId}")
 	@delete

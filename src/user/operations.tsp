@@ -2,6 +2,7 @@ using Http;
 
 @tag("User")
 namespace CoreSystem.User {
+  @summary("Get Current User")
   @get
   @route("/users/me")
   @doc("Get the current user's information.")
@@ -15,9 +16,10 @@ namespace CoreSystem.User {
     @body error: Unauthorized;
   };
 
+  @summary("Onboard User")
   @put
   @route("/users/onboarding")
-  @doc("Update the current user's name.")
+  @doc("Onboard the current user by updating their username and other details.")
   op updateUsername(...OnboardingRequest): {
     @statusCode statusCode: 200;
     @body user: User;

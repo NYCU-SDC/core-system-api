@@ -2,6 +2,7 @@ using Http;
 
 @tag("Healthz")
 namespace CoreSystem.Healthz {
+	@summary("Check Health Status")
 	@route("/healthz")
 	@get
 	op checkHealthz(): {
