@@ -15,19 +15,20 @@ info:
   license:
     name: Apache-2.0
 tags:
-  - name: Healthz
   - name: Auth
   - name: User
-  - name: Unit
   - name: Forms
+  - name: Unit
   - name: Responses
   - name: Inbox
   - name: Slug
   - name: Form Workflow
+  - name: Healthz
 paths:
   /api/auth/login/oauth/{provider}:
     get:
       operationId: Auth_loginGoogle
+      summary: Login with OAuth Provider
       parameters:
         - name: provider
           in: path
@@ -59,6 +60,7 @@ paths:
   /api/auth/logout:
     post:
       operationId: Auth_logout
+      summary: Logout User
       parameters: []
       responses:
         '200':
@@ -70,6 +72,7 @@ paths:
   /api/auth/refresh/{refreshToken}:
     post:
       operationId: Auth_refreshToken
+      summary: Refresh Access Token
       parameters:
         - name: refreshToken
           in: path
@@ -91,6 +94,7 @@ paths:
   /api/forms:
     get:
       operationId: Forms_listForms
+      summary: List Forms
       description: List all existing forms.
       parameters: []
       responses:
@@ -107,6 +111,7 @@ paths:
   /api/forms/fonts:
     get:
       operationId: Forms_getFormFonts
+      summary: Get Form Fonts
       description: Get available fonts list for forms dressing.
       parameters: []
       responses:
@@ -120,9 +125,10 @@ paths:
                   $ref: '#/components/schemas/Forms.Font'
       tags:
         - Forms
-  /api/forms/google-sheet/email:
+  /api/forms/google-sheet-email:
     get:
       operationId: Forms_getGoogleSheetEmail
+      summary: Get Google Sheet Email
       description: Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.
       parameters: []
       responses:
@@ -137,6 +143,7 @@ paths:
   /api/forms/google-sheet/verify:
     post:
       operationId: Forms_verifyGoogleSheet
+      summary: Verify Google Sheet
       description: Verify the Google Sheet URL and whether the system can access it.
       parameters: []
       responses:
@@ -157,6 +164,7 @@ paths:
   /api/forms/me:
     get:
       operationId: Unit_listFormsOfCurrentUser
+      summary: List Forms of Current User
       description: List all forms of current user
       parameters: []
       responses:
@@ -173,6 +181,7 @@ paths:
   /api/forms/recipients/preview:
     post:
       operationId: Forms_previewRecipients
+      summary: Preview Recipients
       description: Preview recipients by orgIds/unitIds (no duplicated).
       parameters: []
       responses:
@@ -193,6 +202,7 @@ paths:
   /api/forms/{formId}/responses:
     post:
       operationId: Responses_createFormResponse
+      summary: Create Form Response
       description: Create a new response of a form.
       parameters:
         - name: formId
@@ -217,6 +227,7 @@ paths:
         - Responses
     get:
       operationId: Responses_listFormResponses
+      summary: List Form Responses
       description: List all responses for a specific form.
       parameters:
         - name: formId
@@ -242,6 +253,7 @@ paths:
   /api/forms/{formId}/responses/{responseId}:
     get:
       operationId: Responses_getFormResponse
+      summary: Get Form Response
       description: Get the preview answer by response ID.
       parameters:
         - name: formId
@@ -271,6 +283,7 @@ paths:
         - Responses
     delete:
       operationId: Responses_deleteFormResponse
+      summary: Delete Form Response
       description: Delete a response and all its associated data.
       parameters:
         - name: formId
@@ -297,6 +310,7 @@ paths:
   /api/forms/{formId}/workflow/nodes:
     post:
       operationId: FormWorkflow_createNode
+      summary: Create Workflow Node
       description: Create a new node for a workflow
       parameters:
         - name: formId
@@ -334,6 +348,7 @@ paths:
   /api/forms/{formId}/workflow/nodes/{nodeId}:
     delete:
       operationId: FormWorkflow_deleteNode
+      summary: Delete Workflow Node
       description: Delete a node for a workflow
       parameters:
         - name: formId
@@ -366,6 +381,7 @@ paths:
   /api/forms/{id}:
     put:
       operationId: Forms_updateForm
+      summary: Update Form
       description: Update an existing form by its unique identifier.
       parameters:
         - name: id
@@ -390,6 +406,7 @@ paths:
               $ref: '#/components/schemas/Forms.FormRequest'
     delete:
       operationId: Forms_deleteForm
+      summary: Delete Form
       description: Delete an existing form by its unique identifier.
       parameters:
         - name: id
@@ -404,6 +421,7 @@ paths:
         - Forms
     get:
       operationId: Forms_getFormById
+      summary: Get Form
       description: Get a specific form by its unique identifier.
       parameters:
         - name: id
@@ -423,6 +441,7 @@ paths:
   /api/forms/{id}/cover:
     post:
       operationId: Forms_uploadFormCoverImage
+      summary: Upload Form Cover Image
       description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
       parameters:
         - name: id
@@ -447,6 +466,7 @@ paths:
               $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
     get:
       operationId: Forms_getFormCoverImage
+      summary: Get Form Cover Image
       description: Get the cover image binary data. Returns the image in WebP format.
       parameters:
         - name: id
@@ -466,6 +486,7 @@ paths:
   /api/forms/{id}/publish:
     post:
       operationId: Forms_publishForm
+      summary: Publish Form
       description: Publish a form. Set status to 'published'.
       parameters:
         - name: id
@@ -485,6 +506,7 @@ paths:
   /api/forms/{id}/sections:
     get:
       operationId: Forms_listSections
+      summary: List Sections
       description: List all the questions of the sections in the form.
       parameters:
         - name: id
@@ -506,6 +528,7 @@ paths:
   /api/forms/{id}/workflow:
     get:
       operationId: FormWorkflow_getWorkflow
+      summary: Get Workflow
       description: Get workflow for a form
       parameters:
         - name: id
@@ -530,6 +553,7 @@ paths:
         - Form Workflow
     put:
       operationId: FormWorkflow_updateWorkflow
+      summary: Update Workflow
       description: Update workflow for a form
       parameters:
         - name: id
@@ -571,6 +595,7 @@ paths:
   /api/forms/{id}/workflow/activate:
     post:
       operationId: FormWorkflow_activateWorkflow
+      summary: Activate Workflow
       description: Activate workflow for a form
       parameters:
         - name: id
@@ -606,6 +631,7 @@ paths:
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
+      summary: Check Health Status
       parameters: []
       responses:
         '200':
@@ -617,6 +643,7 @@ paths:
   /api/inbox:
     get:
       operationId: Inbox_getInboxMessages
+      summary: List Inbox Messages
       description: Get all the preview of the inbox messages with pagination.
       parameters:
         - name: isRead
@@ -720,6 +747,7 @@ paths:
   /api/inbox/{id}:
     get:
       operationId: Inbox_getInboxMessage
+      summary: Get Inbox Message
       description: Get the user inbox message by its unique identifier.
       parameters:
         - name: id
@@ -750,6 +778,7 @@ paths:
         - Inbox
     put:
       operationId: Inbox_updateInboxMessageFlag
+      summary: Update Inbox Message Flags
       description: Update flags for the user inbox message.
       parameters:
         - name: id
@@ -797,6 +826,7 @@ paths:
   /api/orgs:
     get:
       operationId: Unit_getAllOrganizations
+      summary: Get All Organizations
       description: Get all organizations
       parameters: []
       responses:
@@ -812,6 +842,7 @@ paths:
         - Unit
     post:
       operationId: Unit_createOrg
+      summary: Create Organization
       description: Create a new organization
       parameters: []
       responses:
@@ -832,6 +863,7 @@ paths:
   /api/orgs/me:
     get:
       operationId: Unit_listOrganizationsOfCurrentUser
+      summary: List Organizations of Current User
       description: List all organizations of current user
       parameters: []
       responses:
@@ -848,6 +880,7 @@ paths:
   /api/orgs/relations:
     post:
       operationId: Unit_addParentChild
+      summary: Add Parent-Child Relationship
       description: Create a new parent-child relationship between units by linking them
       parameters: []
       responses:
@@ -868,6 +901,7 @@ paths:
   /api/orgs/relations/child-id/{child_id}:
     delete:
       operationId: Unit_removeParentChild
+      summary: Remove Parent-Child Relationship
       description: Remove a parent-child relationship between units by unlinking them
       parameters:
         - name: child_id
@@ -889,6 +923,7 @@ paths:
   /api/orgs/{slug}:
     get:
       operationId: Unit_getOrgById
+      summary: Get Organization
       description: Get a specific unit with the slug of its organization by its unique identifier
       parameters:
         - name: slug
@@ -907,6 +942,7 @@ paths:
         - Unit
     put:
       operationId: Unit_updateOrg
+      summary: Update Organization
       description: Update an existing unit or organization by its unique identifier
       parameters:
         - name: slug
@@ -931,6 +967,7 @@ paths:
               $ref: '#/components/schemas/Unit.UpdateOrgRequest'
     delete:
       operationId: Unit_deleteOrg
+      summary: Delete Organization
       description: Delete a specific organization by its unique identifier
       parameters:
         - name: slug
@@ -952,6 +989,7 @@ paths:
   /api/orgs/{slug}/forms:
     post:
       operationId: Unit_createOrgForm
+      summary: Create Organization Form
       description: Create a new form under an organization.
       parameters:
         - name: slug
@@ -976,6 +1014,7 @@ paths:
               $ref: '#/components/schemas/Forms.FormRequest'
     get:
       operationId: Unit_listFormsByOrg
+      summary: List Forms by Organization
       description: List forms under a specific organization.
       parameters:
         - name: slug
@@ -997,6 +1036,7 @@ paths:
   /api/orgs/{slug}/history:
     get:
       operationId: Slug_getSlugHistory
+      summary: Get Slug History
       description: List the complete usage history of a given slug
       parameters:
         - name: slug
@@ -1032,6 +1072,7 @@ paths:
   /api/orgs/{slug}/members:
     post:
       operationId: Unit_addOrgMember
+      summary: Add Organization Member
       description: Add a member to an organization
       parameters:
         - name: slug
@@ -1056,6 +1097,7 @@ paths:
               $ref: '#/components/schemas/Unit.OrgMemberRequest'
     get:
       operationId: Unit_listOrgMembers
+      summary: List Organization Members
       description: List all members of an organization
       parameters:
         - name: slug
@@ -1070,11 +1112,14 @@ paths:
             application/json:
               schema:
                 type: array
+                items:
+                  $ref: '#/components/schemas/User.User'
       tags:
         - Unit
   /api/orgs/{slug}/members/{member_id}:
     delete:
       operationId: Unit_removeOrgMember
+      summary: Remove Organization Member
       description: Remove an organization-member relationship
       parameters:
         - name: slug
@@ -1101,6 +1146,7 @@ paths:
   /api/orgs/{slug}/status:
     get:
       operationId: Slug_getSlugStatus
+      summary: Get Slug Status
       description: Get the availability of the slug.
       parameters:
         - name: slug
@@ -1126,6 +1172,7 @@ paths:
   /api/orgs/{slug}/unit-ids:
     get:
       operationId: Unit_listOrgSubUnitIds
+      summary: List Organization Sub-unit IDs
       description: List all unit IDs, optionally filtered by parent organization ID
       parameters:
         - name: slug
@@ -1154,6 +1201,7 @@ paths:
   /api/orgs/{slug}/units:
     get:
       operationId: Unit_listOrgSubUnits
+      summary: List Organization Sub-units
       description: List all units, optionally filtered by parent organization ID
       parameters:
         - name: slug
@@ -1181,6 +1229,7 @@ paths:
         - Unit
     post:
       operationId: Unit_createUnit
+      summary: Create Unit
       description: Create a new unit
       parameters:
         - name: slug
@@ -1206,6 +1255,7 @@ paths:
   /api/orgs/{slug}/units/{id}:
     get:
       operationId: Unit_getUnitById
+      summary: Get Unit
       description: Get a specific unit with the slug of its organization by its unique identifier
       parameters:
         - name: slug
@@ -1229,6 +1279,7 @@ paths:
         - Unit
     put:
       operationId: Unit_updateUnit
+      summary: Update Unit
       description: Update an existing unit or organization by its unique identifier
       parameters:
         - name: slug
@@ -1258,6 +1309,7 @@ paths:
               $ref: '#/components/schemas/Unit.UpdateUnitRequest'
     delete:
       operationId: Unit_deleteUnit
+      summary: Delete Unit
       description: Delete a specific unit of an organization by its unique identifier
       parameters:
         - name: slug
@@ -1284,6 +1336,7 @@ paths:
   /api/orgs/{slug}/units/{id}/subunit-ids:
     get:
       operationId: Unit_listUnitSubUnitIds
+      summary: List Unit Sub-unit IDs
       description: List all unit IDs, optionally filtered by parent unit ID
       parameters:
         - name: slug
@@ -1317,6 +1370,7 @@ paths:
   /api/orgs/{slug}/units/{id}/subunits:
     get:
       operationId: Unit_listUnitSubUnits
+      summary: List Unit Sub-units
       description: List all units, optionally filtered by parent unit ID
       parameters:
         - name: slug
@@ -1350,6 +1404,7 @@ paths:
   /api/responses/{id}/answers:
     patch:
       operationId: Responses_updateFormResponse
+      summary: Update Form Response
       description: Update answers for the response.
       parameters:
         - name: id
@@ -1371,6 +1426,7 @@ paths:
   /api/responses/{id}/sections:
     get:
       operationId: Responses_listResponseSections
+      summary: List Response Sections
       description: List the form structure of the response.
       parameters:
         - name: id
@@ -1396,6 +1452,7 @@ paths:
   /api/responses/{id}/submit:
     post:
       operationId: Responses_submitFormResponse
+      summary: Submit Form Response
       description: Submit all the answer in the form response.
       parameters:
         - name: id
@@ -1423,6 +1480,7 @@ paths:
   /api/responses/{responseId}/questions/{questionId}:
     get:
       operationId: Responses_getQuestionResponse
+      summary: Get Question Response
       description: Get a specific answer by question ID in the response.
       parameters:
         - name: responseId
@@ -1453,6 +1511,7 @@ paths:
   /api/responses/{responseId}/questions/{questionId}/files:
     post:
       operationId: Responses_uploadQuestionFiles
+      summary: Upload Question Files
       description: Upload files as answers for a specific question in the response.
       parameters:
         - name: responseId
@@ -1486,6 +1545,7 @@ paths:
   /api/sections/{id}/questions:
     post:
       operationId: Forms_createQuestion
+      summary: Create Question
       description: Create a new question for a specific section.
       parameters:
         - name: id
@@ -1511,6 +1571,7 @@ paths:
   /api/sections/{sectionId}/questions/{questionId}:
     put:
       operationId: Forms_updateQuestion
+      summary: Update Question
       description: Update an existing question by its unique identifier.
       parameters:
         - name: sectionId
@@ -1540,6 +1601,7 @@ paths:
               $ref: '#/components/schemas/Forms.QuestionRequest'
     delete:
       operationId: Forms_deleteQuestion
+      summary: Delete Question
       description: Delete an existing question by its unique identifier.
       parameters:
         - name: sectionId
@@ -1560,6 +1622,7 @@ paths:
   /api/users/me:
     get:
       operationId: User_getMe
+      summary: Get Current User
       description: Get the current user's information.
       parameters: []
       responses:
@@ -1580,7 +1643,8 @@ paths:
   /api/users/onboarding:
     put:
       operationId: User_updateUsername
-      description: Update the current user's name.
+      summary: Onboard User
+      description: Onboard the current user by updating their username and other details.
       parameters: []
       responses:
         '200':
@@ -1621,7 +1685,6 @@ components:
       enum:
         - GOOGLE
         - GITHUB
-        - NYCU
     Auth.RefreshToken:
       type: object
       required:
