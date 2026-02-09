@@ -319,6 +319,18 @@ namespace CoreSystem.Forms {
 		description?: string;
 	}
 
+	@doc("Options for date questions.")
+	model DateOption {
+		@doc("Whether the year component is required for the date.")
+		hasYear: boolean;
+
+		@doc("Whether the month component is required for the date.")
+		hasMonth: boolean;
+
+		@doc("Whether the day component is required for the date.")
+		hasDay: boolean;
+	}
+
 	@doc("A choice with ID and name for choice-based questions.")
 	model Choice {
 		@doc("The unique identifier of the choice.")
@@ -359,6 +371,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Available options for file upload questions.")
 		uploadFile?: UploadFileOption;
+
+		@doc("Available options for date questions.")
+		date?: DateOption;
 
 		@doc("Available options for OAuth connect questions.")
 		oauthConnect?: CoreSystem.Auth.OAuthProviders;
@@ -408,13 +423,14 @@ namespace CoreSystem.Forms {
 		order: 6,
 		choices: #[#{ name: "TypeScript", description: "Modern programming language" }, #{ name: "React", description: "Frontend library" }, #{ name: "Node.js", description: "Backend runtime" }],
 	})
-	@example(#{ required: true, type: QuestionTypes.date, title: "When will you graduate?", description: "Please select your graduation date", order: 7 })
+	@example(#{ required: true, type: QuestionTypes.date, title: "When will you graduate?", description: "Please select your graduation date", order: 7, date: #{ hasYear: true, hasMonth: true, hasDay: true } })
+	@example(#{ required: true, type: QuestionTypes.date, title: "Which year did you join?", description: "Select year and month only", order: 8, date: #{ hasYear: true, hasMonth: true, hasDay: false } })
 	@example(#{
 		required: false,
 		type: QuestionTypes.uploadFile,
 		title: "Upload your resume",
 		description: "Please upload your resume in PDF format",
-		order: 8,
+		order: 9,
 		uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 1, maxFileSizeLimit: FileSizeLimit.tenMB },
 	})
 	@example(#{
@@ -422,16 +438,16 @@ namespace CoreSystem.Forms {
 		type: QuestionTypes.linearScale,
 		title: "Rate your experience level (1-5)",
 		description: "How experienced are you?",
-		order: 9,
+		order: 10,
 		scale: #{ minVal: 1, maxVal: 5, minValueLabel: "No experience", maxValueLabel: "Very experienced" },
 	})
-	@example(#{ required: true, type: QuestionTypes.rating, title: "How satisfied are you?", description: "Rate your satisfaction level", order: 10, scale: #{ icon: "star", minVal: 1, maxVal: 5 } })
+	@example(#{ required: true, type: QuestionTypes.rating, title: "How satisfied are you?", description: "Rate your satisfaction level", order: 11, scale: #{ icon: "star", minVal: 1, maxVal: 5 } })
 	@example(#{
 		required: true,
 		type: QuestionTypes.ranking,
 		title: "Program Match",
 		description: "Sort the following programs based on your preference.",
-		order: 11,
+		order: 12,
 		sourceId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
 	})
 	@example(#{
@@ -439,7 +455,7 @@ namespace CoreSystem.Forms {
 		type: QuestionTypes.oauthConnect,
 		title: "Connect your GitHub account",
 		description: "Link your GitHub account to verify your identity",
-		order: 12,
+		order: 13,
 		oauthConnect: CoreSystem.Auth.OAuthProviders.github,
 	})
 	model QuestionRequest {
@@ -466,6 +482,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Available options for file upload questions.")
 		uploadFile?: UploadFileOption;
+
+		@doc("Available options for date questions.")
+		date?: DateOption;
 
 		@doc("Available options for OAuth connect questions.")
 		oauthConnect?: CoreSystem.Auth.OAuthProviders;

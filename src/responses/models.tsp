@@ -20,7 +20,6 @@ namespace CoreSystem.Responses {
 			| CoreSystem.Forms.QuestionTypes.multipleChoice
 			| CoreSystem.Forms.QuestionTypes.dropdown
 			| CoreSystem.Forms.QuestionTypes.detailedMultipleChoice
-			| CoreSystem.Forms.QuestionTypes.date
 			| CoreSystem.Forms.QuestionTypes.ranking
 			| CoreSystem.Forms.QuestionTypes.hyperlink;
 
@@ -39,6 +38,29 @@ namespace CoreSystem.Responses {
 
 		@doc("The answer value for scale question.")
 		value: int32;
+	}
+
+	@example(#{ questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3", questionType: CoreSystem.Forms.QuestionTypes.date, date: 1735689600, hasYear: true, hasMonth: true, hasDay: true })
+	@example(#{ questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3", questionType: CoreSystem.Forms.QuestionTypes.date, date: 1719792000, hasYear: true, hasMonth: true, hasDay: false })
+	@doc("Request model for submitting a date answer. Date is stored as Unix timestamp (seconds since epoch). For partial dates (e.g., year-month only), the day defaults to 01.")
+	model DateAnswerJSON {
+		@doc("The question being answered.")
+		questionId: uuid;
+
+		@doc("The type of the question being answered.")
+		questionType: CoreSystem.Forms.QuestionTypes.date;
+
+		@doc("The date value as Unix timestamp (seconds since epoch).")
+		date: int32;
+
+		@doc("Whether the year component is included in this date answer.")
+		hasYear: boolean;
+
+		@doc("Whether the month component is included in this date answer.")
+		hasMonth: boolean;
+
+		@doc("Whether the day component is included in this date answer.")
+		hasDay: boolean;
 	}
 
 	@example(#{
@@ -83,6 +105,7 @@ namespace CoreSystem.Responses {
 		answers: #[
 			#{ questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd", questionType: CoreSystem.Forms.QuestionTypes.shortText, value: #["John Doe"] },
 			#{ questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3", questionType: CoreSystem.Forms.QuestionTypes.linearScale, value: 4 },
+			#{ questionId: "3c3cd5f5-82d2-589c-af47-627fbd7c47d4", questionType: CoreSystem.Forms.QuestionTypes.date, date: 1735689600, hasYear: true, hasMonth: true, hasDay: true },
 			#{
 				questionId: "3c3cd5f5-82d2-589c-af47-627fbd7c47d4",
 				questionType: CoreSystem.Forms.QuestionTypes.oauthConnect,
@@ -93,7 +116,7 @@ namespace CoreSystem.Responses {
 	})
 	model AnswersRequest {
 		@doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
-		answers: (AnswerJSON | ScaleAnswerJSON | OauthAnswerRequest)[];
+		answers: (AnswerJSON | ScaleAnswerJSON | DateAnswerJSON | OauthAnswerRequest)[];
 	}
 
 	@doc("Request model for uploading files as answers to a specific question in a response.")
@@ -147,7 +170,7 @@ namespace CoreSystem.Responses {
 		displayValue: string;
 
 		@doc("The structured answer data for submission. Null if not answered yet.")
-		answerData?: AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON;
+		answerData?: AnswerJSON | ScaleAnswerJSON | DateAnswerJSON | OauthAnswerJSON;
 	}
 
 	@doc("Model for a single section in preview view")
@@ -191,7 +214,7 @@ namespace CoreSystem.Responses {
 		id: uuid;
 
 		@doc("A question with its answer for this response..")
-		questionAnswerPair: AnswerJSON;
+		questionAnswerPair: AnswerJSON | ScaleAnswerJSON | DateAnswerJSON;
 	}
 
 	@doc("The current progress of the response.")
@@ -215,7 +238,7 @@ namespace CoreSystem.Responses {
 		submittedBy: uuid;
 
 		@doc("The answer data. Type depends on the question type.")
-		answer: AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON;
+		answer: AnswerJSON | ScaleAnswerJSON | DateAnswerJSON | OauthAnswerJSON;
 
 		@doc("The creation timestamp of the answer.")
 		createdAt: utcDateTime;
