@@ -329,6 +329,12 @@ namespace CoreSystem.Forms {
 
 		@doc("Whether the day component is required for the date.")
 		hasDay: boolean;
+
+		@doc("Minimum date range in milliseconds timestamp (e.g., 1735660800000 for 2025/1/1 00:00:00 UTC). If specified, use the first day of the month/year for the minimum value.")
+		minDate?: int64;
+
+		@doc("Maximum date range in milliseconds timestamp (e.g., 1748649599999 for 2025/5/31 23:59:59.999 UTC). If specified, use the last day of the month/year for the maximum value.")
+		maxDate?: int64;
 	}
 
 	@doc("A choice with ID and name for choice-based questions.")
