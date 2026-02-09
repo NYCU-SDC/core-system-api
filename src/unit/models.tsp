@@ -82,6 +82,9 @@ namespace CoreSystem.Unit {
 
 		@doc("The completion status of the form for the current user")
 		status: UserFormStatus;
+
+		@doc("The unique identifiers of the user's responses to the form, if they exist")
+		responseIds?: uuid[];
 	}
 
 	@doc("Model representing a parent-child relationship between units, allowing for hierarchical structures")
