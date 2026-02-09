@@ -214,7 +214,7 @@ namespace CoreSystem.Responses {
 		id: uuid;
 
 		@doc("A question with its answer for this response..")
-		questionAnswerPair: AnswerJSON | ScaleAnswerJSON | DateAnswerJSON;
+		questionAnswerPair: AnswerJSON;
 	}
 
 	@doc("The current progress of the response.")
