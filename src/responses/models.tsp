@@ -50,8 +50,8 @@ namespace CoreSystem.Responses {
 		@doc("The type of the question being answered.")
 		questionType: CoreSystem.Forms.QuestionTypes.date;
 
-		@doc("The date value as Unix timestamp (seconds since epoch).")
-		date: int32;
+		@doc("The date value as utcDateTime (e.g., 2025-01-01T00:00:00Z for 2025/1/1 00:00:00 UTC). For partial dates, use the first day of the month/year.")
+		date: utcDateTime;
 
 		@doc("Whether the year component is included in this date answer.")
 		hasYear: boolean;
