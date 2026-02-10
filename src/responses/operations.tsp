@@ -33,6 +33,29 @@ namespace CoreSystem.Responses {
 		@statusCode statusCode: 200;
 	};
 
+	@summary("Connect OAuth Account")
+	@doc("Initiate OAuth flow for connecting an account to answer the question. Similar to the auth login flow, this endpoint will redirect (302) to the OAuth provider's authorization page. [See Auth Flow Reference](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)")
+	@route("/responses/{responseId}/questions/{questionId}/oauth/{provider}")
+	@get
+	op connectOauthAccount(
+		@path responseId: uuid,
+		@path questionId: uuid,
+		@path provider: Auth.OAuthLoginProviders,
+		
+		@doc("The callback URL of the OAuth2 login. [See details](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)")
+		@query
+		c: string,
+
+		@doc("The redirect URL for login callback.")
+		@query
+		r?: string,
+	): {
+		@statusCode statusCode: 302;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
 	@summary("Upload Question Files")
 	@doc("Upload files as answers for a specific question in the response.")
 	@route("/responses/{responseId}/questions/{questionId}/files")
