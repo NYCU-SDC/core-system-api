@@ -40,8 +40,8 @@ namespace CoreSystem.Responses {
 	op connectOauthAccount(
 		@path responseId: uuid,
 		@path questionId: uuid,
-		@path provider: Auth.OAuthLoginProviders,
-		
+		@path provider: Auth.OAuthProviders,
+
 		@doc("The callback URL of the OAuth2 login. [See details](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)")
 		@query
 		c: string,
