@@ -178,7 +178,7 @@ namespace CoreSystem.Forms {
 		@doc("File upload")
 		uploadFile: "UPLOAD_FILE",
 
-		@doc("Linear scale/rating (1-5, 1-10, etc.)")
+		@doc("Linear scale/rating (0-10 or 1-10, etc.)")
 		linearScale: "LINEAR_SCALE",
 
 		@doc("Rating (e.g., star rating)")
@@ -297,10 +297,10 @@ namespace CoreSystem.Forms {
 		@doc("Background icon for the linear scale option.")
 		icon?: string;
 
-		@doc("Minimum value of the linear scale.")
+		@doc("Minimum value of the linear scale, can be 0 or 1.")
 		minVal: int32;
 
-		@doc("Maximum value of the linear scale.")
+		@doc("Maximum value of the linear scale, can be between 2 and 10.")
 		maxVal: int32;
 
 		@doc("Label for the minimum value.")
