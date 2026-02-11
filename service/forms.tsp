@@ -150,7 +150,7 @@ namespace CoreSystem.Forms {
     draft: "DRAFT",
 
     @doc("User has completed/passed this response.")
-    submitted: "SUBMITTED"
+    submitted: "SUBMITTED",
   }
 
   @doc("The current status of form ")
@@ -172,31 +172,31 @@ namespace CoreSystem.Forms {
   enum QuestionTypes {
     @doc("Short text input field")
     shortText: "SHORT_TEXT",
-    
+
     @doc("Long text textarea field")
     longText: "LONG_TEXT",
-    
+
     @doc("Single choice with radio buttons")
     singleChoice: "SINGLE_CHOICE",
-    
+
     @doc("Multiple choice with checkboxes")
     multipleChoice: "MULTIPLE_CHOICE",
-    
+
     @doc("Single choice with dropdown select")
     dropdown: "DROPDOWN",
-    
+
     @doc("Multiple choice with detailed checkboxes (more spacing/styling)")
     detailedMultipleChoice: "DETAILED_MULTIPLE_CHOICE",
-    
+
     @doc("Date picker")
     date: "DATE",
-    
+
     @doc("File upload")
     uploadFile: "UPLOAD_FILE",
-    
+
     @doc("Linear scale/rating (1-5, 1-10, etc.)")
     linearScale: "LINEAR_SCALE",
-    
+
     @doc("Ranking/ordering items by preference")
     ranking: "RANKING",
   }
@@ -241,7 +241,7 @@ namespace CoreSystem.Forms {
 
     @doc("More details of this question.")
     description: string;
-    
+
     @doc("Available choices for single_choice and multiple_choice questions.")
     choices?: Choice[];
 
@@ -405,7 +405,10 @@ namespace CoreSystem.Forms {
   @doc("List all the questions of a specific section.")
   @route("/sections/{sectionId}/questions")
   @get
-  op listQuestions(@path sectionId: uuid, @query responseId?: uuid): QuestionResponse[];
+  op listQuestions(
+    @path sectionId: uuid,
+    @query responseId?: uuid,
+  ): QuestionResponse[];
 
   @doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
   @route("/forms/{id}/cover")

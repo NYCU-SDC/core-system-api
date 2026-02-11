@@ -12,12 +12,13 @@ namespace CoreSystem.User {
     @doc("The user's unique identifier.")
     id: uuid;
 
-    @doc("The user's username, can change, but must be unique across the system.")
-    username: string;
-
     @minLength(4)
     @maxLength(15)
     @pattern("^\\w+$")
+    @doc("The user's username, can change, but must be unique across the system.")
+    username: string;
+
+    @maxLength(15)
     @doc("The user's nickname.")
     name: string;
 
