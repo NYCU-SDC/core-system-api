@@ -3604,6 +3604,11 @@ components:
           allOf:
             - $ref: '#/components/schemas/Unit.UserFormStatus'
           description: The completion status of the form for the current user
+        responseIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The unique identifiers of the user's responses to the form, if they exist
       description: Response model for listing user forms with status
     Unit.UserFormStatus:
       type: string
