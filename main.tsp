@@ -40,8 +40,8 @@ import "./src/responses/operations.tsp";
 // ═════════════════════════════════════════════════
 // === Inbox ===
 // ═════════════════════════════════════════════════
-import "./src/inbox/models.tsp";
-import "./src/inbox/operations.tsp";
+// import "./src/inbox/models.tsp";
+// import "./src/inbox/operations.tsp";
 
 // ═════════════════════════════════════════════════
 // === Slug ===
