@@ -3284,6 +3284,7 @@ components:
         - avatarUrl
         - emails
         - roles
+        - is_onboarded
       properties:
         id:
           allOf:
@@ -3291,12 +3292,13 @@ components:
           description: The user's unique identifier.
         username:
           type: string
-          description: The user's username, can change, but must be unique across the system.
-        name:
-          type: string
           minLength: 4
           maxLength: 15
           pattern: ^\w+$
+          description: The user's username, can change, but must be unique across the system.
+        name:
+          type: string
+          maxLength: 15
           description: The user's nickname.
         avatarUrl:
           type: string
@@ -3311,6 +3313,9 @@ components:
           items:
             $ref: '#/components/schemas/User.Role'
           description: Global role of the user.
+        is_onboarded:
+          type: boolean
+          description: The user is onboareded or not
     Versions:
       type: string
       enum:
