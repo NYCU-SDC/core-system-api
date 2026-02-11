@@ -27,7 +27,7 @@ namespace CoreSystem.User {
 		roles: Role[];
 
 		@doc("The user is onboareded or not")
-		is_onboarded: bool;
+		is_onboarded: boolean;
 	}
 
 	model OnboardingRequest {
