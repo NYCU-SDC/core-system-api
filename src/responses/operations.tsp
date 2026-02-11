@@ -40,7 +40,7 @@ namespace CoreSystem.Responses {
 	op connectOauthAccount(
 		@path
 		@doc("The OAuth provider to connect with (github or google).")
-		provider: "github" | "google",
+		provider: CoreSystem.Auth.OAuthProviders,
 
 		@query
 		@doc("The response ID to associate this OAuth answer with.")
