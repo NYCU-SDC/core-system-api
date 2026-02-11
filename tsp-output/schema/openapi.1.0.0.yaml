@@ -1913,12 +1913,8 @@ components:
     Forms.FormPublishResponse:
       type: object
       required:
-        - url
         - visibility
       properties:
-        url:
-          type: string
-          description: The URL to access the published form.
         visibility:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
