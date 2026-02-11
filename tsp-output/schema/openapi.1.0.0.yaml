@@ -591,42 +591,6 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/FormWorkflow.NodeRequest'
-  /api/forms/{id}/workflow/activate:
-    post:
-      operationId: FormWorkflow_activateWorkflow
-      summary: Activate Workflow
-      description: Activate workflow for a form
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Form Workflow
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/FormWorkflow.NodeRequest'
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
