@@ -62,17 +62,11 @@ namespace CoreSystem.Responses {
 		answers: #[
 			#{ questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd", questionType: CoreSystem.Forms.QuestionTypes.shortText, value: #["John Doe"] },
 			#{ questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3", questionType: CoreSystem.Forms.QuestionTypes.linearScale, value: 4 },
-			#{
-				questionId: "3c3cd5f5-82d2-589c-af47-627fbd7c47d4",
-				questionType: CoreSystem.Forms.QuestionTypes.oauthConnect,
-				avatarUrl: "https://example.com/avatar.jpg",
-				username: "JohnDoe"
-			}
 		],
 	})
 	model AnswersRequest {
 		@doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
-		answers: (AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON)[];
+		answers: (AnswerJSON | ScaleAnswerJSON)[];
 	}
 
 	@doc("Request model for uploading files as answers to a specific question in a response.")
