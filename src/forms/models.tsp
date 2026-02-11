@@ -504,9 +504,6 @@ namespace CoreSystem.Forms {
 
 	@doc("Response after publishing a form.")
 	model FormPublishResponse {
-		@doc("The URL to access the published form.")
-		url: string;
-
 		@doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
 		visibility: FormVisibility;
 	}
