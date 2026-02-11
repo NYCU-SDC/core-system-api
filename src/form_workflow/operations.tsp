@@ -29,20 +29,6 @@ namespace CoreSystem.FormWorkflow {
 		@body error: ProblemDetail;
 	};
 
-	@summary("Activate Workflow")
-	@doc("Activate workflow for a form")
-	@route("/forms/{id}/workflow/activate")
-	@post
-	op activateWorkflow(@path id: uuid, @body request: NodeRequest[]): {
-		@statusCode statusCode: 200;
-	} | {
-		@statusCode statusCode: 404;
-		@body error: NotFound;
-	} | {
-		@statusCode statusCode: 400;
-		@body error: ProblemDetail;
-	};
-
 	@summary("Create Workflow Node")
 	@doc("Create a new node for a workflow")
 	@route("/forms/{formId}/workflow/nodes")
