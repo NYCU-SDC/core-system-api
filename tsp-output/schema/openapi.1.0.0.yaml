@@ -94,7 +94,7 @@ paths:
     get:
       operationId: Forms_listForms
       summary: List Forms
-      description: List all existing forms.
+      description: List all existing forms. Archived forms are excluded by default.
       parameters: []
       responses:
         '200':
@@ -422,6 +422,26 @@ paths:
       operationId: Forms_getFormById
       summary: Get Form
       description: Get a specific form by its unique identifier.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+  /api/forms/{id}/archive:
+    post:
+      operationId: Forms_archiveForm
+      summary: Archive Form
+      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.
       parameters:
         - name: id
           in: path
@@ -1935,7 +1955,8 @@ components:
       enum:
         - DRAFT
         - PUBLISHED
-      description: 'The current status of form '
+        - ARCHIVED
+      description: The current status of a form.
     Forms.FormVisibility:
       type: string
       enum:
