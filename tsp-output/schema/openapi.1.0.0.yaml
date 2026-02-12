@@ -2662,9 +2662,11 @@ components:
             - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
               title: Group Info
               progress: SUBMITTED
+              questions: []
             - id: 0f9e8d7c-6b5a-4321-0fed-cba987654321
               title: Self Introduction
               progress: DRAFT
+              questions: []
     Responses.OauthAnswerJSON:
       type: object
       required:
@@ -2819,6 +2821,7 @@ components:
         - id
         - title
         - progress
+        - questions
       properties:
         id:
           allOf:
@@ -2831,6 +2834,11 @@ components:
           allOf:
             - $ref: '#/components/schemas/Responses.SectionProgress'
           description: The answering progress of this section.
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.QuestionResponse'
+          description: The questions of the section.
       description: Response model for a single section in response sections view
     Responses.ScaleAnswerJSON:
       type: object
