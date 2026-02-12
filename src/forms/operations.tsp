@@ -23,7 +23,7 @@ namespace CoreSystem.Forms {
 	op getFormById(@path id: uuid): Form;
 
 	@summary("List Forms")
-	@doc("List all existing forms.")
+	@doc("List all existing forms. Archived forms are excluded by default.")
 	@route("/forms")
 	@get
 	op listForms(): Form[];
@@ -87,6 +87,15 @@ namespace CoreSystem.Forms {
 	op publishForm(@path id: uuid): {
 		@statusCode statusCode: 200;
 		@body response: FormPublishResponse;
+	};
+
+	@summary("Archive Form")
+	@doc("Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.")
+	@route("/forms/{id}/archive")
+	@post
+	op archiveForm(@path id: uuid): {
+		@statusCode statusCode: 200;
+		@body response: Form;
 	};
 
 	@summary("Get Google Sheet Email")

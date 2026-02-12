@@ -140,10 +140,13 @@ namespace CoreSystem.Forms {
 		submitted: "SUBMITTED",
 	}
 
-	@doc("The current status of form ")
+	@doc("The current status of a form.")
 	enum FormStatus {
 		draft: "DRAFT",
 		published: "PUBLISHED",
+
+		@doc("Archived: form is hidden from default listings but is still stored and can be accessed directly.")
+		archived: "ARCHIVED",
 	}
 
 	@doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
