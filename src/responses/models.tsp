@@ -87,6 +87,18 @@ namespace CoreSystem.Responses {
 		id: uuid;
 	}
 
+	@doc("Response model for updating a form response")
+	model UpdateResponse {
+		@doc("The response's unique identifier.")
+		id: uuid;
+
+		@doc("The last updated timestamp of the response.")
+		updatedAt: utcDateTime;
+
+		@doc("The updated answer data.")
+		answers: (AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON)[];
+	}
+
 	@doc("Response model for a single response in list view")
 	model ResponseJSON {
 		@doc("The response's unique identifier.")

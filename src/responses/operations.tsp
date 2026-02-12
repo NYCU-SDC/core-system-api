@@ -31,6 +31,7 @@ namespace CoreSystem.Responses {
 	@patch(#{ implicitOptionality: true })
 	op updateFormResponse(@path id: uuid, @body req: AnswersRequest): {
 		@statusCode statusCode: 200;
+		@body response: UpdateResponse;
 	};
 
 	@summary("Connect OAuth Account")
