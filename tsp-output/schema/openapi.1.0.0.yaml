@@ -1973,14 +1973,11 @@ components:
       type: object
       required:
         - sections
-        - questions
       properties:
         sections:
-          $ref: '#/components/schemas/Forms.Section'
-        questions:
           type: array
           items:
-            $ref: '#/components/schemas/Forms.QuestionResponse'
+            $ref: '#/components/schemas/Forms.Section'
       description: Response model for listing all sections and questions in a form.
     Forms.QuestionRequest:
       type: object
@@ -2276,6 +2273,7 @@ components:
         - id
         - formId
         - title
+        - questions
       properties:
         id:
           allOf:
@@ -2291,6 +2289,11 @@ components:
         description:
           type: string
           description: Section description.
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.QuestionResponse'
+          description: The questions of the section.
       description: A section within a form, grouping questions together.
     Forms.SectionProgress:
       type: string
