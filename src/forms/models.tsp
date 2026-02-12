@@ -126,6 +126,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Section description.")
 		description?: string;
+
+		@doc("The questions of the section.")
+		questions: QuestionResponse[];
 	}
 
 	@doc("The current progress of a section")
@@ -476,8 +479,7 @@ namespace CoreSystem.Forms {
 
 	@doc("Response model for listing all sections and questions in a form.")
 	model ListSectionsResponse {
-		sections: Section;
-		questions: QuestionResponse[];
+		sections: Section[];
 	}
 
 	// form recipientUser
