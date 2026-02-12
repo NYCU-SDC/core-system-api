@@ -243,6 +243,9 @@ namespace CoreSystem.Responses {
 
 		@doc("The answering progress of this section.")
 		progress: SectionProgress;
+
+		@doc("The questions of the section.")
+		questions: CoreSystem.Forms.QuestionResponse[];
 	}
 
 	@doc("The current progress of a section")
@@ -256,8 +259,8 @@ namespace CoreSystem.Responses {
 
 	@example(#{
 		sections: #[
-			#{ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890", title: "Group Info", progress: SectionProgress.submitted },
-			#{ id: "0f9e8d7c-6b5a-4321-0fed-cba987654321", title: "Self Introduction", progress: SectionProgress.draft }
+			#{ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890", title: "Group Info", progress: SectionProgress.submitted, questions: #[] },
+			#{ id: "0f9e8d7c-6b5a-4321-0fed-cba987654321", title: "Self Introduction", progress: SectionProgress.draft, questions: #[] }
 		],
 	})
 	@doc("Response model for listing all sections of a response")
