@@ -2,6 +2,18 @@ using Http;
 
 @tag("Forms")
 namespace CoreSystem.Forms {
+	@summary("List Forms")
+	@doc("List all existing forms. Archived forms are excluded by default.")
+	@route("/forms")
+	@get
+	op listForms(): Form[];
+
+	@summary("Get Form")
+	@doc("Get a specific form by its unique identifier.")
+	@route("/forms/{id}")
+	@get
+	op getFormById(@path id: uuid): Form;
+
 	@summary("Update Form")
 	@doc("Update an existing form by its unique identifier.")
 	@route("/forms/{id}")
@@ -15,46 +27,6 @@ namespace CoreSystem.Forms {
 	op deleteForm(@path id: uuid): {
 		@statusCode statusCode: 204;
 	};
-
-	@summary("Get Form")
-	@doc("Get a specific form by its unique identifier.")
-	@route("/forms/{id}")
-	@get
-	op getFormById(@path id: uuid): Form;
-
-	@summary("List Forms")
-	@doc("List all existing forms. Archived forms are excluded by default.")
-	@route("/forms")
-	@get
-	op listForms(): Form[];
-
-	@summary("List Sections")
-	@doc("List all the questions of the sections in the form.")
-	@route("/forms/{id}/sections")
-	@get
-	op listSections(@path id: uuid): ListSectionsResponse[];
-
-	@summary("Upload Form Cover Image")
-	@doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
-	@route("/forms/{id}/cover")
-	@post
-	op uploadFormCoverImage(@path id: uuid, @header("content-type") contentType: "multipart/form-data", @multipartBody body: FormCoverUploadRequest): FormCoverUploadResponse;
-
-	@summary("Get Form Cover Image")
-	@doc("Get the cover image binary data. Returns the image in WebP format.")
-	@route("/forms/{id}/cover")
-	@get
-	op getFormCoverImage(@path id: uuid): {
-		@header("content-type") contentType: "image/webp";
-		@body body: bytes;
-	};
-
-	// for form publish
-	@summary("Preview Recipients")
-	@doc("Preview recipients by orgIds/unitIds (no duplicated).")
-	@route("/forms/recipients/preview")
-	@post
-	op previewRecipients(@body req: RecipientSelectionRequest): RecipientSelectionResponse;
 
 	@summary("Publish Form")
 	@doc("Publish a form. Set status to 'published'.")
@@ -74,6 +46,30 @@ namespace CoreSystem.Forms {
 		@body response: Form;
 	};
 
+	// === Cover Image Operations ===
+	@summary("Get Form Cover Image")
+	@doc("Get the cover image binary data. Returns the image in WebP format.")
+	@route("/forms/{id}/cover")
+	@get
+	op getFormCoverImage(@path id: uuid): {
+		@header("content-type") contentType: "image/webp";
+		@body body: bytes;
+	};
+
+	@summary("Upload Form Cover Image")
+	@doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
+	@route("/forms/{id}/cover")
+	@post
+	op uploadFormCoverImage(@path id: uuid, @header("content-type") contentType: "multipart/form-data", @multipartBody body: FormCoverUploadRequest): FormCoverUploadResponse;
+
+	// === Section Operations ===
+	@summary("List Sections")
+	@doc("List all the questions of the sections in the form.")
+	@route("/forms/{id}/sections")
+	@get
+	op listSections(@path id: uuid): ListSectionsResponse[];
+
+	// === Google Sheet Operations ===
 	@summary("Get Google Sheet Email")
 	@doc("Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.")
 	@route("/forms/google-sheet-email")
@@ -91,4 +87,12 @@ namespace CoreSystem.Forms {
 	@route("/forms/fonts")
 	@get
 	op getFormFonts(): Font[];
+
+	// Deprecated
+	// @summary("Preview Recipients")
+	// @doc("Preview recipients by orgIds/unitIds (no duplicated).")
+	// @route("/forms/recipients/preview")
+	// @post
+	// op previewRecipients(@body req: RecipientSelectionRequest): RecipientSelectionResponse;
+
 }
