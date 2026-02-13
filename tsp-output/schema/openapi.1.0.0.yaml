@@ -15,14 +15,14 @@ info:
   license:
     name: Apache-2.0
 tags:
+  - name: Healthz
   - name: Auth
   - name: User
-  - name: Forms
   - name: Unit
-  - name: Responses
   - name: Slug
+  - name: Forms
   - name: Form Workflow
-  - name: Healthz
+  - name: Responses
 paths:
   /api/auth/login/oauth/{provider}:
     get:
@@ -177,27 +177,6 @@ paths:
                   $ref: '#/components/schemas/Unit.UserForm'
       tags:
         - Unit
-  /api/forms/recipients/preview:
-    post:
-      operationId: Forms_previewRecipients
-      summary: Preview Recipients
-      description: Preview recipients by orgIds/unitIds (no duplicated).
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.RecipientSelectionResponse'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Forms.RecipientSelectionRequest'
   /api/forms/{formId}/responses:
     post:
       operationId: Responses_createFormResponse
@@ -378,6 +357,25 @@ paths:
       tags:
         - Form Workflow
   /api/forms/{id}:
+    get:
+      operationId: Forms_getFormById
+      summary: Get Form
+      description: Get a specific form by its unique identifier.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
     put:
       operationId: Forms_updateForm
       summary: Update Form
@@ -418,25 +416,6 @@ paths:
           description: 'There is no content to send for this request, but the headers may be useful. '
       tags:
         - Forms
-    get:
-      operationId: Forms_getFormById
-      summary: Get Form
-      description: Get a specific form by its unique identifier.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Form'
-      tags:
-        - Forms
   /api/forms/{id}/archive:
     post:
       operationId: Forms_archiveForm
@@ -458,6 +437,25 @@ paths:
       tags:
         - Forms
   /api/forms/{id}/cover:
+    get:
+      operationId: Forms_getFormCoverImage
+      summary: Get Form Cover Image
+      description: Get the cover image binary data. Returns the image in WebP format.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            image/webp:
+              schema:
+                contentMediaType: image/webp
+      tags:
+        - Forms
     post:
       operationId: Forms_uploadFormCoverImage
       summary: Upload Form Cover Image
@@ -483,25 +481,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
-    get:
-      operationId: Forms_getFormCoverImage
-      summary: Get Form Cover Image
-      description: Get the cover image binary data. Returns the image in WebP format.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            image/webp:
-              schema:
-                contentMediaType: image/webp
-      tags:
-        - Forms
   /api/forms/{id}/publish:
     post:
       operationId: Forms_publishForm
