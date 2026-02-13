@@ -6,7 +6,7 @@ import "@typespec/versioning";
 // ═════════════════════════════════════════════════
 // --- Common ---
 import "./src/models.tsp";
-import "./src/errors/models.tsp";
+import "./src/error/models.tsp";
 
 // --- Health Check ---
 import "./src/healthz/models.tsp";
@@ -26,36 +26,53 @@ import "./src/user/operations.tsp";
 // ═════════════════════════════════════════════════
 // === Unit ===
 // ═════════════════════════════════════════════════
-// --- Organization, Unit, Membership ---
-import "./src/unit/models.tsp";
-import "./src/unit/operations.tsp";
+// --- Organization ---
+import "./src/org/models.tsp";
+import "./src/org/operations.tsp";
+
+// --- Unit ---
+import "./src/org/unit/models.tsp";
+import "./src/org/unit/operations.tsp";
+
+// --- Parent-Child Relationship ---
+import "./src/org/relationship/models.tsp";
+import "./src/org/relationship/operations.tsp";
+
+// --- Member ---
+import "./src/org/member/models.tsp";
+import "./src/org/member/operations.tsp";
 
 // --- Slug ---
 import "./src/slug/models.tsp";
 import "./src/slug/operations.tsp";
 
+// --- Resource ---
+// ## Form ##
+import "./src/org/form/models.tsp";
+import "./src/org/form/operations.tsp";
+
 // ═════════════════════════════════════════════════
 // === Forms ===
 // ═════════════════════════════════════════════════
 // --- Forms, Sections, Questions ---
-import "./src/forms/models.tsp";
-import "./src/forms/operations.tsp";
+import "./src/form/models.tsp";
+import "./src/form/operations.tsp";
 
 // --- Question ---
-import "./src/forms/question/models.tsp";
-import "./src/forms/question/operations.tsp";
+import "./src/form/question/models.tsp";
+import "./src/form/question/operations.tsp";
 
 // --- Workflow ---
-import "./src/forms/workflow/models.tsp";
-import "./src/forms/workflow/operations.tsp";
+import "./src/form/workflow/models.tsp";
+import "./src/form/workflow/operations.tsp";
 
 // --- Response ---
-import "./src/forms/response/models.tsp";
-import "./src/forms/response/operations.tsp";
+import "./src/form/response/models.tsp";
+import "./src/form/response/operations.tsp";
 
 // --- Answer ---
-import "./src/forms/answer/models.tsp";
-import "./src/forms/answer/operations.tsp";
+import "./src/form/answer/models.tsp";
+import "./src/form/answer/operations.tsp";
 
 // ═════════════════════════════════════════════════
 // === Inbox ===
