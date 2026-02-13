@@ -6,11 +6,11 @@
 	"author": "NYCU SDC",
 	"type": "module",
 	"scripts": {
+		"build:http": "pnpm run compile:openapi && node scripts/generate-http.js",
 		"build:redocly": "redocly build-docs tsp-output/schema/openapi.1.0.0.yaml --output website/redocly/index.html",
 		"build:sdk": "orval --config orval.config.js",
 		"build:typedoc": "typedoc --entryPoints packages/sdk/src/index.ts --out website/sdk --tsconfig packages/sdk/tsconfig.json --plugin typedoc-rhineai-theme",
 		"build:yaak": "node scripts/generate-yaak.js",
-		"build:http": "pnpm run compile:openapi && node scripts/generate-http.js",
 		"clean": "rm -rf tsp-output yaak packages/sdk/src/generated packages/sdk/docs",
 		"compile:openapi": "tsp compile . && node scripts/patch-openapi.js",
 		"compile:sdk": "pnpm --filter @nycu-sdc/core-system-sdk run build",
