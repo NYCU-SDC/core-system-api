@@ -3,12 +3,12 @@ using Http;
 @tag("Auth")
 namespace CoreSystem.Auth {
 	@summary("Login with OAuth Provider")
-	@route("/auth/login/oauth/{provider}")
+	@route("/auth/login/oauth/{oauthProvider}")
 	@get
 	op loginGoogle(
 		@doc("The OAuth2 provider to use for login.")
 		@path
-		provider: OAuthLoginProviders,
+		oauthProvider: OAuthLoginProviders,
 
 		@doc("The callback URL of the OAuth2 login. [See details](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)")
 		@query

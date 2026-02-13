@@ -10,7 +10,7 @@
 		"build:sdk": "orval --config orval.config.js",
 		"build:typedoc": "typedoc --entryPoints packages/sdk/src/index.ts --out website/sdk --tsconfig packages/sdk/tsconfig.json --plugin typedoc-rhineai-theme",
 		"build:yaak": "node scripts/generate-yaak.js",
-		"build:http": "node scripts/generate-http.js",
+		"build:http": "pnpm run compile:openapi && node scripts/generate-http.js",
 		"clean": "rm -rf tsp-output yaak packages/sdk/src/generated packages/sdk/docs",
 		"compile:openapi": "tsp compile . && node scripts/patch-openapi.js",
 		"compile:sdk": "pnpm --filter @nycu-sdc/core-system-sdk run build",
