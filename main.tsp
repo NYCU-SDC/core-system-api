@@ -41,6 +41,10 @@ import "./src/slug/operations.tsp";
 import "./src/forms/models.tsp";
 import "./src/forms/operations.tsp";
 
+// --- Question ---
+import "./src/forms/question/models.tsp";
+import "./src/forms/question/operations.tsp";
+
 // --- Workflow ---
 import "./src/forms/workflow/models.tsp";
 import "./src/forms/workflow/operations.tsp";
@@ -48,6 +52,10 @@ import "./src/forms/workflow/operations.tsp";
 // --- Response ---
 import "./src/forms/response/models.tsp";
 import "./src/forms/response/operations.tsp";
+
+// --- Answer ---
+import "./src/forms/answer/models.tsp";
+import "./src/forms/answer/operations.tsp";
 
 // ═════════════════════════════════════════════════
 // === Inbox ===
@@ -59,15 +67,13 @@ using Http;
 using Versioning;
 
 @service(#{ title: "Core System API" })
-
 @server("https://dev.core-system.sdc.nycu.club", "Dev server")
 @server("https://mock.core-system.sdc.nycu.club", "Mock server")
 @server("http://127.0.0.1:4010", "Local Prism mock")
-
 @versioned(Versions)
 @route("/api")
 namespace CoreSystem;
 
 enum Versions {
-  v1: "1.0.0",
+	v1: "1.0.0",
 }
