@@ -1,0 +1,215 @@
+# ============================================
+# Phase 2: Form Creation - Form CRUD & Metadata
+# ============================================
+# This file covers form creation and basic CRUD operations:
+# - Create form
+# - Get form by ID
+# - Update form metadata
+# - List forms
+# - Get available fonts
+# - Upload cover image (optional)
+
+# Import setup from Phase 1
+# @import ./01-setup.http
+
+###
+
+# ============================================
+# Get Available Fonts
+# ============================================
+# @name getFonts
+GET {{BASE_URL}}/forms/fonts
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Fonts array is returned', () => {
+        const data = JSON.parse(response.body);
+        equal(Array.isArray(data), true, 'Response should be an array');
+        equal(data.length > 0, true, 'Fonts array should not be empty');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.firstFontId = data[0].id;
+}}
+
+###
+
+# ============================================
+# Create Form
+# ============================================
+# @name createForm
+# @ref addUserToOrg
+POST {{BASE_URL}}/orgs/{{orgSlug}}/forms
+Content-Type: application/json
+
+{
+    "title": "Form Lifecycle Test Form",
+    "description": "This is a comprehensive test form covering all question types and form lifecycle operations. It demonstrates form creation, question management, workflow setup, and response handling.",
+    "previewMessage": "Complete test form",
+    "messageAfterSubmission": "Thank you for completing this test form! Your response has been recorded.",
+    "visibility": "PUBLIC"
+}
+
+?? status <= 201
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Form created with correct properties', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Form ID should exist');
+        equal(data.title, 'Form Lifecycle Test Form', 'Form title should match');
+        equal(data.description, 'This is a comprehensive test form covering all question types and form lifecycle operations. It demonstrates form creation, question management, workflow setup, and response handling.', 'Form description should match');
+        equal(data.previewMessage, 'Complete test form', 'Preview message should match');
+        equal(data.messageAfterSubmission, 'Thank you for completing this test form! Your response has been recorded.', 'Message after submission should match');
+        equal(data.visibility, 'PUBLIC', 'Form visibility should be PUBLIC');
+        equal(data.status, 'DRAFT', 'Form status should be DRAFT');
+        equal(data.lastEditor.id, userId, 'Last editor should be the current user');
+        equal(data.unitId, orgId, 'Organization ID should match');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.formId = data.id;
+}}
+
+###
+
+# ============================================
+# Get Form by ID
+# ============================================
+# @name getForm
+# @ref createForm
+GET {{BASE_URL}}/forms/{{formId}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Form retrieved successfully', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id, formId, 'Form ID should match');
+        equal(data.title, 'Form Lifecycle Test Form', 'Form title should match');
+        equal(data.status, 'DRAFT', 'Form status should be DRAFT');
+    });
+}}
+
+###
+
+# ============================================
+# List Forms
+# ============================================
+# @name listForms
+# @ref getForm
+GET {{BASE_URL}}/forms
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Forms list contains created form', () => {
+        const data = JSON.parse(response.body);
+        equal(Array.isArray(data), true, 'Response should be an array');
+        equal(data.some(f => f.id === formId), true, 'Created form should be in the list');
+    });
+}}
+
+###
+
+# ============================================
+# Update Form - Add Dressing & Metadata
+# ============================================
+# @name updateForm
+# @ref listForms
+PUT {{BASE_URL}}/forms/{{formId}}
+Content-Type: application/json
+
+{
+    "title": "Form Lifecycle Test Form (Updated)",
+    "description": "This is an updated comprehensive test form covering all question types and form lifecycle operations. Updated to test form editing capabilities.",
+    "previewMessage": "Updated test form - complete all sections",
+    "messageAfterSubmission": "Thank you for your submission! We will review your response shortly.",
+    "visibility": "PUBLIC",
+    "dressing": {
+        "color": "#0066cc",
+        "headerFont": "BoutiqueBitmap7x7CircleDot",
+        "questionFont": "BoutiqueBitmap7x7SquareDot",
+        "textFont": "ChillBitmap16px"
+    },
+    "deadline": "2026-12-31T23:59:59Z",
+    "publishTime": "2026-02-01T00:00:00Z"
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Form updated with correct properties', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Form Lifecycle Test Form (Updated)', 'Form title should be updated');
+        equal(data.dressing !== undefined, true, 'Dressing should exist');
+        equal(data.dressing.color, '#0066cc', 'Dressing color should match');
+        equal(data.dressing.headerFont, 'BoutiqueBitmap7x7CircleDot', 'Dressing header font should match');
+        equal(data.dressing.questionFont, 'BoutiqueBitmap7x7SquareDot', 'Dressing question font should match');
+        equal(data.dressing.textFont, 'ChillBitmap16px', 'Dressing text font should match');
+        equal(data.deadline !== null, true, 'Deadline should be set');
+        equal(data.publishTime !== null, true, 'Publish time should be set');
+    });
+}}
+
+###
+
+# ============================================
+# Get Updated Form
+# ============================================
+# @name getUpdatedForm
+# @ref updateForm
+GET {{BASE_URL}}/forms/{{formId}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Form update persisted', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Form Lifecycle Test Form (Updated)', 'Updated title should persist');
+        equal(data.dressing.color, '#0066cc', 'Dressing color should persist');
+        equal(data.dressing.headerFont, 'BoutiqueBitmap7x7CircleDot', 'Dressing header font should persist');
+        equal(data.dressing.questionFont, 'BoutiqueBitmap7x7SquareDot', 'Dressing question font should persist');
+        equal(data.dressing.textFont, 'ChillBitmap16px', 'Dressing text font should persist');
+    });
+}}
+
+###
+
+# ============================================
+# List Forms by Organization
+# ============================================
+# @name listFormsByOrg
+# @ref getUpdatedForm
+GET {{BASE_URL}}/orgs/{{orgSlug}}/forms
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Organization forms list contains created form', () => {
+        const data = JSON.parse(response.body);
+        equal(Array.isArray(data), true, 'Response should be an array');
+        equal(data.some(f => f.id === formId), true, 'Created form should be in organization forms list');
+    });
+}}

@@ -1,0 +1,4 @@
+###
+
+# @title Check Health Status
+GET {{BASE_URL}}/healthz
