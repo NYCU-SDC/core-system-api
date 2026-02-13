@@ -24,6 +24,27 @@ tags:
   - name: Form Workflow
   - name: Responses
 paths:
+  /api/auth/login/internal:
+    post:
+      operationId: Auth_internalLogin
+      summary: Internal Login (Debug)
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth.InternalLoginResponse'
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth.InternalLoginRequest'
+        description: Login request with user ID.
   /api/auth/login/oauth/{oauthProvider}:
     get:
       operationId: Auth_loginGoogle
@@ -1498,6 +1519,22 @@ paths:
               $ref: '#/components/schemas/User.OnboardingRequest'
 components:
   schemas:
+    Auth.InternalLoginRequest:
+      type: object
+      required:
+        - uid
+      properties:
+        uid:
+          type: string
+          description: The user ID to login as.
+    Auth.InternalLoginResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Login status message.
     Auth.OAuthLoginProviders:
       type: string
       enum:
