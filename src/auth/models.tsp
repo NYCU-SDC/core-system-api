@@ -19,4 +19,14 @@ namespace CoreSystem.Auth {
 		@doc("The new refresh token.")
 		refreshToken: string;
 	}
+
+	model InternalLoginRequest {
+		@doc("The user ID to login as.")
+		uid: string;
+	}
+
+	model InternalLoginResponse {
+		@doc("Login status message.")
+		message: string;
+	}
 }

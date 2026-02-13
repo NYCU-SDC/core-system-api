@@ -45,4 +45,16 @@ namespace CoreSystem.Auth {
 	} | {
 		@statusCode statusCode: 401;
 	};
+
+	@summary("Internal Login (Debug)")
+	@route("/auth/login/internal")
+	@post
+	op internalLogin(
+		@doc("Login request with user ID.")
+		@body
+		request: InternalLoginRequest,
+	): {
+		@statusCode statusCode: 200;
+		@body response: InternalLoginResponse;
+	};
 }
