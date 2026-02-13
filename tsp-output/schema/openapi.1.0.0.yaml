@@ -24,12 +24,12 @@ tags:
   - name: Form Workflow
   - name: Responses
 paths:
-  /api/auth/login/oauth/{provider}:
+  /api/auth/login/oauth/{oauthProvider}:
     get:
       operationId: Auth_loginGoogle
       summary: Login with OAuth Provider
       parameters:
-        - name: provider
+        - name: oauthProvider
           in: path
           required: true
           description: The OAuth2 provider to use for login.
