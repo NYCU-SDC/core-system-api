@@ -177,6 +177,151 @@ paths:
                   $ref: '#/components/schemas/Unit.UserForm'
       tags:
         - Unit
+  /api/forms/{formId}:
+    get:
+      operationId: Forms_getFormById
+      summary: Get Form
+      description: Get a specific form by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+    put:
+      operationId: Forms_updateForm
+      summary: Update Form
+      description: Update an existing form by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.FormRequest'
+    delete:
+      operationId: Forms_deleteForm
+      summary: Delete Form
+      description: Delete an existing form by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+      tags:
+        - Forms
+  /api/forms/{formId}/archive:
+    post:
+      operationId: Forms_archiveForm
+      summary: Archive Form
+      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+  /api/forms/{formId}/cover:
+    get:
+      operationId: Forms_getFormCoverImage
+      summary: Get Form Cover Image
+      description: Get the cover image binary data. Returns the image in WebP format.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            image/webp:
+              schema:
+                contentMediaType: image/webp
+      tags:
+        - Forms
+    post:
+      operationId: Forms_uploadFormCoverImage
+      summary: Upload Form Cover Image
+      description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormCoverUploadResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
+  /api/forms/{formId}/publish:
+    post:
+      operationId: Forms_publishForm
+      summary: Publish Form
+      description: Publish a form. Set status to 'published'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormPublishResponse'
+      tags:
+        - Forms
   /api/forms/{formId}/responses:
     post:
       operationId: Responses_createFormResponse
@@ -285,6 +430,95 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/sections:
+    get:
+      operationId: Forms_listSections
+      summary: List Sections
+      description: List all the questions of the sections in the form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.ListSectionsResponse'
+      tags:
+        - Forms
+  /api/forms/{formId}/workflow:
+    get:
+      operationId: FormWorkflow_getWorkflow
+      summary: Get Workflow
+      description: Get workflow for a form
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormWorkflow.GetWorkflowResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+    put:
+      operationId: FormWorkflow_updateWorkflow
+      summary: Update Workflow
+      description: Update workflow for a form
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormWorkflow.NodeRequest'
   /api/forms/{formId}/workflow/nodes:
     post:
       operationId: FormWorkflow_createNode
@@ -356,240 +590,6 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Form Workflow
-  /api/forms/{id}:
-    get:
-      operationId: Forms_getFormById
-      summary: Get Form
-      description: Get a specific form by its unique identifier.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Form'
-      tags:
-        - Forms
-    put:
-      operationId: Forms_updateForm
-      summary: Update Form
-      description: Update an existing form by its unique identifier.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Form'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Forms.FormRequest'
-    delete:
-      operationId: Forms_deleteForm
-      summary: Delete Form
-      description: Delete an existing form by its unique identifier.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
-      tags:
-        - Forms
-  /api/forms/{id}/archive:
-    post:
-      operationId: Forms_archiveForm
-      summary: Archive Form
-      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.Form'
-      tags:
-        - Forms
-  /api/forms/{id}/cover:
-    get:
-      operationId: Forms_getFormCoverImage
-      summary: Get Form Cover Image
-      description: Get the cover image binary data. Returns the image in WebP format.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            image/webp:
-              schema:
-                contentMediaType: image/webp
-      tags:
-        - Forms
-    post:
-      operationId: Forms_uploadFormCoverImage
-      summary: Upload Form Cover Image
-      description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.FormCoverUploadResponse'
-      tags:
-        - Forms
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
-  /api/forms/{id}/publish:
-    post:
-      operationId: Forms_publishForm
-      summary: Publish Form
-      description: Publish a form. Set status to 'published'.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Forms.FormPublishResponse'
-      tags:
-        - Forms
-  /api/forms/{id}/sections:
-    get:
-      operationId: Forms_listSections
-      summary: List Sections
-      description: List all the questions of the sections in the form.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Forms.ListSectionsResponse'
-      tags:
-        - Forms
-  /api/forms/{id}/workflow:
-    get:
-      operationId: FormWorkflow_getWorkflow
-      summary: Get Workflow
-      description: Get workflow for a form
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormWorkflow.GetWorkflowResponse'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Form Workflow
-    put:
-      operationId: FormWorkflow_updateWorkflow
-      summary: Update Workflow
-      description: Update workflow for a form
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FormWorkflow.NodeResponse'
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Form Workflow
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/FormWorkflow.NodeRequest'
   /api/healthz:
     get:
       operationId: Healthz_checkHealthz
@@ -717,13 +717,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Unit.ParentChildRequest'
-  /api/orgs/relations/child-id/{child_id}:
+  /api/orgs/relations/child-id/{childId}:
     delete:
       operationId: Unit_removeParentChild
       summary: Remove Parent-Child Relationship
       description: Remove a parent-child relationship between units by unlinking them
       parameters:
-        - name: child_id
+        - name: childId
           in: path
           required: true
           schema:
@@ -743,7 +743,7 @@ paths:
     get:
       operationId: Unit_getOrgById
       summary: Get Organization
-      description: Get a specific unit with the slug of its organization by its unique identifier
+      description: Get a specific organization by its unique identifier
       parameters:
         - name: slug
           in: path
@@ -762,7 +762,7 @@ paths:
     put:
       operationId: Unit_updateOrg
       summary: Update Organization
-      description: Update an existing unit or organization by its unique identifier
+      description: Update an existing organization by its unique identifier
       parameters:
         - name: slug
           in: path
@@ -935,7 +935,7 @@ paths:
                   $ref: '#/components/schemas/User.User'
       tags:
         - Unit
-  /api/orgs/{slug}/members/{member_id}:
+  /api/orgs/{slug}/members/{memberId}:
     delete:
       operationId: Unit_removeOrgMember
       summary: Remove Organization Member
@@ -946,7 +946,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: member_id
+        - name: memberId
           in: path
           required: true
           schema:
@@ -1071,7 +1071,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Unit.CreateUnitRequest'
-  /api/orgs/{slug}/units/{id}:
+  /api/orgs/{slug}/units/{unitId}:
     get:
       operationId: Unit_getUnitById
       summary: Get Unit
@@ -1082,7 +1082,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: id
+        - name: unitId
           in: path
           required: true
           schema:
@@ -1106,7 +1106,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: id
+        - name: unitId
           in: path
           required: true
           schema:
@@ -1136,7 +1136,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: id
+        - name: unitId
           in: path
           required: true
           schema:
@@ -1152,7 +1152,7 @@ paths:
                 type: string
       tags:
         - Unit
-  /api/orgs/{slug}/units/{id}/subunit-ids:
+  /api/orgs/{slug}/units/{unitId}/subunit-ids:
     get:
       operationId: Unit_listUnitSubUnitIds
       summary: List Unit Sub-unit IDs
@@ -1163,7 +1163,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: id
+        - name: unitId
           in: path
           required: true
           schema:
@@ -1186,7 +1186,7 @@ paths:
                   $ref: '#/components/schemas/uuid'
       tags:
         - Unit
-  /api/orgs/{slug}/units/{id}/subunits:
+  /api/orgs/{slug}/units/{unitId}/subunits:
     get:
       operationId: Unit_listUnitSubUnits
       summary: List Unit Sub-units
@@ -1197,7 +1197,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: id
+        - name: unitId
           in: path
           required: true
           schema:
@@ -1220,13 +1220,13 @@ paths:
                   $ref: '#/components/schemas/Unit.Unit'
       tags:
         - Unit
-  /api/responses/{id}/answers:
+  /api/responses/{responseId}/answers:
     patch:
       operationId: Responses_updateFormResponse
       summary: Update Form Response
       description: Update answers for the response.
       parameters:
-        - name: id
+        - name: responseId
           in: path
           required: true
           schema:
@@ -1246,60 +1246,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Responses.AnswersRequestUpdate'
-  /api/responses/{id}/sections:
-    get:
-      operationId: Responses_listResponseSections
-      summary: List Response Sections
-      description: List the form structure of the response.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Responses.ListSectionResponse'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Responses
-  /api/responses/{id}/submit:
-    post:
-      operationId: Responses_submitFormResponse
-      summary: Submit Form Response
-      description: Submit all the answer in the form response.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Responses
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Responses.AnswersRequest'
   /api/responses/{responseId}/questions/{questionId}:
     get:
       operationId: Responses_getQuestionResponse
@@ -1365,13 +1311,67 @@ paths:
             encoding:
               files:
                 contentType: application/json
-  /api/sections/{id}/questions:
+  /api/responses/{responseId}/sections:
+    get:
+      operationId: Responses_listResponseSections
+      summary: List Response Sections
+      description: List the form structure of the response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ListSectionResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+  /api/responses/{responseId}/submit:
+    post:
+      operationId: Responses_submitFormResponse
+      summary: Submit Form Response
+      description: Submit all the answer in the form response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswersRequest'
+  /api/sections/{sectionId}/questions:
     post:
       operationId: Forms_createQuestion
       summary: Create Question
       description: Create a new question for a specific section.
       parameters:
-        - name: id
+        - name: sectionId
           in: path
           required: true
           schema:
