@@ -53,9 +53,9 @@ namespace CoreSystem.Responses {
 
 	@summary("Update Form Response")
 	@doc("Update answers for the response.")
-	@route("/responses/{id}/answers")
+	@route("/responses/{responseId}/answers")
 	@patch(#{ implicitOptionality: true })
-	op updateFormResponse(@path id: uuid, @body req: AnswersRequest): {
+	op updateFormResponse(@path responseId: uuid, @body req: AnswersRequest): {
 		@statusCode statusCode: 200;
 		@body response: UpdateResponse;
 	};

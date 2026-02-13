@@ -1,6 +1,5 @@
 namespace CoreSystem.Unit {
-
-@doc("The completion status of the form for the user")
+	@doc("The completion status of the form for the user")
 	enum UserFormStatus {
 		not_started: "NOT_STARTED",
 		in_progress: "IN_PROGRESS",

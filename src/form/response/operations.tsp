@@ -16,9 +16,9 @@ namespace CoreSystem.Responses {
 
 	@summary("Submit Form Response")
 	@doc("Submit all the answer in the form response.")
-	@route("/responses/{id}/submit")
+	@route("/responses/{responseId}/submit")
 	@post
-	op submitFormResponse(@path id: uuid, @body req: AnswersRequest): {
+	op submitFormResponse(@path responseId: uuid, @body req: AnswersRequest): {
 		@statusCode statusCode: 200;
 	} | {
 		@statusCode statusCode: 404;
@@ -51,9 +51,9 @@ namespace CoreSystem.Responses {
 
 	@summary("List Response Sections")
 	@doc("List the form structure of the response.")
-	@route("/responses/{id}/sections")
+	@route("/responses/{responseId}/sections")
 	@get
-	op listResponseSections(@path id: uuid): {
+	op listResponseSections(@path responseId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: ListSectionResponse;
 	} | {

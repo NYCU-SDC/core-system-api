@@ -4,9 +4,9 @@ using Http;
 namespace CoreSystem.FormWorkflow {
 	@summary("Get Workflow")
 	@doc("Get workflow for a form")
-	@route("/forms/{id}/workflow")
+	@route("/forms/{formId}/workflow")
 	@get
-	op getWorkflow(@path id: uuid): {
+	op getWorkflow(@path formId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: GetWorkflowResponse;
 	} | {
@@ -16,9 +16,9 @@ namespace CoreSystem.FormWorkflow {
 
 	@summary("Update Workflow")
 	@doc("Update workflow for a form")
-	@route("/forms/{id}/workflow")
+	@route("/forms/{formId}/workflow")
 	@put
-	op updateWorkflow(@path id: uuid, @body request: NodeRequest[]): {
+	op updateWorkflow(@path formId: uuid, @body request: NodeRequest[]): {
 		@statusCode statusCode: 200;
 		@body response: NodeResponse[];
 	} | {

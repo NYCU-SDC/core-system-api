@@ -5,9 +5,9 @@ namespace CoreSystem.Forms {
 	// for form edit - question management
 	@summary("Create Question")
 	@doc("Create a new question for a specific section.")
-	@route("/sections/{id}/questions")
+	@route("/sections/{sectionId}/questions")
 	@post
-	op createQuestion(@path id: uuid, @body q: QuestionRequest): {
+	op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
 		@statusCode statusCode: 201;
 		@body question: QuestionResponse;
 	};

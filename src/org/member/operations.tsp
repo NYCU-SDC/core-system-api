@@ -6,7 +6,7 @@ namespace CoreSystem.Unit {
 	@post
 	@route("/orgs/{slug}/members")
 	@doc("Add a member to an organization")
-	op addOrgMember(@path slug: string, @body Request: OrgMemberRequest): {
+	op addOrgMember(@path slug: string, @body request: OrgMemberRequest): {
 		@statusCode statusCode: 201;
 		@body orgMember: OrgMemberResponse;
 	};
@@ -19,9 +19,9 @@ namespace CoreSystem.Unit {
 
 	@summary("Remove Organization Member")
 	@delete
-	@route("/orgs/{slug}/members/{member_id}")
+	@route("/orgs/{slug}/members/{memberId}")
 	@doc("Remove an organization-member relationship")
-	op removeOrgMember(@path slug: string, @path member_id: uuid): {
+	op removeOrgMember(@path slug: string, @path memberId: uuid): {
 		@statusCode statusCode: 204;
 	} | {
 		@statusCode statusCode: 404;

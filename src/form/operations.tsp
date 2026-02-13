@@ -10,38 +10,38 @@ namespace CoreSystem.Forms {
 
 	@summary("Get Form")
 	@doc("Get a specific form by its unique identifier.")
-	@route("/forms/{id}")
+	@route("/forms/{formId}")
 	@get
-	op getFormById(@path id: uuid): Form;
+	op getFormById(@path formId: uuid): Form;
 
 	@summary("Update Form")
 	@doc("Update an existing form by its unique identifier.")
-	@route("/forms/{id}")
+	@route("/forms/{formId}")
 	@put
-	op updateForm(@path id: uuid, @body updateFormRequest: FormRequest): Form;
+	op updateForm(@path formId: uuid, @body updateFormRequest: FormRequest): Form;
 
 	@summary("Delete Form")
 	@doc("Delete an existing form by its unique identifier.")
-	@route("/forms/{id}")
+	@route("/forms/{formId}")
 	@delete
-	op deleteForm(@path id: uuid): {
+	op deleteForm(@path formId: uuid): {
 		@statusCode statusCode: 204;
 	};
 
 	@summary("Publish Form")
 	@doc("Publish a form. Set status to 'published'.")
-	@route("/forms/{id}/publish")
+	@route("/forms/{formId}/publish")
 	@post
-	op publishForm(@path id: uuid): {
+	op publishForm(@path formId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: FormPublishResponse;
 	};
 
 	@summary("Archive Form")
 	@doc("Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.")
-	@route("/forms/{id}/archive")
+	@route("/forms/{formId}/archive")
 	@post
-	op archiveForm(@path id: uuid): {
+	op archiveForm(@path formId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: Form;
 	};
@@ -49,25 +49,25 @@ namespace CoreSystem.Forms {
 	// === Cover Image Operations ===
 	@summary("Get Form Cover Image")
 	@doc("Get the cover image binary data. Returns the image in WebP format.")
-	@route("/forms/{id}/cover")
+	@route("/forms/{formId}/cover")
 	@get
-	op getFormCoverImage(@path id: uuid): {
+	op getFormCoverImage(@path formId: uuid): {
 		@header("content-type") contentType: "image/webp";
 		@body body: bytes;
 	};
 
 	@summary("Upload Form Cover Image")
 	@doc("Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
-	@route("/forms/{id}/cover")
+	@route("/forms/{formId}/cover")
 	@post
-	op uploadFormCoverImage(@path id: uuid, @header("content-type") contentType: "multipart/form-data", @multipartBody body: FormCoverUploadRequest): FormCoverUploadResponse;
+	op uploadFormCoverImage(@path formId: uuid, @header("content-type") contentType: "multipart/form-data", @multipartBody body: FormCoverUploadRequest): FormCoverUploadResponse;
 
 	// === Section Operations ===
 	@summary("List Sections")
 	@doc("List all the questions of the sections in the form.")
-	@route("/forms/{id}/sections")
+	@route("/forms/{formId}/sections")
 	@get
-	op listSections(@path id: uuid): ListSectionsResponse[];
+	op listSections(@path formId: uuid): ListSectionsResponse[];
 
 	// === Google Sheet Operations ===
 	@summary("Get Google Sheet Email")

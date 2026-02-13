@@ -7,7 +7,8 @@ namespace CoreSystem.Unit {
 	@route("/orgs/{slug}/units")
 	@doc("List all units, optionally filtered by parent organization ID")
 	op listOrgSubUnits(
-		@path slug: string,
+		@path 
+		slug: string,
 
 		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
 		@query
@@ -19,7 +20,8 @@ namespace CoreSystem.Unit {
 	@route("/orgs/{slug}/unit-ids")
 	@doc("List all unit IDs, optionally filtered by parent organization ID")
 	op listOrgSubUnitIds(
-		@path slug: string,
+		@path
+		slug: string,
 
 		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
 		@query
@@ -41,14 +43,14 @@ namespace CoreSystem.Unit {
 	@summary("Get Organization")
 	@get
 	@route("/orgs/{slug}")
-	@doc("Get a specific unit with the slug of its organization by its unique identifier")
+	@doc("Get a specific organization by its unique identifier")
 	op getOrgById(@path slug: string): Organization;
 
 	@summary("Create Organization")
 	@post
 	@route("/orgs")
 	@doc("Create a new organization")
-	op createOrg(@body Request: CreateOrgRequest): {
+	op createOrg(@body request: CreateOrgRequest): {
 		@statusCode statusCode: 201;
 		@body organization: Organization;
 	};
@@ -56,8 +58,8 @@ namespace CoreSystem.Unit {
 	@summary("Update Organization")
 	@put
 	@route("/orgs/{slug}")
-	@doc("Update an existing unit or organization by its unique identifier")
-	op updateOrg(@path slug: string, @body Request: UpdateOrgRequest): Organization;
+	@doc("Update an existing organization by its unique identifier")
+	op updateOrg(@path slug: string, @body request: UpdateOrgRequest): Organization;
 
 	@summary("Delete Organization")
 	@delete
