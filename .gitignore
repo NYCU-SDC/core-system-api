@@ -23,3 +23,6 @@ packages/sdk/src/generated/
 
 # Built SDK package
 packages/sdk/dist/
+
+# Dot env file
+.env
