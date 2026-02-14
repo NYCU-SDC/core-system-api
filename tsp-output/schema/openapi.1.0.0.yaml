@@ -1302,7 +1302,7 @@ paths:
     post:
       operationId: Responses_uploadQuestionFiles
       summary: Upload Question Files
-      description: Upload files as answers for a specific question in the response.
+      description: Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs.
       parameters:
         - name: responseId
           in: path
@@ -1321,6 +1321,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Responses.QuestionFilesUploadResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
       requestBody:
@@ -1820,15 +1826,6 @@ components:
           type: string
           description: Optional description for the choice.
       description: A choice option for creating/updating choice-based questions.
-    Forms.FileSizeLimit:
-      type: string
-      enum:
-        - 1_MB
-        - 5_MB
-        - 10_MB
-        - 100_MB
-        - 1_GB
-      description: File size limit options for file uploads.
     Forms.Font:
       type: object
       required:
@@ -2151,7 +2148,7 @@ components:
               - DOC
               - DOCX
             maxFileAmount: 1
-            maxFileSizeLimit: 10_MB
+            maxFileSizeLimit: 1024000
         - required: true
           type: DATE
           title: When will you graduate?
@@ -2401,9 +2398,11 @@ components:
           maximum: 10
           description: 'Maximum number of files that can be uploaded. Range: 1-10.'
         maxFileSizeLimit:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FileSizeLimit'
-          description: Maximum file size limit.
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 10485760
+          description: The maximum allowed file size in bytes, must be between 1 byte and 10 MB.
       description: Options for file upload questions.
     Forms.allowedFileTypes:
       type: string
@@ -2821,14 +2820,18 @@ components:
     Responses.QuestionFilesUploadResponse:
       type: object
       required:
-        - fileUrls
+        - id
+        - questionAnswerPair
       properties:
-        fileUrls:
-          type: array
-          items:
-            type: string
-          description: The temporary full URLs of the uploaded files.
-      description: Response model for the uploaded files
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        questionAnswerPair:
+          allOf:
+            - $ref: '#/components/schemas/Responses.AnswerJSON'
+          description: The auto-created/updated answer with file URLs.
+      description: Response model for the uploaded files and auto-created answer
     Responses.ResponseJSON:
       type: object
       required:
