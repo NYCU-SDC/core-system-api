@@ -29,7 +29,7 @@ namespace CoreSystem.Responses {
 	};
 
 	@summary("Upload Question Files")
-	@doc("Upload files as answers for a specific question in the response.")
+	@doc("Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs.")
 	@route("/responses/{responseId}/questions/{questionId}/files")
 	@post
 	op uploadQuestionFiles(
@@ -37,7 +37,13 @@ namespace CoreSystem.Responses {
 		@path questionId: uuid,
 		@header("content-type") contentType: "multipart/form-data",
 		@multipartBody body: QuestionFilesUploadRequest,
-	): QuestionFilesUploadResponse;
+	): {
+		@statusCode statusCode: 200;
+		@body response: QuestionFilesUploadResponse;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
 
 	@summary("Get Question Response")
 	@doc("Get a specific answer by question ID in the response.")

@@ -75,10 +75,13 @@ namespace CoreSystem.Responses {
 		files: HttpPart<bytes[]>;
 	}
 
-	@doc("Response model for the uploaded files")
+	@doc("Response model for the uploaded files and auto-created answer")
 	model QuestionFilesUploadResponse {
-		@doc("The temporary full URLs of the uploaded files.")
-		fileUrls: string[];
+		@doc("The response's unique identifier.")
+		id: uuid;
+
+		@doc("The auto-created/updated answer with file URLs.")
+		questionAnswerPair: AnswerJSON;
 	}
 
 	@doc("Model for a question with its answer in preview view")

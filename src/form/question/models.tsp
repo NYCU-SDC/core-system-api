@@ -1,5 +1,3 @@
-using Http;
-
 namespace CoreSystem.Forms {
 	@doc("The current types of question")
 	enum QuestionTypes {
@@ -109,24 +107,6 @@ namespace CoreSystem.Forms {
 		zip: "ZIP",
 	}
 
-	@doc("File size limit options for file uploads.")
-	enum FileSizeLimit {
-		@doc("1 MB")
-		oneMB: "1_MB",
-
-		@doc("5 MB")
-		fiveMB: "5_MB",
-
-		@doc("10 MB")
-		tenMB: "10_MB",
-
-		@doc("100 MB")
-		hundredMB: "100_MB",
-
-		@doc("1 GB")
-		oneGB: "1_GB",
-	}
-
 	@doc("Options for file upload questions.")
 	model UploadFileOption {
 		@doc("Allowed file types/extensions.")
@@ -137,8 +117,10 @@ namespace CoreSystem.Forms {
 		@maxValue(10)
 		maxFileAmount: int32;
 
-		@doc("Maximum file size limit.")
-		maxFileSizeLimit: FileSizeLimit;
+		@doc("The maximum allowed file size in bytes, must be between 1 byte and 10 MB.")
+		@minValue(1)
+		@maxValue(10485760) // 10 MB in bytes
+		maxFileSizeLimit: int64;
 	}
 
 	@doc("Options for linear scale and rating questions.")
@@ -264,7 +246,7 @@ namespace CoreSystem.Forms {
 		title: "Upload your resume",
 		description: "Please upload your resume in PDF format",
 		order: 8,
-		uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 1, maxFileSizeLimit: FileSizeLimit.tenMB },
+		uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 1, maxFileSizeLimit: 1024000 },
 	})
 	@example(#{
 		required: true,
