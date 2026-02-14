@@ -7,7 +7,7 @@ namespace CoreSystem.Unit {
 	@route("/orgs/{slug}/units")
 	@doc("List all units, optionally filtered by parent organization ID")
 	op listOrgSubUnits(
-		@path 
+		@path
 		slug: string,
 
 		@doc("The parent unit ID used to filter subunits by their parent-child relationship")
