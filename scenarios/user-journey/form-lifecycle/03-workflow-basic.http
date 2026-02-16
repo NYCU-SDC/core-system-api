@@ -160,8 +160,8 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
 
     const data = JSON.parse(response.body);
     if (data.length > 0) {
-        exports.defaultSectionId = data[0].Section.ID;
-        console.log('Default section ID:', data[0].Section.ID);
+        exports.defaultSectionId = data[0].section.id;
+        console.log('Default section ID:', data[0].section.id);
     }
 }}
 

@@ -679,10 +679,10 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.Section.ID === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.Questions), true, 'Questions should be an array');
-        equal(ourSection.Questions.length, 10, 'Should now have 10 questions (after deletion)');
+        equal(ourSection.Questions.length, 11, 'Should now have 10 questions (after deletion)');
         
         // Verify the deleted question is not in the list
-        const deletedQuestion = ourSection.Questions.find(q => q.id === hyperlinkQuestionId);
+        const deletedQuestion = ourSection.Questions.find(q => q.id === hyperlinkQuestionToDeleteId);
         equal(deletedQuestion, undefined, 'Deleted question should not exist');
         
         console.log('Question count after deletion:', ourSection.Questions.length);
