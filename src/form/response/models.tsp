@@ -16,7 +16,7 @@ namespace CoreSystem.Responses {
 		updatedAt: utcDateTime;
 
 		@doc("The updated answer data.")
-		answers: (AnswerJSON | ScaleAnswerJSON | OauthAnswerJSON)[];
+		answers: (StringArrayAnswer | ScaleAnswer | OauthAnswer)[];
 	}
 
 	@doc("Response model for a single response in list view")
