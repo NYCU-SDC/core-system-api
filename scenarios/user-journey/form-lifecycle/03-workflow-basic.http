@@ -156,10 +156,6 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
     test('Sections list structure', () => {
         const data = JSON.parse(response.body);
         equal(Array.isArray(data), true, 'Response should be an array');
-        
-        console.log('=== Sections List ===');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('=== End Sections List ===');
     });
 
     const data = JSON.parse(response.body);

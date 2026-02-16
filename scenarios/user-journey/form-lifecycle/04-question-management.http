@@ -545,10 +545,47 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Create Question HYPERLINK That Need To Delete
+# ============================================
+# @name createHyperlinkQuestionToDelete
+# @ref createHyperlinkQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "HYPERLINK",
+    "title": "Need to delete this question",
+    "description": "Please provide a link to your portfolio, GitHub, or LinkedIn profile",
+    "order": 12
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Hyperlink question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'HYPERLINK', 'Type should be HYPERLINK');
+        equal(data.required, false, 'Required should be false');
+        
+        console.log('Created HYPERLINK question:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.hyperlinkQuestionToDeleteId = data.id;
+}}
+
+###
+
+# ============================================
 # List All Questions in Section
 # ============================================
 # @name listQuestionsInSection
-# @ref createHyperlinkQuestion
+# @ref createHyperlinkQuestionToDelete
 GET {{BASE_URL}}/forms/{{formId}}/sections
 
 {{
@@ -567,10 +604,6 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.Questions), true, 'Questions should be an array');
         equal(ourSection.Questions.length, 11, 'Should have 11 questions');
-        
-        console.log('=== Section with All Questions ===');
-        console.log(JSON.stringify(ourSection, null, 2));
-        console.log('=== End Section ===');
     });
 }}
 
@@ -616,12 +649,12 @@ Content-Type: application/json
 # ============================================
 # @name deleteHyperlinkQuestion
 # @ref updateShortTextQuestion
-DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionId}}
+DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionToDeleteId}}
 
 {{
     test.status(204);
     
-    console.log('Deleted HYPERLINK question:', hyperlinkQuestionId);
+    console.log('Deleted HYPERLINK question:', hyperlinkQuestionToDeleteId);
 }}
 
 ###
