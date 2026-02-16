@@ -91,7 +91,7 @@ namespace CoreSystem.Responses {
 	})
 	model AnswersRequest {
 		@doc("The answers to be saved. Can contain a partial subset for drafts or the full set for submission.")
-		answers: (StringAnswer | StringArrayAnswer | ScaleAnswer)[];
+		answers: (StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer)[];
 	}
 
 	@doc("Request model for uploading files as answers to a specific question in a response.")
@@ -118,7 +118,7 @@ namespace CoreSystem.Responses {
 		displayValue: string;
 
 		@doc("The structured answer data for submission. Null if not answered yet.")
-		answerData?: StringArrayAnswer | ScaleAnswer | OauthAnswer;
+		answerData?: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
 	}
 
 	@example(#{
@@ -131,11 +131,11 @@ namespace CoreSystem.Responses {
 	})
 	@doc("Response model for getting an answer of a specific question.")
 	model GetQuestionResponse {
-		@doc("The response's unique identifier.")
+		@doc("Response ID that this question answer belongs to.")
 		id: uuid;
 
 		@doc("A question with its answer for this response..")
-		questionAnswerPair: StringArrayAnswer;
+		questionAnswerPair: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
 	}
 
 	@doc("Response model for a single answer in question answers view")
@@ -150,7 +150,7 @@ namespace CoreSystem.Responses {
 		submittedBy: uuid;
 
 		@doc("The answer data. Type depends on the question type.")
-		answer: StringArrayAnswer | ScaleAnswer | OauthAnswer;
+		answer: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
 
 		@doc("The creation timestamp of the answer.")
 		createdAt: utcDateTime;

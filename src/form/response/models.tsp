@@ -16,11 +16,11 @@ namespace CoreSystem.Responses {
 		updatedAt: utcDateTime;
 
 		@doc("The updated answer data.")
-		answers: (StringArrayAnswer | ScaleAnswer | OauthAnswer)[];
+		answers: (StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer)[];
 	}
 
 	@doc("Response model for a single response in list view")
-	model ResponseJSON {
+	model Response {
 		@doc("The response's unique identifier.")
 		id: uuid;
 
@@ -40,7 +40,7 @@ namespace CoreSystem.Responses {
 		formId: uuid;
 
 		@doc("All responses for this form.")
-		responses: ResponseJSON[];
+		responses: Response[];
 	}
 
 	@doc("Model for a single section in preview view")
