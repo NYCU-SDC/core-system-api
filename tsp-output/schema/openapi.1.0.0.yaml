@@ -1826,6 +1826,31 @@ components:
           type: string
           description: Optional description for the choice.
       description: A choice option for creating/updating choice-based questions.
+    Forms.DateOption:
+      type: object
+      required:
+        - hasYear
+        - hasMonth
+        - hasDay
+      properties:
+        hasYear:
+          type: boolean
+          description: Whether the year component is required for the date.
+        hasMonth:
+          type: boolean
+          description: Whether the month component is required for the date.
+        hasDay:
+          type: boolean
+          description: Whether the day component is required for the date.
+        minDate:
+          type: string
+          format: date-time
+          description: Minimum date range in utcDateTime (e.g., 2025-01-01T00:00:00Z for 2025/1/1 00:00:00 UTC). If specified, use the first day of the month/year for the minimum value.
+        maxDate:
+          type: string
+          format: date-time
+          description: Maximum date range in utcDateTime (e.g., 2025-05-31T23:59:59Z for 2025/5/31 23:59:59 UTC). If specified, use the last day of the month/year for the maximum value.
+      description: Options for date questions.
     Forms.Font:
       type: object
       required:
@@ -2096,6 +2121,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.UploadFileOption'
           description: Available options for file upload questions.
+        date:
+          allOf:
+            - $ref: '#/components/schemas/Forms.DateOption'
+          description: Available options for date questions.
         oauthConnect:
           allOf:
             - $ref: '#/components/schemas/Auth.OAuthProviders'
@@ -2106,6 +2135,24 @@ components:
           description: If set, choices are dynamically generated from answers to this question.
       description: The request body for creating/updating a question.
       examples:
+        - required: true
+          type: DATE
+          title: Which year did you join?
+          description: Select year and month only
+          order: 14
+          date:
+            hasYear: true
+            hasMonth: true
+            hasDay: false
+        - required: true
+          type: DATE
+          title: When will you graduate?
+          description: Please select your graduation date
+          order: 13
+          date:
+            hasYear: true
+            hasMonth: true
+            hasDay: true
         - required: true
           type: OAUTH_CONNECT
           title: Connect your GitHub account
@@ -2250,6 +2297,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.UploadFileOption'
           description: Available options for file upload questions.
+        date:
+          allOf:
+            - $ref: '#/components/schemas/Forms.DateOption'
+          description: Available options for date questions.
         oauthConnect:
           allOf:
             - $ref: '#/components/schemas/Auth.OAuthProviders'
@@ -2489,63 +2540,6 @@ components:
           type: string
           description: The problem's detail.
       description: Problem represents a problem detail as defined in RFC 7807
-    Responses.AnswerJSON:
-      type: object
-      required:
-        - questionId
-        - questionType
-        - value
-      properties:
-        questionId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The question being answered.
-        questionType:
-          anyOf:
-            - type: string
-              enum:
-                - SHORT_TEXT
-            - type: string
-              enum:
-                - LONG_TEXT
-            - type: string
-              enum:
-                - SINGLE_CHOICE
-            - type: string
-              enum:
-                - MULTIPLE_CHOICE
-            - type: string
-              enum:
-                - DROPDOWN
-            - type: string
-              enum:
-                - DETAILED_MULTIPLE_CHOICE
-            - type: string
-              enum:
-                - DATE
-            - type: string
-              enum:
-                - RANKING
-            - type: string
-              enum:
-                - HYPERLINK
-          description: The type of the question being answered.
-        value:
-          type: array
-          items:
-            type: string
-          description: The answer value (format depends on questionType from questionId).
-      description: Request model for submitting an individual answer
-      examples:
-        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
-          questionType: MULTIPLE_CHOICE
-          value:
-            - f421cfc2-2b84-4da9-9629-011af609935a
-            - 2ca86a6d-7735-4f17-8676-29b4724b524f
-        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
-          questionType: SHORT_TEXT
-          value:
-            - John Doe
     Responses.AnswerResponse:
       type: object
       required:
@@ -2570,9 +2564,11 @@ components:
           description: The user who submitted this answer.
         answer:
           anyOf:
-            - $ref: '#/components/schemas/Responses.AnswerJSON'
-            - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
-            - $ref: '#/components/schemas/Responses.OauthAnswerJSON'
+            - $ref: '#/components/schemas/Responses.StringAnswer'
+            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+            - $ref: '#/components/schemas/Responses.ScaleAnswer'
+            - $ref: '#/components/schemas/Responses.DateAnswer'
+            - $ref: '#/components/schemas/Responses.OauthAnswer'
           description: The answer data. Type depends on the question type.
         createdAt:
           type: string
@@ -2592,16 +2588,17 @@ components:
           type: array
           items:
             anyOf:
-              - $ref: '#/components/schemas/Responses.AnswerJSON'
-              - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
+              - $ref: '#/components/schemas/Responses.StringAnswer'
+              - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+              - $ref: '#/components/schemas/Responses.ScaleAnswer'
+              - $ref: '#/components/schemas/Responses.DateAnswer'
           description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
       description: Request model for update or submit the form response.
       examples:
         - answers:
             - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
               questionType: SHORT_TEXT
-              value:
-                - John Doe
+              value: John Doe
             - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
               questionType: LINEAR_SCALE
               value: 4
@@ -2612,16 +2609,17 @@ components:
           type: array
           items:
             anyOf:
-              - $ref: '#/components/schemas/Responses.AnswerJSON'
-              - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
+              - $ref: '#/components/schemas/Responses.StringAnswer'
+              - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+              - $ref: '#/components/schemas/Responses.ScaleAnswer'
+              - $ref: '#/components/schemas/Responses.DateAnswer'
           description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
       description: Request model for update or submit the form response.
       examples:
         - answers:
             - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
               questionType: SHORT_TEXT
-              value:
-                - John Doe
+              value: John Doe
             - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
               questionType: LINEAR_SCALE
               value: 4
@@ -2651,6 +2649,30 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: The response's unique identifier.
       description: Response model for creating a form response
+    Responses.DateAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          type: string
+          enum:
+            - DATE
+          description: The type of the question being answered.
+        value:
+          type: string
+          format: date-time
+          description: The answer value for date question in ISO format (e.g., '2024-12-31').
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: DATE
+          value: 2024-05-06T12:20-12Z
     Responses.GetFormResponse:
       type: object
       required:
@@ -2686,10 +2708,14 @@ components:
         id:
           allOf:
             - $ref: '#/components/schemas/uuid'
-          description: The response's unique identifier.
+          description: Response ID that this question answer belongs to.
         questionAnswerPair:
-          allOf:
-            - $ref: '#/components/schemas/Responses.AnswerJSON'
+          anyOf:
+            - $ref: '#/components/schemas/Responses.StringAnswer'
+            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+            - $ref: '#/components/schemas/Responses.ScaleAnswer'
+            - $ref: '#/components/schemas/Responses.DateAnswer'
+            - $ref: '#/components/schemas/Responses.OauthAnswer'
           description: A question with its answer for this response..
       description: Response model for getting an answer of a specific question.
       examples:
@@ -2713,7 +2739,7 @@ components:
         responses:
           type: array
           items:
-            $ref: '#/components/schemas/Responses.ResponseJSON'
+            $ref: '#/components/schemas/Responses.Response'
           description: All responses for this form.
       description: Response model for listing all responses of a form
     Responses.ListSectionResponse:
@@ -2737,13 +2763,12 @@ components:
               title: Self Introduction
               progress: DRAFT
               questions: []
-    Responses.OauthAnswerJSON:
+    Responses.OauthAnswer:
       type: object
       required:
         - questionId
         - questionType
-        - avatarUrl
-        - username
+        - value
       properties:
         questionId:
           allOf:
@@ -2754,18 +2779,25 @@ components:
           enum:
             - OAUTH_CONNECT
           description: The type of the question being answered.
-        avatarUrl:
-          type: string
-          description: The avatar URL from the OAuth provider.
-        username:
-          type: string
-          description: The username from the OAuth provider.
+        value:
+          type: object
+          properties:
+            avatarUrl:
+              type: string
+              description: The avatar URL from the OAuth provider.
+            username:
+              type: string
+              description: The username from the OAuth provider.
+          required:
+            - avatarUrl
+            - username
       description: Response model for an OAuth answer
       examples:
         - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
           questionType: OAUTH_CONNECT
-          avatarUrl: https://example.com/avatar.jpg
-          username: JohnDoe
+          value:
+            username: johndoe
+            avatarUrl: https://example.com/avatar.jpg
     Responses.PreviewQuestion:
       type: object
       required:
@@ -2781,9 +2813,11 @@ components:
           description: The formatted answer value for display.
         answerData:
           anyOf:
-            - $ref: '#/components/schemas/Responses.AnswerJSON'
-            - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
-            - $ref: '#/components/schemas/Responses.OauthAnswerJSON'
+            - $ref: '#/components/schemas/Responses.StringAnswer'
+            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+            - $ref: '#/components/schemas/Responses.ScaleAnswer'
+            - $ref: '#/components/schemas/Responses.DateAnswer'
+            - $ref: '#/components/schemas/Responses.OauthAnswer'
           description: The structured answer data for submission. Null if not answered yet.
       description: Model for a question with its answer in preview view
     Responses.PreviewSection:
@@ -2829,10 +2863,10 @@ components:
           description: The response's unique identifier.
         questionAnswerPair:
           allOf:
-            - $ref: '#/components/schemas/Responses.AnswerJSON'
+            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
           description: The auto-created/updated answer with file URLs.
       description: Response model for the uploaded files and auto-created answer
-    Responses.ResponseJSON:
+    Responses.Response:
       type: object
       required:
         - id
@@ -2888,7 +2922,7 @@ components:
             $ref: '#/components/schemas/Forms.QuestionResponse'
           description: The questions of the section.
       description: Response model for a single section in response sections view
-    Responses.ScaleAnswerJSON:
+    Responses.ScaleAnswer:
       type: object
       required:
         - questionId
@@ -2923,6 +2957,77 @@ components:
         - DRAFT
         - SUBMITTED
       description: The current progress of a section
+    Responses.StringAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - SHORT_TEXT
+            - type: string
+              enum:
+                - LONG_TEXT
+            - type: string
+              enum:
+                - HYPERLINK
+          description: The type of the question being answered.
+        value:
+          type: string
+          description: The answer value (format depends on questionType from questionId).
+      examples:
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          questionType: SHORT_TEXT
+          value: John Doe
+    Responses.StringArrayAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - SINGLE_CHOICE
+            - type: string
+              enum:
+                - MULTIPLE_CHOICE
+            - type: string
+              enum:
+                - DROPDOWN
+            - type: string
+              enum:
+                - DETAILED_MULTIPLE_CHOICE
+            - type: string
+              enum:
+                - RANKING
+          description: The type of the question being answered.
+        value:
+          type: array
+          items:
+            type: string
+          description: The answer value (format depends on questionType from questionId).
+      description: Request model for submitting an individual answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: MULTIPLE_CHOICE
+          value:
+            - f421cfc2-2b84-4da9-9629-011af609935a
+            - 2ca86a6d-7735-4f17-8676-29b4724b524f
     Responses.UpdateResponse:
       type: object
       required:
@@ -2942,9 +3047,10 @@ components:
           type: array
           items:
             anyOf:
-              - $ref: '#/components/schemas/Responses.AnswerJSON'
-              - $ref: '#/components/schemas/Responses.ScaleAnswerJSON'
-              - $ref: '#/components/schemas/Responses.OauthAnswerJSON'
+              - $ref: '#/components/schemas/Responses.StringAnswer'
+              - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+              - $ref: '#/components/schemas/Responses.ScaleAnswer'
+              - $ref: '#/components/schemas/Responses.DateAnswer'
           description: The updated answer data.
       description: Response model for updating a form response
     Slug.History:
