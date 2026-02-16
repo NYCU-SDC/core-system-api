@@ -32,12 +32,7 @@ namespace CoreSystem.Responses {
 	@doc("Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs.")
 	@route("/responses/{responseId}/questions/{questionId}/files")
 	@post
-	op uploadQuestionFiles(
-		@path responseId: uuid,
-		@path questionId: uuid,
-		@header("content-type") contentType: "multipart/form-data",
-		@multipartBody body: QuestionFilesUploadRequest,
-	): {
+	op uploadQuestionFiles(@path responseId: uuid, @path questionId: uuid, @header("content-type") contentType: "multipart/form-data", @multipartBody body: QuestionFilesUploadRequest): {
 		@statusCode statusCode: 200;
 		@body response: QuestionFilesUploadResponse;
 	} | {

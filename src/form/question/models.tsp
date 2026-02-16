@@ -162,6 +162,24 @@ namespace CoreSystem.Forms {
 		description?: string;
 	}
 
+	@doc("Options for date questions.")
+	model DateOption {
+		@doc("Whether the year component is required for the date.")
+		hasYear: boolean;
+
+		@doc("Whether the month component is required for the date.")
+		hasMonth: boolean;
+
+		@doc("Whether the day component is required for the date.")
+		hasDay: boolean;
+
+		@doc("Minimum date range in utcDateTime (e.g., 2025-01-01T00:00:00Z for 2025/1/1 00:00:00 UTC). If specified, use the first day of the month/year for the minimum value.")
+		minDate?: utcDateTime;
+
+		@doc("Maximum date range in utcDateTime (e.g., 2025-05-31T23:59:59Z for 2025/5/31 23:59:59 UTC). If specified, use the last day of the month/year for the maximum value.")
+		maxDate?: utcDateTime;
+	}
+
 	@doc("Response model for the detailed structure of a question.")
 	model QuestionResponse {
 		@doc("The question's unique identifier.")
@@ -190,6 +208,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Available options for file upload questions.")
 		uploadFile?: UploadFileOption;
+
+		@doc("Available options for date questions.")
+		date?: DateOption;
 
 		@doc("Available options for OAuth connect questions.")
 		oauthConnect?: CoreSystem.Auth.OAuthProviders;
@@ -273,6 +294,22 @@ namespace CoreSystem.Forms {
 		order: 12,
 		oauthConnect: CoreSystem.Auth.OAuthProviders.github,
 	})
+	@example(#{
+		required: true,
+		type: QuestionTypes.date,
+		title: "When will you graduate?",
+		description: "Please select your graduation date",
+		order: 13,
+		date: #{ hasYear: true, hasMonth: true, hasDay: true },
+	})
+	@example(#{
+		required: true,
+		type: QuestionTypes.date,
+		title: "Which year did you join?",
+		description: "Select year and month only",
+		order: 14,
+		date: #{ hasYear: true, hasMonth: true, hasDay: false },
+	})
 	model QuestionRequest {
 		@doc("Whether the question is required to answer or not.")
 		required: boolean;
@@ -297,6 +334,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Available options for file upload questions.")
 		uploadFile?: UploadFileOption;
+
+		@doc("Available options for date questions.")
+		date?: DateOption;
 
 		@doc("Available options for OAuth connect questions.")
 		oauthConnect?: CoreSystem.Auth.OAuthProviders;
