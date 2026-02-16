@@ -106,45 +106,38 @@ namespace CoreSystem.Responses {
 		id: uuid;
 
 		@doc("The auto-created/updated answer with file URLs.")
-		questionAnswerPair: StringArrayAnswer;
+		answer: AnswerPayload;
 	}
 
-	@doc("Model for a question with its answer in preview view")
-	model PreviewQuestion {
-		@doc("The question details.")
-		question: CoreSystem.Forms.QuestionResponse;
-
-		@doc("The formatted answer value for display.")
-		displayValue: string;
-
-		@doc("The structured answer data for submission. Null if not answered yet.")
-		answerData?: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
-	}
-
-	@example(#{
-		id: "a269d06a-5f41-4d1f-a0a1-3d4007ffd633",
-		questionAnswerPair: #{
-			questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
-			questionType: CoreSystem.Forms.QuestionTypes.ranking,
-			value: #["Full Stack Intro Training", "Full Stack Advanced Training"],
-		},
-	})
-	@doc("Response model for getting an answer of a specific question.")
 	model GetQuestionResponse {
 		@doc("Response ID that this question answer belongs to.")
 		id: uuid;
 
-		@doc("A question with its answer for this response..")
-		questionAnswerPair: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
+		answer: AnswerPayload;
 	}
 
-	@doc("Response model for a single answer in question answers view")
-	model AnswerResponse {
-		@doc("The answer's unique identifier.")
-		id: uuid;
+	@doc("Contains the question details and the corresponding answer for a specific question in a response")
+	model AnswersDetail {
+		@doc("The question details.")
+		question: CoreSystem.Forms.QuestionResponse;
+
+		@doc("All answers for this question.")
+		payload: AnswerPayload;
+	}
+
+	@doc("Contains the details of an answer for a specific question in a response")
+	model AnswerPayload {
+		@doc("The creation timestamp of the answer.")
+		createdAt: utcDateTime;
+
+		@doc("The last updated timestamp of the answer.")
+		updatedAt: utcDateTime;
 
 		@doc("The response this answer belongs to.")
 		responseId: uuid;
+
+		@doc("The question this answer belongs to.")
+		questionId: uuid;
 
 		@doc("The user who submitted this answer.")
 		submittedBy: uuid;
@@ -152,19 +145,7 @@ namespace CoreSystem.Responses {
 		@doc("The answer data. Type depends on the question type.")
 		answer: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
 
-		@doc("The creation timestamp of the answer.")
-		createdAt: utcDateTime;
-
-		@doc("The last updated timestamp of the answer.")
-		updatedAt: utcDateTime;
-	}
-
-	@doc("Response model for getting all answers for a specific question")
-	model AnswersResponse {
-		@doc("The question details.")
-		question: CoreSystem.Forms.QuestionResponse;
-
-		@doc("All answers for this question.")
-		answers: AnswerResponse[];
+		@doc("The formatted answer value for display.")
+		displayValue: string;
 	}
 }

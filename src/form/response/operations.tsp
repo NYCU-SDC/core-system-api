@@ -49,18 +49,6 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
-	@summary("List Response Sections")
-	@doc("List the form structure of the response.")
-	@route("/responses/{responseId}/sections")
-	@get
-	op listResponseSections(@path responseId: uuid): {
-		@statusCode statusCode: 200;
-		@body response: ListSectionResponse;
-	} | {
-		@statusCode statusCode: 404;
-		@body error: NotFound;
-	};
-
 	@summary("Delete Form Response")
 	@doc("Delete a response and all its associated data.")
 	@route("/forms/{formId}/responses/{responseId}")
