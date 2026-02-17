@@ -32,6 +32,7 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Condition rule for condition nodes")
+	@example(#{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" })
 	model ConditionRule {
 		@doc("Source of data for the condition")
 		@example(ConditionSource.nonChoice)
@@ -49,6 +50,7 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Workflow node structure with linked list connections")
+	@example(#{ id: "b23f2668-c2dc-4213-88fe-eceedff46398", type: NodeType.start, label: "開始表單" })
 	model NodeStructure {
 		@doc("Unique identifier for the node.")
 		id: uuid;
@@ -71,6 +73,11 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Workflow node request model with linked list connections")
+	@example(#{
+		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		label: "Personal Information Section",
+		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
+	})
 	model NodeRequest {
 		@doc("Unique identifier for the node.")
 		id: uuid;
@@ -93,6 +100,15 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Workflow node response model with linked list connections")
+	@example(#{
+		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		type: NodeType.section,
+		label: "Personal Information",
+		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
+		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
+		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
+		nextFalse: "e56i5991-f5gf-7e46-11ih-hfhggii79621",
+	})
 	model NodeResponse {
 		...NodeStructure;
 
@@ -125,6 +141,7 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Validation information for workflow validation errors")
+	@example(#{ type: ValidationInfoType.graphValidationFailed, nodeId: "b23f2668-c2dc-4213-88fe-eceedff46398", message: "section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field" })
 	model ValidationInfo {
 		@doc("The type/category of validation error")
 		@example(ValidationInfoType.graphValidationFailed)
@@ -140,6 +157,7 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Response model for getting a workflow, includes workflow nodes and validation info")
+	@example(#{ workflow: #[], info: #[] })
 	model GetWorkflowResponse {
 		@doc("Array of workflow nodes")
 		workflow: NodeResponse[];

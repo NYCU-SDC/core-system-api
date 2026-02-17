@@ -33,6 +33,15 @@ namespace CoreSystem.Unit {
 		metadata: Record<string>;
 	}
 
+	@example(#{
+		id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		name: "NYCU SDC",
+		description: "National Yang Ming Chiao Tung University Software Development Club",
+		metadata: #{ type: "club", founded: "2020" },
+		createdAt: utcDateTime.fromISO("2024-01-15T08:00:00Z"),
+		updatedAt: utcDateTime.fromISO("2024-12-20T10:30:00Z"),
+		slug: "nycu-sdc",
+	})
 	model Organization {
 		...Base;
 
@@ -41,6 +50,7 @@ namespace CoreSystem.Unit {
 	}
 
 	@doc("Model representing a member of an organization, linking organization and member by their unique identifiers")
+	@example(#{ orgId: "3c5fa073-7b97-43a3-bc44-ddc98f390a08", memberId: "d26e9c90-4747-496b-9953-7e7c4f97643f" })
 	model OrgMember {
 		@doc("The unique identifier of the organization")
 		orgId: uuid;
@@ -55,6 +65,7 @@ namespace CoreSystem.Unit {
 		slug: string; // Slug is required for organizations
 	}
 
+	@example(#{ name: "NYCU SDC 2025", description: "Updated organization description", slug: "nycu-sdc", metadata: #{ type: "club", members: "150" } })
 	model UpdateOrgRequest {
 		...BaseRequest;
 		slug: string;

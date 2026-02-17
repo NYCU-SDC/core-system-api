@@ -7,6 +7,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Response after uploading a cover image.")
+	@example(#{ imageUrl: "https://example.com/images/form-cover-123.webp" })
 	model FormCoverUploadResponse {
 		@doc("The temporary full URL of the uploaded image.")
 		imageUrl: string;
@@ -47,6 +48,24 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The structure of a form.")
+	@example(#{
+		id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+		title: "SDC 2025 Recruitment Form",
+		description: "Join us for an exciting journey in software development!",
+		previewMessage: "Join us for an exciting journey",
+		status: FormStatus.published,
+		unitId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
+		lastEditor: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		deadline: utcDateTime.fromISO("2025-03-31T23:59:59Z"),
+		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
+		messageAfterSubmission: "Thank you for your application! We'll get back to you soon.",
+		dressing: #{ color: "#0066cc", headerFont: "LINESeedTW", questionFont: "LINESeedTW", textFont: "LINESeedTW" },
+		coverImage: "https://example.com/images/form-cover.webp",
+		googleSheetUrl: "https://docs.google.com/spreadsheets/d/1ABC123/edit",
+		visibility: FormVisibility.public,
+		createdAt: utcDateTime.fromISO("2025-01-15T10:00:00Z"),
+		updatedAt: utcDateTime.fromISO("2025-02-10T14:30:00Z"),
+	})
 	model Form {
 		@doc("The form's unique identifier.")
 		id: uuid;
@@ -114,6 +133,13 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("A section within a form, grouping questions together.")
+	@example(#{
+		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+		title: "Personal Information",
+		description: "Please provide your basic information",
+		questions: #[],
+	})
 	model Section {
 		@doc("Unique identifier.")
 		id: uuid;
@@ -159,12 +185,14 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Response model for listing all sections and questions in a form.")
+	@example(#{ sections: #[] })
 	model ListSectionsResponse {
 		sections: Section[];
 	}
 
 	// form recipientUser
 	@doc("The basic info of a user that can receive the form.")
+	@example(#{ id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08", name: "John Doe" })
 	model RecipientUser {
 		id: uuid;
 		name: string;
@@ -181,35 +209,41 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The result of recipients selection (no duplicated).")
+	@example(#{ recipients: #[#{ id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08", name: "John Doe" }] })
 	model RecipientSelectionResponse {
 		recipients: RecipientUser[];
 	}
 
 	@doc("Response after publishing a form.")
+	@example(#{ visibility: FormVisibility.public })
 	model FormPublishResponse {
 		@doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
 		visibility: FormVisibility;
 	}
 
 	@doc("Response containing the Gmail address for Google Sheet permissions.")
+	@example(#{ email: "core-system-bot@example.com" })
 	model GoogleSheetEmailResponse {
 		@doc("The Gmail address that should be added to Google Sheet permissions so the system can modify the form.")
 		email: string;
 	}
 
 	@doc("Request body for verifying a Google Sheet URL.")
+	@example(#{ googleSheetUrl: "https://docs.google.com/spreadsheets/d/1ABC123XYZ/edit" })
 	model GoogleSheetVerifyRequest {
 		@doc("The Google Sheet URL provided by user.")
 		googleSheetUrl: string;
 	}
 
 	@doc("Verification result for the given Google Sheet URL.")
+	@example(#{ isValid: true })
 	model GoogleSheetVerifyResponse {
 		@doc("Indicates whether the Google Sheet URL is valid and accessible.")
 		isValid: boolean;
 	}
 
 	@doc("A font definition used in form dressing.")
+	@example(#{ id: "LINESeedTW", name: "LINE Seed TW" })
 	model Font {
 		@doc("The unique identifier of the font.")
 		id: string;

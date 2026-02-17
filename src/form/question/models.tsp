@@ -108,6 +108,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Options for file upload questions.")
+	@example(#{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 3, maxFileSizeLimit: 5242880 })
 	model UploadFileOption {
 		@doc("Allowed file types/extensions.")
 		allowedFileTypes: allowedFileTypes[];
@@ -124,6 +125,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Options for linear scale and rating questions.")
+	@example(#{ icon: "star", minVal: 1, maxVal: 5, minValueLabel: "Poor", maxValueLabel: "Excellent" })
 	model ScaleOption {
 		@doc("Background icon for the linear scale option.")
 		icon?: string;
@@ -142,6 +144,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("A choice option for creating/updating choice-based questions.")
+	@example(#{ name: "Option A", description: "This is option A" })
 	model ChoiceOption {
 		@doc("The name/text of the choice option.")
 		name: string;
@@ -151,6 +154,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("A choice with ID and name for choice-based questions.")
+	@example(#{ id: "f421cfc2-2b84-4da9-9629-011af609935a", name: "Backend", description: "Backend development team" })
 	model Choice {
 		@doc("The unique identifier of the choice.")
 		id: uuid;
@@ -163,6 +167,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Options for date questions.")
+	@example(#{ hasYear: true, hasMonth: true, hasDay: true, minDate: utcDateTime.fromISO("2025-01-01T00:00:00Z"), maxDate: utcDateTime.fromISO("2025-12-31T23:59:59Z") })
 	model DateOption {
 		@doc("Whether the year component is required for the date.")
 		hasYear: boolean;
@@ -181,6 +186,16 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Response model for the detailed structure of a question.")
+	@example(#{
+		id: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
+		sectionId: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		required: true,
+		type: QuestionTypes.shortText,
+		title: "What's your name?",
+		description: "Please enter your full name",
+		createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
+		updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
+	})
 	model QuestionResponse {
 		@doc("The question's unique identifier.")
 		id: uuid;
