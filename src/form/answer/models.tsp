@@ -136,9 +136,6 @@ namespace CoreSystem.Responses {
 		@doc("The response this answer belongs to.")
 		responseId: uuid;
 
-		@doc("The question this answer belongs to.")
-		questionId: uuid;
-
 		@doc("The answer data. Type depends on the question type.")
 		answer: StringAnswer | StringArrayAnswer | ScaleAnswer | DateAnswer | OauthAnswer;
 
