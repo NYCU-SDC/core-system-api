@@ -77,5 +77,5 @@ namespace CoreSystem.Unit {
 	@doc("List all forms of current user")
 	@route("/forms/me")
 	@get
-	op listFormsOfCurrentUser(): UserForm[];
+	op listFormsOfCurrentUser(): UserFormListResponse;
 }

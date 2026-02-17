@@ -60,7 +60,7 @@ namespace CoreSystem.Forms {
 		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
 		messageAfterSubmission: "Thank you for your application! We'll get back to you soon.",
 		dressing: #{ color: "#0066cc", headerFont: "LINESeedTW", questionFont: "LINESeedTW", textFont: "LINESeedTW" },
-		coverImage: "https://example.com/images/form-cover.webp",
+	coverImage: "https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment",
 		googleSheetUrl: "https://docs.google.com/spreadsheets/d/1ABC123/edit",
 		visibility: FormVisibility.public,
 		createdAt: utcDateTime.fromISO("2025-01-15T10:00:00Z"),

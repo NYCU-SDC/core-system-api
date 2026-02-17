@@ -14,6 +14,7 @@
 		"email": "contact@sdc.nycu.club",
 		"url": "https://sdc.nycu.club"
 	},
+	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
