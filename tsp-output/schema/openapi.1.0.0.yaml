@@ -1514,6 +1514,8 @@ components:
         uid:
           type: string
           description: The user ID to login as.
+      examples:
+        - uid: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
     Auth.InternalLoginResponse:
       type: object
       required:
@@ -1522,6 +1524,8 @@ components:
         message:
           type: string
           description: Login status message.
+      examples:
+        - message: Login successful
     Auth.OAuthLoginProviders:
       type: string
       enum:
@@ -1548,6 +1552,10 @@ components:
         refreshToken:
           type: string
           description: The new refresh token.
+      examples:
+        - accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          expirationTime: 1735689600
+          refreshToken: d290f1ee-6c54-4b01-90e6-d701748f0851
     BadRequest:
       type: object
       required:
@@ -1570,6 +1578,11 @@ components:
             - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
         detail:
           type: string
+      examples:
+        - title: Bad Request
+          status: 400
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+          detail: The request body contains invalid data
     FormWorkflow.ConditionRule:
       type: object
       required:
@@ -1597,6 +1610,10 @@ components:
             - ^f421cfc2-2b84-4da9-9629-011af609935a$
             - ^([6-9]|[1-9][0-9]+)$
       description: Condition rule for condition nodes
+      examples:
+        - source: NON_CHOICE
+          question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          pattern: ^([6-9]|[1-9][0-9]+)$
     FormWorkflow.ConditionSource:
       type: string
       enum:
@@ -1639,6 +1656,9 @@ components:
             $ref: '#/components/schemas/FormWorkflow.ValidationInfo'
           description: Array of validation information/errors for the workflow
       description: Response model for getting a workflow, includes workflow nodes and validation info
+      examples:
+        - workflow: []
+          info: []
     FormWorkflow.NodeRequest:
       type: object
       required:
@@ -1671,6 +1691,10 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: Next node id when condition is false (for condition nodes)
       description: Workflow node request model with linked list connections
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          label: Personal Information Section
+          next: c34g3779-d3ed-5c24-99gf-fdffegg57409
     FormWorkflow.NodeResponse:
       type: object
       required:
@@ -1714,6 +1738,17 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: Next node id when condition is false (for condition nodes)
       description: Workflow node response model with linked list connections
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          type: SECTION
+          label: Personal Information
+          conditionRule:
+            source: NON_CHOICE
+            question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            pattern: ^([6-9]|[1-9][0-9]+)$
+          next: c34g3779-d3ed-5c24-99gf-fdffegg57409
+          nextTrue: d45h4880-e4fe-6d35-00hg-gegffhh68510
+          nextFalse: e56i5991-f5gf-7e46-11ih-hfhggii79621
     FormWorkflow.NodeStructure:
       type: object
       required:
@@ -1737,6 +1772,10 @@ components:
           examples:
             - 開始表單
       description: Workflow node structure with linked list connections
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          type: START
+          label: 開始表單
     FormWorkflow.NodeType:
       type: string
       enum:
@@ -1770,6 +1809,10 @@ components:
           examples:
             - section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field
       description: Validation information for workflow validation errors
+      examples:
+        - type: graph_validation_failed
+          nodeId: b23f2668-c2dc-4213-88fe-eceedff46398
+          message: section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field
     FormWorkflow.ValidationInfoType:
       type: string
       enum:
@@ -1795,6 +1838,10 @@ components:
           type: string
           description: Optional description for the choice.
       description: A choice with ID and name for choice-based questions.
+      examples:
+        - id: f421cfc2-2b84-4da9-9629-011af609935a
+          name: Backend
+          description: Backend development team
     Forms.ChoiceOption:
       type: object
       required:
@@ -1807,6 +1854,9 @@ components:
           type: string
           description: Optional description for the choice.
       description: A choice option for creating/updating choice-based questions.
+      examples:
+        - name: Option A
+          description: This is option A
     Forms.DateOption:
       type: object
       required:
@@ -1832,6 +1882,12 @@ components:
           format: date-time
           description: Maximum date range in utcDateTime (e.g., 2025-05-31T23:59:59Z for 2025/5/31 23:59:59 UTC). If specified, use the last day of the month/year for the maximum value.
       description: Options for date questions.
+      examples:
+        - hasYear: true
+          hasMonth: true
+          hasDay: true
+          minDate: '2025-01-01T00:00:00Z'
+          maxDate: '2025-12-31T23:59:59Z'
     Forms.Font:
       type: object
       required:
@@ -1845,6 +1901,9 @@ components:
           type: string
           description: The display name of the font.
       description: A font definition used in form dressing.
+      examples:
+        - id: LINESeedTW
+          name: LINE Seed TW
     Forms.Form:
       type: object
       required:
@@ -1919,6 +1978,27 @@ components:
           format: date-time
           description: The last updated timestamp of the form
       description: The structure of a form.
+      examples:
+        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: SDC 2025 Recruitment Form
+          description: Join us for an exciting journey in software development!
+          previewMessage: Join us for an exciting journey
+          status: PUBLISHED
+          unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          deadline: '2025-03-31T23:59:59Z'
+          publishTime: '2025-02-01T00:00:00Z'
+          messageAfterSubmission: Thank you for your application! We'll get back to you soon.
+          dressing:
+            color: '#0066cc'
+            headerFont: LINESeedTW
+            questionFont: LINESeedTW
+            textFont: LINESeedTW
+          coverImage: https://example.com/images/form-cover.webp
+          googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
+          visibility: PUBLIC
+          createdAt: '2025-01-15T10:00:00Z'
+          updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormCoverUploadRequest:
       type: object
       properties:
@@ -1936,6 +2016,8 @@ components:
           type: string
           description: The temporary full URL of the uploaded image.
       description: Response after uploading a cover image.
+      examples:
+        - imageUrl: https://example.com/images/form-cover-123.webp
     Forms.FormDressing:
       type: object
       properties:
@@ -1967,6 +2049,8 @@ components:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
       description: Response after publishing a form.
+      examples:
+        - visibility: PUBLIC
     Forms.FormRequest:
       type: object
       required:
@@ -2035,6 +2119,8 @@ components:
           type: string
           description: The Gmail address that should be added to Google Sheet permissions so the system can modify the form.
       description: Response containing the Gmail address for Google Sheet permissions.
+      examples:
+        - email: core-system-bot@example.com
     Forms.GoogleSheetVerifyRequest:
       type: object
       required:
@@ -2044,6 +2130,8 @@ components:
           type: string
           description: The Google Sheet URL provided by user.
       description: Request body for verifying a Google Sheet URL.
+      examples:
+        - googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123XYZ/edit
     Forms.GoogleSheetVerifyResponse:
       type: object
       required:
@@ -2053,6 +2141,8 @@ components:
           type: boolean
           description: Indicates whether the Google Sheet URL is valid and accessible.
       description: Verification result for the given Google Sheet URL.
+      examples:
+        - isValid: true
     Forms.ListSectionsResponse:
       type: object
       required:
@@ -2063,6 +2153,8 @@ components:
           items:
             $ref: '#/components/schemas/Forms.Section'
       description: Response model for listing all sections and questions in a form.
+      examples:
+        - sections: []
     Forms.QuestionRequest:
       type: object
       required:
@@ -2299,6 +2391,15 @@ components:
           format: date-time
           description: The updated timestamp of the question.
       description: Response model for the detailed structure of a question.
+      examples:
+        - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+          required: true
+          type: SHORT_TEXT
+          title: What's your name?
+          description: Please enter your full name
+          createdAt: '2025-01-20T10:00:00Z'
+          updatedAt: '2025-02-01T15:30:00Z'
     Forms.QuestionTypes:
       type: string
       enum:
@@ -2342,6 +2443,10 @@ components:
           items:
             $ref: '#/components/schemas/Forms.RecipientUser'
       description: The result of recipients selection (no duplicated).
+      examples:
+        - recipients:
+            - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+              name: John Doe
     Forms.RecipientUser:
       type: object
       required:
@@ -2353,6 +2458,9 @@ components:
         name:
           type: string
       description: The basic info of a user that can receive the form.
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          name: John Doe
     Forms.ScaleOption:
       type: object
       required:
@@ -2377,6 +2485,12 @@ components:
           type: string
           description: Label for the maximum value.
       description: Options for linear scale and rating questions.
+      examples:
+        - icon: star
+          minVal: 1
+          maxVal: 5
+          minValueLabel: Poor
+          maxValueLabel: Excellent
     Forms.Section:
       type: object
       required:
@@ -2405,6 +2519,12 @@ components:
             $ref: '#/components/schemas/Forms.QuestionResponse'
           description: The questions of the section.
       description: A section within a form, grouping questions together.
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: Personal Information
+          description: Please provide your basic information
+          questions: []
     Forms.SectionProgress:
       type: string
       enum:
@@ -2436,6 +2556,13 @@ components:
           maximum: 10485760
           description: The maximum allowed file size in bytes, must be between 1 byte and 10 MB.
       description: Options for file upload questions.
+      examples:
+        - allowedFileTypes:
+            - PDF
+            - DOC
+            - DOCX
+          maxFileAmount: 3
+          maxFileSizeLimit: 5242880
     Forms.allowedFileTypes:
       type: string
       enum:
@@ -2500,6 +2627,11 @@ components:
             - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
         detail:
           type: string
+      examples:
+        - title: Not Found
+          status: 404
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+          detail: The requested resource was not found
     ProblemDetail:
       type: object
       required:
@@ -2521,6 +2653,11 @@ components:
           type: string
           description: The problem's detail.
       description: Problem represents a problem detail as defined in RFC 7807
+      examples:
+        - title: Bad Request
+          status: 400
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+          detail: Invalid request parameters
     Responses.AnswerPayload:
       type: object
       required:
@@ -2554,6 +2691,15 @@ components:
           type: string
           description: The formatted answer value for display.
       description: Contains the details of an answer for a specific question in a response
+      examples:
+        - createdAt: '2025-02-15T10:00:00Z'
+          updatedAt: '2025-02-17T16:45:00Z'
+          responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          answer:
+            questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+            questionType: SHORT_TEXT
+            value: John Doe
+          displayValue: John Doe
     Responses.AnswersDetail:
       type: object
       required:
@@ -2569,6 +2715,25 @@ components:
             - $ref: '#/components/schemas/Responses.AnswerPayload'
           description: All answers for this question.
       description: Contains the question details and the corresponding answer for a specific question in a response
+      examples:
+        - question:
+            id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+            sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+            required: true
+            type: SHORT_TEXT
+            title: What's your name?
+            description: Please enter your full name
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          payload:
+            createdAt: '2025-02-15T10:00:00Z'
+            updatedAt: '2025-02-17T16:45:00Z'
+            responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            answer:
+              questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            displayValue: John Doe
     Responses.AnswersRequest:
       type: object
       required:
@@ -2623,6 +2788,8 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: The response's unique identifier.
       description: Response model for creating a form response
+      examples:
+        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
     Responses.DateAnswer:
       type: object
       required:
@@ -2673,6 +2840,11 @@ components:
             $ref: '#/components/schemas/Responses.ResponseSections'
           description: The section list of the response, order by the form workflow.
       description: Response model for getting a specific form response
+      examples:
+        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          progress: DRAFT
+          sections: []
     Responses.GetQuestionResponse:
       type: object
       required:
@@ -2685,6 +2857,17 @@ components:
           description: Response ID that this question answer belongs to.
         answer:
           $ref: '#/components/schemas/Responses.AnswerPayload'
+      examples:
+        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          answer:
+            createdAt: '2025-02-15T10:00:00Z'
+            updatedAt: '2025-02-17T16:45:00Z'
+            responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            answer:
+              questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            displayValue: John Doe
     Responses.ListResponse:
       type: object
       required:
@@ -2701,6 +2884,9 @@ components:
             $ref: '#/components/schemas/Responses.Response'
           description: All responses for this form.
       description: Response model for listing all responses of a form
+      examples:
+        - formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          responses: []
     Responses.OauthAnswer:
       type: object
       required:
@@ -2762,6 +2948,17 @@ components:
             - $ref: '#/components/schemas/Responses.AnswerPayload'
           description: The auto-created/updated answer with file URLs.
       description: Response model for the uploaded files and auto-created answer
+      examples:
+        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          answer:
+            createdAt: '2025-02-15T10:00:00Z'
+            updatedAt: '2025-02-17T16:45:00Z'
+            responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            answer:
+              questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            displayValue: John Doe
     Responses.Response:
       type: object
       required:
@@ -2787,6 +2984,11 @@ components:
           format: date-time
           description: The last updated timestamp of the response.
       description: Response model for a single response in list view
+      examples:
+        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          submittedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          createdAt: '2025-02-15T10:00:00Z'
+          updatedAt: '2025-02-17T16:45:00Z'
     Responses.ResponseProgress:
       type: string
       enum:
@@ -2818,6 +3020,11 @@ components:
             $ref: '#/components/schemas/Responses.AnswersDetail'
           description: The questions of the section.
       description: Response model for a single section in response sections view
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          title: Personal Information
+          progress: DRAFT
+          answerDetails: []
     Responses.ScaleAnswer:
       type: object
       required:
@@ -2951,6 +3158,10 @@ components:
               - $ref: '#/components/schemas/Responses.DateAnswer'
           description: The updated answer data.
       description: Response model for updating a form response
+      examples:
+        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          updatedAt: '2025-02-17T16:45:00Z'
+          answers: []
     Slug.History:
       type: object
       required:
@@ -2977,6 +3188,11 @@ components:
             - type: 'null'
           description: The timestamp when the organization stopped using the slug, if applicable.
       description: The usage history of the slug.
+      examples:
+        - orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          orgName: NYCU SDC
+          startedAt: '2024-01-15T08:00:00Z'
+          endedAt: null
     Slug.Status:
       type: object
       required:
@@ -2992,6 +3208,9 @@ components:
             - type: 'null'
           description: The organization currently using the slug, if any.
       description: The current state of the slug.
+      examples:
+        - available: false
+          orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
     Unauthorized:
       type: object
       required:
@@ -3014,6 +3233,11 @@ components:
             - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
         detail:
           type: string
+      examples:
+        - title: Unauthorized
+          status: 401
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+          detail: Authentication credentials were missing or invalid
     Unit.Base:
       type: object
       required:
@@ -3139,6 +3363,9 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: The unique identifier of the member
       description: Model representing a member of an organization, linking organization and member by their unique identifiers
+      examples:
+        - orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          memberId: d26e9c90-4747-496b-9953-7e7c4f97643f
     Unit.OrgMemberRequest:
       type: object
       required:
@@ -3163,6 +3390,18 @@ components:
             - $ref: '#/components/schemas/User.User'
           description: Full user details including emails
       description: Response model for organization member with full user details
+      examples:
+        - orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          member:
+            id: d26e9c90-4747-496b-9953-7e7c4f97643f
+            username: alice_wang
+            name: Alice Wang
+            avatarUrl: https://avatars.githubusercontent.com/u/87654321
+            emails:
+              - alice@example.com
+            roles:
+              - USER
+            is_onboarded: true
     Unit.Organization:
       type: object
       required:
@@ -3200,6 +3439,16 @@ components:
         slug:
           type: string
           description: Unique slug for the organization, used for URL routing and identification
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          name: NYCU SDC
+          description: National Yang Ming Chiao Tung University Software Development Club
+          metadata:
+            type: club
+            founded: '2020'
+          createdAt: '2024-01-15T08:00:00Z'
+          updatedAt: '2024-12-20T10:30:00Z'
+          slug: nycu-sdc
     Unit.ParentChild:
       type: object
       required:
@@ -3219,6 +3468,10 @@ components:
             - $ref: '#/components/schemas/uuid'
           description: The unique identifier of the units' organization
       description: Model representing a parent-child relationship between units, allowing for hierarchical structures
+      examples:
+        - parentId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          childId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
     Unit.ParentChildRequest:
       type: object
       required:
@@ -3268,6 +3521,14 @@ components:
           type: string
           format: date-time
           description: The last updated timestamp of the unit or organization
+      examples:
+        - id: d26e9c90-4747-496b-9953-7e7c4f97643f
+          name: Backend Team
+          description: Backend development team
+          metadata:
+            tech: Go, Node.js
+          createdAt: '2024-03-01T09:00:00Z'
+          updatedAt: '2024-11-15T14:20:00Z'
     Unit.UpdateOrgRequest:
       type: object
       required:
@@ -3289,6 +3550,13 @@ components:
           description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
         slug:
           type: string
+      examples:
+        - name: NYCU SDC 2025
+          description: Updated organization description
+          slug: nycu-sdc
+          metadata:
+            type: club
+            members: '150'
     Unit.UpdateUnitRequest:
       type: object
       required:
@@ -3307,6 +3575,11 @@ components:
           unevaluatedProperties:
             type: string
           description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+      examples:
+        - name: Updated Backend Team
+          description: Backend and Infrastructure team
+          metadata:
+            tech: Go, Node.js, Kubernetes
     Unit.UserForm:
       type: object
       required:
@@ -3336,6 +3609,13 @@ components:
             $ref: '#/components/schemas/uuid'
           description: The unique identifiers of the user's responses to the form, if they exist
       description: Response model for listing user forms with status
+      examples:
+        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: SDC 2025 Recruitment Form
+          deadline: '2025-03-31T23:59:59Z'
+          status: IN_PROGRESS
+          responseIds:
+            - a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
     Unit.UserFormStatus:
       type: string
       enum:
@@ -3358,6 +3638,9 @@ components:
           maxLength: 15
           pattern: ^\w+$
           description: The user's nickname.
+      examples:
+        - username: jane_smith
+          name: Jane Smith
     User.Role:
       type: string
       enum:
@@ -3403,6 +3686,17 @@ components:
         is_onboarded:
           type: boolean
           description: The user is onboareded or not
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          username: john_doe
+          name: John Doe
+          avatarUrl: https://avatars.githubusercontent.com/u/12345678
+          emails:
+            - john.doe@example.com
+            - john@gmail.com
+          roles:
+            - USER
+          is_onboarded: true
     Versions:
       type: string
       enum:
