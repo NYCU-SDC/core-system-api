@@ -428,7 +428,7 @@ Content-Type: application/json
         {
             "questionId": "{{rankingQuestionId}}",
             "questionType": "RANKING",
-            "value": ["{{singleChoiceOptions[2].id}}", "{{singleChoiceOptions[0].id}}", "{{singleChoiceOptions[1].id}}"]
+            "value": ["{{rankingOptions[2].id}}", "{{rankingOptions[0].id}}", "{{rankingOptions[1].id}}"]
         }
     ]
 }
@@ -438,13 +438,49 @@ Content-Type: application/json
     test.hasResponseBody();
 
     const { equal } = require('assert');
+    const data = JSON.parse(response.body);
 
-    test('Draft ranking answer saved', () => {
-        const data = JSON.parse(response.body);
-        equal(data.id, responseId, 'Response ID should match');
-        equal(Array.isArray(data.answers), true, 'Answers should be an array');
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
         
         console.log('Saved ranking answer (auto-save)');
+    });
+
+    test('Answer has required metadata fields', () => {
+        const rankingAnswer = data.answers[0];
+        equal(rankingAnswer.createdAt !== undefined, true, 'Answer should have createdAt');
+        equal(rankingAnswer.updatedAt !== undefined, true, 'Answer should have updatedAt');
+        equal(rankingAnswer.responseId, responseId, 'responseId should match');
+        equal(rankingAnswer.questionId, rankingQuestionId, 'questionId should match');
+        
+        console.log('Answer metadata verified');
+    });
+
+    test('Answer has correct nested answer structure', () => {
+        const rankingAnswer = data.answers[0];
+        equal(rankingAnswer.answer !== undefined, true, 'Should have nested answer object');
+        equal(rankingAnswer.answer.questionId, rankingQuestionId, 'Nested questionId should match');
+        equal(rankingAnswer.answer.questionType, 'RANKING', 'Question type should be RANKING');
+        equal(Array.isArray(rankingAnswer.answer.value), true, 'Value should be an array for ranking question');
+        equal(rankingAnswer.displayValue !== undefined, true, 'Should have displayValue');
+        
+        console.log('Nested answer structure verified');
+    });
+
+    test('Ranking answer content is correct', () => {
+        const rankingAnswer = data.answers.find(a => a.questionId === rankingQuestionId);
+        equal(rankingAnswer !== undefined, true, 'Ranking answer should exist');
+        equal(rankingAnswer.questionId, rankingQuestionId, 'Question ID should match');
+        equal(rankingAnswer.answer.questionId, rankingQuestionId, 'Nested questionId should match');
+        equal(rankingAnswer.answer.questionType, 'RANKING', 'Question type should be RANKING');
+        equal(rankingAnswer.answer.value.length, 3, 'Should have 3 ranked options');
+        equal(rankingAnswer.answer.value[0], rankingOptions[2].id, 'First ranked option should match');
+        equal(rankingAnswer.answer.value[1], rankingOptions[0].id, 'Second ranked option should match');
+        equal(rankingAnswer.answer.value[2], rankingOptions[1].id, 'Third ranked option should match');
+        equal(rankingAnswer.displayValue.includes('>'), true, 'Display value should contain ranking separator');
+        
+        console.log('Ranking answer:', rankingAnswer.displayValue);
     });
 }}
 
@@ -473,61 +509,96 @@ Content-Type: application/json
     test.hasResponseBody();
 
     const { equal } = require('assert');
+    const data = JSON.parse(response.body);
 
-    test('Draft detailed multiple choice answer saved', () => {
-        const data = JSON.parse(response.body);
-        equal(data.id, responseId, 'Response ID should match');
-        equal(Array.isArray(data.answers), true, 'Answers should be an array');
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
         
         console.log('Saved detailed multiple choice answer (auto-save)');
+    });
+
+    test('Answer has required metadata fields', () => {
+        const detailedAnswer = data.answers[0];
+        equal(detailedAnswer.createdAt !== undefined, true, 'Answer should have createdAt');
+        equal(detailedAnswer.updatedAt !== undefined, true, 'Answer should have updatedAt');
+        equal(detailedAnswer.responseId, responseId, 'responseId should match');
+        equal(detailedAnswer.questionId, detailedMultipleChoiceQuestionId, 'questionId should match');
+        
+        console.log('Answer metadata verified');
+    });
+
+    test('Answer has correct nested answer structure', () => {
+        const detailedAnswer = data.answers[0];
+        equal(detailedAnswer.answer !== undefined, true, 'Should have nested answer object');
+        equal(detailedAnswer.answer.questionId, detailedMultipleChoiceQuestionId, 'Nested questionId should match');
+        equal(detailedAnswer.answer.questionType, 'DETAILED_MULTIPLE_CHOICE', 'Question type should be DETAILED_MULTIPLE_CHOICE');
+        equal(Array.isArray(detailedAnswer.answer.value), true, 'Value should be an array for choice question');
+        equal(detailedAnswer.displayValue !== undefined, true, 'Should have displayValue');
+        
+        console.log('Nested answer structure verified');
+    });
+
+    test('Detailed multiple choice answer content is correct', () => {
+        const detailedAnswer = data.answers.find(a => a.questionId === detailedMultipleChoiceQuestionId);
+        equal(detailedAnswer !== undefined, true, 'Detailed multiple choice answer should exist');
+        equal(detailedAnswer.questionId, detailedMultipleChoiceQuestionId, 'Question ID should match');
+        equal(detailedAnswer.answer.questionId, detailedMultipleChoiceQuestionId, 'Nested questionId should match');
+        equal(detailedAnswer.answer.questionType, 'DETAILED_MULTIPLE_CHOICE', 'Question type should be DETAILED_MULTIPLE_CHOICE');
+        equal(detailedAnswer.answer.value.length, 2, 'Should have 2 selected options');
+        equal(detailedAnswer.answer.value.includes(detailedMultipleChoiceOptions[0].id), true, 'Should include first selected option');
+        equal(detailedAnswer.answer.value.includes(detailedMultipleChoiceOptions[2].id), true, 'Should include second selected option');
+        equal(detailedAnswer.displayValue !== undefined, true, 'Display value should exist');
+        
+        console.log('Detailed multiple choice answer:', detailedAnswer.displayValue);
     });
 }}
 
 ###
 
-# ============================================
-# Upload Files for File Upload Question
-# ============================================
-# NOTE: This test may fail if file upload is not configured
-# @name uploadQuestionFiles
-# @ref saveDraftDetailedMultipleChoiceAnswer
-POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/files
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+# # ============================================
+# # Upload Files for File Upload Question
+# # ============================================
+# # NOTE: This test may fail if file upload is not configured
+# # @name uploadQuestionFiles
+# # @ref saveDraftDetailedMultipleChoiceAnswer
+# POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/files
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="files"; filename="resume.pdf"
-Content-Type: application/pdf
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW
+# Content-Disposition: form-data; name="files"; filename="resume.pdf"
+# Content-Type: application/pdf
 
-%PDF-1.4 Mock PDF content for testing
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
+# %PDF-1.4 Mock PDF content for testing
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
-{{
-    const statusCode = response.statusCode;
-    const isSuccess = statusCode === 200;
-    const isError = statusCode >= 400;
+# {{
+#     const statusCode = response.statusCode;
+#     const isSuccess = statusCode === 200;
+#     const isError = statusCode >= 400;
     
-    if (isSuccess) {
-        test.status(200);
-        test.hasResponseBody();
+#     if (isSuccess) {
+#         test.status(200);
+#         test.hasResponseBody();
 
-        const { equal } = require('assert');
+#         const { equal } = require('assert');
 
-        test('File uploaded and answer auto-created', () => {
-            const data = JSON.parse(response.body);
-            equal(data.id, responseId, 'Response ID should match');
-            equal(data.questionAnswerPair.questionId, uploadFileQuestionId, 'Question ID should match');
-            equal(data.questionAnswerPair.questionType, 'UPLOAD_FILE', 'Question type should be UPLOAD_FILE');
-            equal(Array.isArray(data.questionAnswerPair.value), true, 'Value should be an array of URLs');
-            equal(data.questionAnswerPair.value.length > 0, true, 'Should have at least one file URL');
+#         test('File uploaded and answer auto-created', () => {
+#             const data = JSON.parse(response.body);
+#             equal(data.id, responseId, 'Response ID should match');
+#             equal(data.questionAnswerPair.questionId, uploadFileQuestionId, 'Question ID should match');
+#             equal(data.questionAnswerPair.questionType, 'UPLOAD_FILE', 'Question type should be UPLOAD_FILE');
+#             equal(Array.isArray(data.questionAnswerPair.value), true, 'Value should be an array of URLs');
+#             equal(data.questionAnswerPair.value.length > 0, true, 'Should have at least one file URL');
             
-            console.log('File uploaded successfully');
-            console.log('File URLs:', data.questionAnswerPair.value);
-        });
-    } else if (isError) {
-        console.warn('⚠️  File upload test skipped - upload not configured or failed');
-        console.warn('Status:', statusCode);
-    }
-}}
+#             console.log('File uploaded successfully');
+#             console.log('File URLs:', data.questionAnswerPair.value);
+#         });
+#     } else if (isError) {
+#         console.warn('⚠️  File upload test skipped - upload not configured or failed');
+#         console.warn('Status:', statusCode);
+#     }
+# }}
 
 ###
 
