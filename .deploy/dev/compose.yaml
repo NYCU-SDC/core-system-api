@@ -8,10 +8,25 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.core-system-mock-dev.rule=Host(`mock.core-system.sdc.nycu.club`)"
-      - "traefik.http.routers.core-system-mock-dev.entrypoints=websecure"
-      - "traefik.http.routers.core-system-mock-dev.tls=true"
-      - "traefik.http.routers.core-system-mock-dev.tls.certresolver=cloudflare"
+
+      # Router
+      - "traefik.http.routers.core-system-mock.rule=Host(`mock.core-system.sdc.nycu.club`)"
+      - "traefik.http.routers.core-system-mock.entrypoints=websecure"
+      - "traefik.http.routers.core-system-mock.tls=true"
+      - "traefik.http.routers.core-system-mock.tls.certresolver=cloudflare"
+
+      # Service
+      - "traefik.http.services.core-system-mock.loadbalancer.server.port=4010"
+
+      # CORS Middleware
+      - "traefik.http.middlewares.core-system-cors.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.middlewares.core-system-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.core-system-cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.core-system-cors.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.core-system-cors.headers.addvaryheader=true"
+
+      # Attach middleware
+      - "traefik.http.routers.core-system-mock.middlewares=core-system-cors"
 
 networks:
   traefik:
