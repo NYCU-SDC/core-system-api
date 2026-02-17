@@ -111,9 +111,18 @@ Content-Type: application/json
     "description": "Select one option that best describes your preference",
     "order": 3,
     "choices": [
-        { "name": "Remote" },
-        { "name": "On-site" },
-        { "name": "Hybrid" }
+        { 
+            "name": "Remote", 
+            "description": "Work from home or any location of your choice" 
+        },
+        { 
+            "name": "On-site", 
+            "description": "Work from the company office" 
+        },
+        { 
+            "name": "Hybrid", 
+            "description": "Combination of remote and on-site work" 
+        }
     ]
 }
 
@@ -129,6 +138,10 @@ Content-Type: application/json
         equal(data.type, 'SINGLE_CHOICE', 'Type should be SINGLE_CHOICE');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 3, 'Should have 3 choices');
+        
+        // Verify descriptions exist
+        const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
+        equal(hasDescriptions, true, 'All choices should have descriptions');
         
         console.log('Created SINGLE_CHOICE question:', data.id);
     });
@@ -155,11 +168,26 @@ Content-Type: application/json
     "description": "Select all that apply",
     "order": 4,
     "choices": [
-        { "name": "JavaScript" },
-        { "name": "TypeScript" },
-        { "name": "Python" },
-        { "name": "Go" },
-        { "name": "Rust" }
+        { 
+            "name": "JavaScript", 
+            "description": "Dynamic programming language for web development" 
+        },
+        { 
+            "name": "TypeScript", 
+            "description": "Typed superset of JavaScript" 
+        },
+        { 
+            "name": "Python", 
+            "description": "High-level programming language for general purpose" 
+        },
+        { 
+            "name": "Go", 
+            "description": "Compiled language designed at Google" 
+        },
+        { 
+            "name": "Rust", 
+            "description": "Systems programming language focused on safety" 
+        }
     ]
 }
 
@@ -175,6 +203,10 @@ Content-Type: application/json
         equal(data.type, 'MULTIPLE_CHOICE', 'Type should be MULTIPLE_CHOICE');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 5, 'Should have 5 choices');
+        
+        // Verify descriptions exist
+        const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
+        equal(hasDescriptions, true, 'All choices should have descriptions');
         
         console.log('Created MULTIPLE_CHOICE question:', data.id);
     });
@@ -201,10 +233,22 @@ Content-Type: application/json
     "description": "Choose from the dropdown menu",
     "order": 5,
     "choices": [
-        { "name": "Beginner (0-1 years)" },
-        { "name": "Intermediate (1-3 years)" },
-        { "name": "Advanced (3-5 years)" },
-        { "name": "Expert (5+ years)" }
+        { 
+            "name": "Beginner (0-1 years)", 
+            "description": "Just starting out in the field" 
+        },
+        { 
+            "name": "Intermediate (1-3 years)", 
+            "description": "Some professional experience" 
+        },
+        { 
+            "name": "Advanced (3-5 years)", 
+            "description": "Extensive professional experience" 
+        },
+        { 
+            "name": "Expert (5+ years)", 
+            "description": "Senior level with deep expertise" 
+        }
     ]
 }
 
@@ -221,6 +265,10 @@ Content-Type: application/json
         equal(data.required, false, 'Required should be false');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 4, 'Should have 4 choices');
+        
+        // Verify descriptions exist
+        const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
+        equal(hasDescriptions, true, 'All choices should have descriptions');
         
         console.log('Created DROPDOWN question:', data.id);
     });
@@ -495,7 +543,20 @@ Content-Type: application/json
     "title": "Rank your work location preferences",
     "description": "Order the options based on your preference (most preferred first)",
     "order": 11,
-    "sourceId": "{{singleChoiceQuestionId}}"
+    "choices": [
+        { 
+            "name": "Remote", 
+            "description": "Work from home or any location of your choice" 
+        },
+        { 
+            "name": "On-site", 
+            "description": "Work from the company office" 
+        },
+        { 
+            "name": "Hybrid", 
+            "description": "Combination of remote and on-site work" 
+        }
+    ]
 }
 
 {{
@@ -509,13 +570,19 @@ Content-Type: application/json
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'RANKING', 'Type should be RANKING');
         equal(data.required, true, 'Required should be true');
-        equal(data.sourceId, singleChoiceQuestionId, 'Source ID should match the single choice question');
+        equal(Array.isArray(data.choices), true, 'Choices should be an array');
+        equal(data.choices.length, 3, 'Should have 3 choices');
+        
+        // Verify descriptions exist
+        const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
+        equal(hasDescriptions, true, 'All choices should have descriptions');
         
         console.log('Created RANKING question:', data.id);
     });
 
     const data = JSON.parse(response.body);
     exports.rankingQuestionId = data.id;
+    exports.rankingOptions = data.choices;
 }}
 
 ###
