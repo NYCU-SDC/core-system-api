@@ -2,12 +2,18 @@ using Http;
 
 namespace CoreSystem.Responses {
 	@doc("Response model for creating a form response")
+	@example(#{ id: "a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6" })
 	model CreateResponse {
 		@doc("The response's unique identifier.")
 		id: uuid;
 	}
 
 	@doc("Response model for updating a form response")
+	@example(#{
+		id: "a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6",
+		updatedAt: utcDateTime.fromISO("2025-02-17T16:45:00Z"),
+		answers: #[],
+	})
 	model UpdateResponse {
 		@doc("The response's unique identifier.")
 		id: uuid;
@@ -20,6 +26,12 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for a single response in list view")
+	@example(#{
+		id: "a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6",
+		submittedBy: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		createdAt: utcDateTime.fromISO("2025-02-15T10:00:00Z"),
+		updatedAt: utcDateTime.fromISO("2025-02-17T16:45:00Z"),
+	})
 	model Response {
 		@doc("The response's unique identifier.")
 		id: uuid;
@@ -35,6 +47,7 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for listing all responses of a form")
+	@example(#{ formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", responses: #[] })
 	model ListResponse {
 		@doc("The form ID.")
 		formId: uuid;
@@ -44,6 +57,12 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for getting a specific form response")
+	@example(#{
+		id: "a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6",
+		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+		progress: ResponseProgress.draft,
+		sections: #[],
+	})
 	model GetFormResponse {
 		@doc("The response's unique identifier.")
 		id: uuid;
@@ -68,6 +87,12 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for a single section in response sections view")
+	@example(#{
+		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		title: "Personal Information",
+		progress: SectionProgress.draft,
+		answerDetails: #[],
+	})
 	model ResponseSections {
 		@doc("Unique identifier.")
 		id: uuid;
