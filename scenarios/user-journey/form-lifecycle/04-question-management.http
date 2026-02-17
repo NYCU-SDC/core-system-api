@@ -306,7 +306,14 @@ Content-Type: application/json
     "type": "DATE",
     "title": "When can you start?",
     "description": "Please select your preferred start date",
-    "order": 7
+    "order": 7,
+    "date": {
+        "hasYear": true,
+        "hasMonth": true,
+        "hasDay": true,
+        "minDate": "2024-01-01T00:00:00Z",
+        "maxDate": "2026-12-31T23:59:59Z"
+    }
 }
 
 {{
@@ -320,6 +327,12 @@ Content-Type: application/json
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'DATE', 'Type should be DATE');
         equal(data.required, true, 'Required should be true');
+        equal(data.date !== undefined, true, 'Date options should exist');
+        equal(data.date.hasYear, true, 'hasYear should be true');
+        equal(data.date.hasMonth, true, 'hasMonth should be true');
+        equal(data.date.hasDay, true, 'hasDay should be true');
+        equal(data.date.minDate, '2024-01-01T00:00:00Z', 'minDate should match');
+        equal(data.date.maxDate, '2026-12-31T23:59:59Z', 'maxDate should match');
         
         console.log('Created DATE question:', data.id);
     });
@@ -545,10 +558,47 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Create Question HYPERLINK That Need To Delete
+# ============================================
+# @name createHyperlinkQuestionToDelete
+# @ref createHyperlinkQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "HYPERLINK",
+    "title": "Need to delete this question",
+    "description": "Please provide a link to your portfolio, GitHub, or LinkedIn profile",
+    "order": 12
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Hyperlink question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'HYPERLINK', 'Type should be HYPERLINK');
+        equal(data.required, false, 'Required should be false');
+        
+        console.log('Created HYPERLINK question:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.hyperlinkQuestionToDeleteId = data.id;
+}}
+
+###
+
+# ============================================
 # List All Questions in Section
 # ============================================
 # @name listQuestionsInSection
-# @ref createHyperlinkQuestion
+# @ref createHyperlinkQuestionToDelete
 GET {{BASE_URL}}/forms/{{formId}}/sections
 
 {{
@@ -563,14 +613,10 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         equal(data.length > 0, true, 'Should have at least one section');
         
         // Find our section
-        const ourSection = data.find(s => s.Section.ID === sectionNodeId);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
-        equal(Array.isArray(ourSection.Questions), true, 'Questions should be an array');
-        equal(ourSection.Questions.length, 11, 'Should have 11 questions');
-        
-        console.log('=== Section with All Questions ===');
-        console.log(JSON.stringify(ourSection, null, 2));
-        console.log('=== End Section ===');
+        equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
+        equal(ourSection.questions.length, 12, 'Should have 12 questions');
     });
 }}
 
@@ -616,12 +662,12 @@ Content-Type: application/json
 # ============================================
 # @name deleteHyperlinkQuestion
 # @ref updateShortTextQuestion
-DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionId}}
+DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionToDeleteId}}
 
 {{
     test.status(204);
     
-    console.log('Deleted HYPERLINK question:', hyperlinkQuestionId);
+    console.log('Deleted HYPERLINK question:', hyperlinkQuestionToDeleteId);
 }}
 
 ###
@@ -643,15 +689,15 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const data = JSON.parse(response.body);
         
         // Find our section
-        const ourSection = data.find(s => s.Section.ID === sectionNodeId);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
-        equal(Array.isArray(ourSection.Questions), true, 'Questions should be an array');
-        equal(ourSection.Questions.length, 10, 'Should now have 10 questions (after deletion)');
+        equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
+        equal(ourSection.questions.length, 11, 'Should now have 10 questions (after deletion)');
         
         // Verify the deleted question is not in the list
-        const deletedQuestion = ourSection.Questions.find(q => q.id === hyperlinkQuestionId);
+        const deletedQuestion = ourSection.questions.find(q => q.id === hyperlinkQuestionToDeleteId);
         equal(deletedQuestion, undefined, 'Deleted question should not exist');
         
-        console.log('Question count after deletion:', ourSection.Questions.length);
+        console.log('Question count after deletion:', ourSection.questions.length);
     });
 }}

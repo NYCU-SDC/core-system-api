@@ -43,31 +43,19 @@ namespace CoreSystem.Responses {
 		responses: Response[];
 	}
 
-	@doc("Model for a single section in preview view")
-	model PreviewSection {
-		@doc("The section title.")
-		sectionTitle: string;
-
-		@doc("The answering progress of this section.")
-		progress: SectionProgress;
-
-		@doc("All questions with their answers in this section.")
-		questionAnswerPairs: PreviewQuestion[];
-	}
-
 	@doc("Response model for getting a specific form response")
 	model GetFormResponse {
 		@doc("The response's unique identifier.")
 		id: uuid;
 
-		@doc("The current answering progress of the response.")
-		progress: ResponseProgress;
-
 		@doc("The form that this response belongs to.")
 		formId: uuid;
 
-		@doc("All questions with their answers for this response.")
-		questionAnswerPairs: PreviewSection[];
+		@doc("The current answering progress of the response.")
+		progress: ResponseProgress;
+
+		@doc("The section list of the response, order by the form workflow.")
+		sections: ResponseSections[];
 	}
 
 	@doc("The current progress of the response.")
@@ -91,27 +79,21 @@ namespace CoreSystem.Responses {
 		progress: SectionProgress;
 
 		@doc("The questions of the section.")
-		questions: CoreSystem.Forms.QuestionResponse[];
+		answerDetails: AnswersDetail[];
 	}
 
-	@doc("The current progress of a section")
+	@doc("The current progress of a section, notStarted -> draft -> completed, or skipped if user doesn't need to answer this section.")
 	enum SectionProgress {
+		@doc("User doesn't need to answer this section.")
+		skipped: "SKIPPED",
+
+		@doc("User is not started to answer this section, no one question in this section is answered.")
+		notStarted: "NOT_STARTED",
+
 		@doc("User hasn't started or not finished.")
 		draft: "DRAFT",
 
-		@doc("User has completed/passed this response.")
-		submitted: "SUBMITTED",
-	}
-
-	@example(#{
-		sections: #[
-			#{ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890", title: "Group Info", progress: SectionProgress.submitted, questions: #[] },
-			#{ id: "0f9e8d7c-6b5a-4321-0fed-cba987654321", title: "Self Introduction", progress: SectionProgress.draft, questions: #[] }
-		],
-	})
-	@doc("Response model for listing all sections of a response")
-	model ListSectionResponse {
-		@doc("The section list of the response.")
-		sections: ResponseSections[];
+		@doc("User has passed all validations in this section.")
+		completed: "COMPLETED",
 	}
 }
