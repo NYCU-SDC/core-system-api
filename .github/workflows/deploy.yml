@@ -1,4 +1,4 @@
-name: Deploy API docs and mock server
+name: Deploy API Docs and Mock Server
 
 on:
   push:
