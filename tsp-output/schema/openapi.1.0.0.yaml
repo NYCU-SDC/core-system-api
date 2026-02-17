@@ -193,9 +193,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Unit.UserForm'
+                $ref: '#/components/schemas/Unit.UserFormListResponse'
       tags:
         - Unit
   /api/forms/{formId}:
@@ -1994,7 +1992,7 @@ components:
             headerFont: LINESeedTW
             questionFont: LINESeedTW
             textFont: LINESeedTW
-          coverImage: https://example.com/images/form-cover.webp
+          coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
           googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
           visibility: PUBLIC
           createdAt: '2025-01-15T10:00:00Z'
@@ -2154,7 +2152,416 @@ components:
             $ref: '#/components/schemas/Forms.Section'
       description: Response model for listing all sections and questions in a form.
       examples:
-        - sections: []
+        - sections:
+            - id: b23f2668-c2dc-4213-88fe-eceedff46398
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Personal Information
+              description: Please provide your basic information
+              questions:
+                - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Full Name
+                  description: Please enter your full name (in English)
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f2a1b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Student ID
+                  description: Enter your student ID number
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a3b4c5d6-7e8f-9a0b-1c2d-3e4f5a6b7c8d
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Email Address
+                  description: Please provide your email address
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Phone Number
+                  description: Your contact phone number
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: e5f6a7b8-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: DATE
+                  title: Date of Birth
+                  description: Select your date of birth
+                  date:
+                    hasYear: true
+                    hasMonth: true
+                    hasDay: true
+                    minDate: '1990-01-01T00:00:00Z'
+                    maxDate: '2010-12-31T23:59:59Z'
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f6a7b8c9-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: LONG_TEXT
+                  title: Self Introduction
+                  description: Tell us about yourself (200-500 words)
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Academic & Experience
+              description: Tell us about your academic background and experience
+              questions:
+                - id: a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: true
+                  type: DROPDOWN
+                  title: Current Education Level
+                  description: Select your current education level
+                  choices:
+                    - id: ch1-1
+                      name: Freshman
+                    - id: ch1-2
+                      name: Sophomore
+                    - id: ch1-3
+                      name: Junior
+                    - id: ch1-4
+                      name: Senior
+                    - id: ch1-5
+                      name: Graduate Student
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: b8c9d0e1-2f3a-4b5c-6d7e-8f9a0b1c2d3e
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: true
+                  type: SINGLE_CHOICE
+                  title: Department/Major
+                  description: Select your department or major
+                  choices:
+                    - id: ch2-1
+                      name: Computer Science
+                    - id: ch2-2
+                      name: Information Management
+                    - id: ch2-3
+                      name: Electrical Engineering
+                    - id: ch2-4
+                      name: Electronics Engineering
+                    - id: ch2-5
+                      name: Other
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c9d0e1f2-3a4b-5c6d-7e8f-9a0b1c2d3e4f
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: true
+                  type: DATE
+                  title: Expected Graduation Date
+                  description: When do you expect to graduate?
+                  date:
+                    hasYear: true
+                    hasMonth: true
+                    hasDay: false
+                    minDate: '2025-01-01T00:00:00Z'
+                    maxDate: '2030-12-31T23:59:59Z'
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: d0e1f2a3-4b5c-6d7e-8f9a-0b1c2d3e4f5a
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: false
+                  type: MULTIPLE_CHOICE
+                  title: Previous Experience
+                  description: Select all that apply
+                  choices:
+                    - id: ch3-1
+                      name: Participated in hackathons
+                    - id: ch3-2
+                      name: Open source contributor
+                    - id: ch3-3
+                      name: Personal projects
+                    - id: ch3-4
+                      name: Internship experience
+                    - id: ch3-5
+                      name: Research assistant
+                    - id: ch3-6
+                      name: None of the above
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Technical Skills
+              description: Tell us about your technical expertise
+              questions:
+                - id: e1f2a3b4-5c6d-7e8f-9a0b-1c2d3e4f5a6b
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: DETAILED_MULTIPLE_CHOICE
+                  title: Programming Languages
+                  description: Select all programming languages you are familiar with
+                  choices:
+                    - id: ch4-1
+                      name: TypeScript/JavaScript
+                      description: Modern web development
+                    - id: ch4-2
+                      name: Python
+                      description: General purpose and data science
+                    - id: ch4-3
+                      name: Go
+                      description: Backend and systems programming
+                    - id: ch4-4
+                      name: Rust
+                      description: Systems programming
+                    - id: ch4-5
+                      name: C/C++
+                      description: Low-level programming
+                    - id: ch4-6
+                      name: Java
+                      description: Enterprise applications
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f2a3b4c5-6d7e-8f9a-0b1c-2d3e4f5a6b7c
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: LINEAR_SCALE
+                  title: Backend Development Experience
+                  description: Rate your backend development experience level
+                  scale:
+                    minVal: 0
+                    maxVal: 10
+                    minValueLabel: Beginner
+                    maxValueLabel: Expert
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a3b4c5d6-7e8f-9a0b-1c2d-3e4f5a6b7c8d
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: LINEAR_SCALE
+                  title: Frontend Development Experience
+                  description: Rate your frontend development experience level
+                  scale:
+                    minVal: 0
+                    maxVal: 10
+                    minValueLabel: Beginner
+                    maxValueLabel: Expert
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: b4c5d6e7-8f9a-0b1c-2d3e-4f5a6b7c8d9e
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: RATING
+                  title: DevOps & Infrastructure
+                  description: Rate your familiarity with DevOps practices and infrastructure
+                  scale:
+                    icon: star
+                    minVal: 1
+                    maxVal: 5
+                    minValueLabel: Novice
+                    maxValueLabel: Proficient
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c5d6e7f8-9a0b-1c2d-3e4f-5a6b7c8d9e0f
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: false
+                  type: MULTIPLE_CHOICE
+                  title: Technologies You've Worked With
+                  description: Select all technologies you have experience with
+                  choices:
+                    - id: ch5-1
+                      name: Docker
+                    - id: ch5-2
+                      name: Kubernetes
+                    - id: ch5-3
+                      name: React/Vue/Angular
+                    - id: ch5-4
+                      name: Node.js
+                    - id: ch5-5
+                      name: PostgreSQL/MySQL
+                    - id: ch5-6
+                      name: MongoDB
+                    - id: ch5-7
+                      name: Redis
+                    - id: ch5-8
+                      name: AWS/GCP/Azure
+                    - id: ch5-9
+                      name: CI/CD (GitHub Actions, GitLab CI)
+                    - id: ch5-10
+                      name: Git
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Team Preferences
+              description: Help us understand your team preferences
+              questions:
+                - id: d6e7f8a9-0b1c-2d3e-4f5a-6b7c8d9e0f1a
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: RANKING
+                  title: Team Preferences
+                  description: Rank the following teams in order of your preference (1 = most preferred)
+                  choices:
+                    - id: team-1
+                      name: Core System Team
+                      description: Backend API & infrastructure development
+                    - id: team-2
+                      name: Clustron Team
+                      description: Cluster management and distributed systems
+                    - id: team-3
+                      name: HPC Team
+                      description: High-performance computing
+                    - id: team-4
+                      name: Frontend Team
+                      description: User interface and experience
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: e7f8a9b0-1c2d-3e4f-5a6b-7c8d9e0f1a2b
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: SINGLE_CHOICE
+                  title: Role Preference
+                  description: Which role are you most interested in?
+                  choices:
+                    - id: role-1
+                      name: Backend Developer
+                    - id: role-2
+                      name: Frontend Developer
+                    - id: role-3
+                      name: Full Stack Developer
+                    - id: role-4
+                      name: DevOps Engineer
+                    - id: role-5
+                      name: Data Engineer
+                    - id: role-6
+                      name: System Administrator
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f8a9b0c1-2d3e-4f5a-6b7c-8d9e0f1a2b3c
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: LONG_TEXT
+                  title: Why SDC?
+                  description: Why do you want to join SDC? What are your expectations?
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a9b0c1d2-3e4f-5a6b-7c8d-9e0f1a2b3c4d
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: RATING
+                  title: Team Collaboration
+                  description: How comfortable are you working in a team environment?
+                  scale:
+                    icon: heart
+                    minVal: 1
+                    maxVal: 5
+                    minValueLabel: Prefer solo
+                    maxValueLabel: Love teamwork
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Availability & Additional Information
+              description: Final section - availability and additional materials
+              questions:
+                - id: b0c1d2e3-4f5a-6b7c-8d9e-0f1a2b3c4d5e
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: true
+                  type: MULTIPLE_CHOICE
+                  title: Weekly Availability
+                  description: Which days are you available each week? (Select all that apply)
+                  choices:
+                    - id: day-1
+                      name: Monday
+                    - id: day-2
+                      name: Tuesday
+                    - id: day-3
+                      name: Wednesday
+                    - id: day-4
+                      name: Thursday
+                    - id: day-5
+                      name: Friday
+                    - id: day-6
+                      name: Saturday
+                    - id: day-7
+                      name: Sunday
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c1d2e3f4-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: true
+                  type: LINEAR_SCALE
+                  title: Time Commitment
+                  description: How many hours per week can you commit to SDC activities?
+                  scale:
+                    minVal: 0
+                    maxVal: 10
+                    minValueLabel: 0-5 hours
+                    maxValueLabel: 20+ hours
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: d2e3f4a5-6b7c-8d9e-0f1a-2b3c4d5e6f7a
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: true
+                  type: UPLOAD_FILE
+                  title: Resume/CV
+                  description: Please upload your resume or CV
+                  uploadFile:
+                    allowedFileTypes:
+                      - PDF
+                      - DOC
+                      - DOCX
+                    maxFileAmount: 1
+                    maxFileSizeLimit: 5242880
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: e3f4a5b6-7c8d-9e0f-1a2b-3c4d5e6f7a8b
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: UPLOAD_FILE
+                  title: Portfolio/Projects
+                  description: Upload any relevant portfolio materials or project documentation (optional)
+                  uploadFile:
+                    allowedFileTypes:
+                      - PDF
+                      - ZIP
+                    maxFileAmount: 3
+                    maxFileSizeLimit: 10485760
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f4a5b6c7-8d9e-0f1a-2b3c-4d5e6f7a8b9c
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: HYPERLINK
+                  title: GitHub Profile
+                  description: Link to your GitHub profile (if available)
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a5b6c7d8-9e0f-1a2b-3c4d-5e6f7a8b9c0d
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: HYPERLINK
+                  title: LinkedIn Profile
+                  description: Link to your LinkedIn profile (optional)
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: b6c7d8e9-0f1a-2b3c-4d5e-6f7a8b9c0d1e
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: HYPERLINK
+                  title: Personal Website/Blog
+                  description: Link to your personal website or blog (if any)
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c7d8e9f0-1a2b-3c4d-5e6f-7a8b9c0d1e2f
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: LONG_TEXT
+                  title: Anything Else?
+                  description: Is there anything else you'd like us to know?
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
     Forms.QuestionRequest:
       type: object
       required:
@@ -2694,7 +3101,7 @@ components:
       examples:
         - createdAt: '2025-02-15T10:00:00Z'
           updatedAt: '2025-02-17T16:45:00Z'
-          responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+          responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           answer:
             questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
             questionType: SHORT_TEXT
@@ -2728,7 +3135,7 @@ components:
           payload:
             createdAt: '2025-02-15T10:00:00Z'
             updatedAt: '2025-02-17T16:45:00Z'
-            responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
             answer:
               questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
               questionType: SHORT_TEXT
@@ -2789,7 +3196,7 @@ components:
           description: The response's unique identifier.
       description: Response model for creating a form response
       examples:
-        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
     Responses.DateAnswer:
       type: object
       required:
@@ -2841,7 +3248,7 @@ components:
           description: The section list of the response, order by the form workflow.
       description: Response model for getting a specific form response
       examples:
-        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
           progress: DRAFT
           sections: []
@@ -2858,11 +3265,11 @@ components:
         answer:
           $ref: '#/components/schemas/Responses.AnswerPayload'
       examples:
-        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           answer:
             createdAt: '2025-02-15T10:00:00Z'
             updatedAt: '2025-02-17T16:45:00Z'
-            responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
             answer:
               questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
               questionType: SHORT_TEXT
@@ -2949,11 +3356,11 @@ components:
           description: The auto-created/updated answer with file URLs.
       description: Response model for the uploaded files and auto-created answer
       examples:
-        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           answer:
             createdAt: '2025-02-15T10:00:00Z'
             updatedAt: '2025-02-17T16:45:00Z'
-            responseId: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
             answer:
               questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
               questionType: SHORT_TEXT
@@ -2985,7 +3392,7 @@ components:
           description: The last updated timestamp of the response.
       description: Response model for a single response in list view
       examples:
-        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           submittedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
           createdAt: '2025-02-15T10:00:00Z'
           updatedAt: '2025-02-17T16:45:00Z'
@@ -3159,7 +3566,7 @@ components:
           description: The updated answer data.
       description: Response model for updating a form response
       examples:
-        - id: a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           updatedAt: '2025-02-17T16:45:00Z'
           answers: []
     Slug.History:
@@ -3610,12 +4017,46 @@ components:
           description: The unique identifiers of the user's responses to the form, if they exist
       description: Response model for listing user forms with status
       examples:
+        - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
+          title: Member Information Update 2025
+          deadline: '2025-02-15T23:59:59Z'
+          status: COMPLETED
+          responseIds:
+            - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
+            - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
         - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
           title: SDC 2025 Recruitment Form
           deadline: '2025-03-31T23:59:59Z'
           status: IN_PROGRESS
           responseIds:
-            - a12b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6
+            - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+        - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
+          title: Annual Survey 2026
+          deadline: '2026-03-31T23:59:59Z'
+          status: NOT_STARTED
+    Unit.UserFormListResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Unit.UserForm'
+      description: Response model for listing all forms of current user
+      examples:
+        - - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
+            title: Annual Survey 2026
+            deadline: '2026-03-31T23:59:59Z'
+            status: NOT_STARTED
+          - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: SDC 2025 Recruitment Form
+            deadline: '2025-03-31T23:59:59Z'
+            status: IN_PROGRESS
+            responseIds:
+              - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
+            title: Member Information Update 2025
+            deadline: '2025-02-15T23:59:59Z'
+            status: COMPLETED
+            responseIds:
+              - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
+              - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
     Unit.UserFormStatus:
       type: string
       enum:
