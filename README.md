@@ -1,12 +1,8 @@
 # Core System API
 
-[![Test Build and Format](https://github.com/NYCU-SDC/core-system-api/actions/workflows/test.yml/badge.svg)](https://github.com/NYCU-SDC/core-system-api/actions/workflows/test.yml)
-[![Release SDK](https://github.com/NYCU-SDC/core-system-api/actions/workflows/sdk.yml/badge.svg)](https://github.com/NYCU-SDC/core-system-api/actions/workflows/sdk.yml)
-[![npm version](https://badge.fury.io/js/%40nycu-sdc%2Fcore-system-sdk.svg)](https://www.npmjs.com/package/@nycu-sdc/core-system-sdk)
+[![Test Build and Format](https://github.com/NYCU-SDC/core-system-api/actions/workflows/test.yml/badge.svg)](https://github.com/NYCU-SDC/core-system-api/actions/workflows/test.yml) [![Release SDK](https://github.com/NYCU-SDC/core-system-api/actions/workflows/sdk.yml/badge.svg)](https://github.com/NYCU-SDC/core-system-api/actions/workflows/sdk.yml) [![npm version](https://badge.fury.io/js/%40nycu-sdc%2Fcore-system-sdk.svg)](https://www.npmjs.com/package/@nycu-sdc/core-system-sdk)
 
 Core System API defined using TypeSpec.
-
-
 
 ```mermaid
 flowchart TD
