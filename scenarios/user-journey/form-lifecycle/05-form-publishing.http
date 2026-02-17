@@ -84,12 +84,12 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         equal(Array.isArray(data), true, 'Response should be an array');
         
         // Find our section
-        const ourSection = data.find(s => s.Section.ID === defaultSectionId);
+        const ourSection = data.find(s => s.section.id === defaultSectionId);
         equal(ourSection !== undefined, true, 'Our section should exist');
-        equal(Array.isArray(ourSection.Questions), true, 'Questions should be an array');
-        equal(ourSection.Questions.length >= 1, true, 'Should have at least 1 question');
+        equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
+        equal(ourSection.questions.length >= 1, true, 'Should have at least 1 question');
         
-        console.log('Form has', ourSection.Questions.length, 'questions ready for publishing');
+        console.log('Form has', ourSection.questions.length, 'questions ready for publishing');
     });
 }}
 

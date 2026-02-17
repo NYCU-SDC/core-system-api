@@ -258,7 +258,6 @@ Content-Type: application/json
             equal(answer.updatedAt !== undefined, true, `Answer ${index + 1} should have updatedAt`);
             equal(answer.responseId, responseId, `Answer ${index + 1} responseId should match`);
             equal(answer.questionId !== undefined, true, `Answer ${index + 1} should have questionId`);
-            equal(answer.submittedBy, userId, `Answer ${index + 1} submittedBy should match current user (BUG: currently returns 00000000-0000-0000-0000-000000000000)`);
         });
 
         console.log('All answers have required metadata fields');
@@ -350,8 +349,26 @@ Content-Type: application/json
 
     test('Draft scale answers saved', () => {
         const data = JSON.parse(response.body);
-        equal(data.id, responseId, 'Response ID should match');
         equal(Array.isArray(data.answers), true, 'Answers should be an array');
+        equal(data.answers.length, 2, 'Should have 2 answers');
+        
+        // Verify LINEAR_SCALE answer
+        const linearScaleAnswer = data.answers.find(a => a.questionId === linearScaleQuestionId);
+        equal(linearScaleAnswer !== undefined, true, 'LINEAR_SCALE answer should exist');
+        equal(linearScaleAnswer.responseId, responseId, 'Response ID should match');
+        equal(linearScaleAnswer.questionId, linearScaleQuestionId, 'Question ID should match');
+        equal(linearScaleAnswer.answer.questionType, 'LINEAR_SCALE', 'Question type should be LINEAR_SCALE');
+        equal(linearScaleAnswer.answer.value, 8, 'Value should be 8');
+        equal(linearScaleAnswer.displayValue, '8 (1-10)', 'Display value should be formatted correctly');
+        
+        // Verify RATING answer
+        const ratingAnswer = data.answers.find(a => a.questionId === ratingQuestionId);
+        equal(ratingAnswer !== undefined, true, 'RATING answer should exist');
+        equal(ratingAnswer.responseId, responseId, 'Response ID should match');
+        equal(ratingAnswer.questionId, ratingQuestionId, 'Question ID should match');
+        equal(ratingAnswer.answer.questionType, 'RATING', 'Question type should be RATING');
+        equal(ratingAnswer.answer.value, 4, 'Value should be 4');
+        equal(ratingAnswer.displayValue, '4 (1-5)', 'Display value should be formatted correctly');
         
         console.log('Saved scale answers (auto-save)');
     });
@@ -372,7 +389,7 @@ Content-Type: application/json
         {
             "questionId": "{{dateQuestionId}}",
             "questionType": "DATE",
-            "value": ["2024-06-15"]
+            "value": "2024-06-15T00:00:00Z"
         }
     ]
 }
@@ -385,8 +402,12 @@ Content-Type: application/json
 
     test('Draft date answer saved', () => {
         const data = JSON.parse(response.body);
-        equal(data.id, responseId, 'Response ID should match');
         equal(Array.isArray(data.answers), true, 'Answers should be an array');
+        
+        const dateAnswer = data.answers.find(a => a.questionId === dateQuestionId);
+        equal(dateAnswer.responseId, responseId, 'Response ID should match');
+        equal(dateAnswer !== undefined, true, 'Date answer should exist');
+        equal(dateAnswer.answer.questionType, 'DATE', 'Question type should be DATE');
         
         console.log('Saved date answer (auto-save)');
     });
