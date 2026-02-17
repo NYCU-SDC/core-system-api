@@ -1258,7 +1258,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Responses.UpdateResponse'
+                type: object
+                properties:
+                  answers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Responses.AnswerPayload'
+                required:
+                  - answers
       tags:
         - Responses
       requestBody:
@@ -1338,32 +1345,6 @@ paths:
             encoding:
               files:
                 contentType: application/json
-  /api/responses/{responseId}/sections:
-    get:
-      operationId: Responses_listResponseSections
-      summary: List Response Sections
-      description: List the form structure of the response.
-      parameters:
-        - name: responseId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/uuid'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Responses.ListSectionResponse'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-      tags:
-        - Responses
   /api/responses/{responseId}/submit:
     post:
       operationId: Responses_submitFormResponse
@@ -2540,36 +2521,15 @@ components:
           type: string
           description: The problem's detail.
       description: Problem represents a problem detail as defined in RFC 7807
-    Responses.AnswerResponse:
+    Responses.AnswerPayload:
       type: object
       required:
-        - id
-        - responseId
-        - submittedBy
-        - answer
         - createdAt
         - updatedAt
+        - responseId
+        - answer
+        - displayValue
       properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The answer's unique identifier.
-        responseId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The response this answer belongs to.
-        submittedBy:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who submitted this answer.
-        answer:
-          anyOf:
-            - $ref: '#/components/schemas/Responses.StringAnswer'
-            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
-            - $ref: '#/components/schemas/Responses.ScaleAnswer'
-            - $ref: '#/components/schemas/Responses.DateAnswer'
-            - $ref: '#/components/schemas/Responses.OauthAnswer'
-          description: The answer data. Type depends on the question type.
         createdAt:
           type: string
           format: date-time
@@ -2578,7 +2538,37 @@ components:
           type: string
           format: date-time
           description: The last updated timestamp of the answer.
-      description: Response model for a single answer in question answers view
+        responseId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response this answer belongs to.
+        answer:
+          anyOf:
+            - $ref: '#/components/schemas/Responses.StringAnswer'
+            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+            - $ref: '#/components/schemas/Responses.ScaleAnswer'
+            - $ref: '#/components/schemas/Responses.DateAnswer'
+            - $ref: '#/components/schemas/Responses.OauthAnswer'
+          description: The answer data. Type depends on the question type.
+        displayValue:
+          type: string
+          description: The formatted answer value for display.
+      description: Contains the details of an answer for a specific question in a response
+    Responses.AnswersDetail:
+      type: object
+      required:
+        - question
+        - payload
+      properties:
+        question:
+          allOf:
+            - $ref: '#/components/schemas/Forms.QuestionResponse'
+          description: The question details.
+        payload:
+          allOf:
+            - $ref: '#/components/schemas/Responses.AnswerPayload'
+          description: All answers for this question.
+      description: Contains the question details and the corresponding answer for a specific question in a response
     Responses.AnswersRequest:
       type: object
       required:
@@ -2623,22 +2613,6 @@ components:
             - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
               questionType: LINEAR_SCALE
               value: 4
-    Responses.AnswersResponse:
-      type: object
-      required:
-        - question
-        - answers
-      properties:
-        question:
-          allOf:
-            - $ref: '#/components/schemas/Forms.QuestionResponse'
-          description: The question details.
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.AnswerResponse'
-          description: All answers for this question.
-      description: Response model for getting all answers for a specific question
     Responses.CreateResponse:
       type: object
       required:
@@ -2677,55 +2651,40 @@ components:
       type: object
       required:
         - id
-        - progress
         - formId
-        - questionAnswerPairs
+        - progress
+        - sections
       properties:
         id:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The response's unique identifier.
-        progress:
-          allOf:
-            - $ref: '#/components/schemas/Responses.ResponseProgress'
-          description: The current answering progress of the response.
         formId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form that this response belongs to.
-        questionAnswerPairs:
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.ResponseProgress'
+          description: The current answering progress of the response.
+        sections:
           type: array
           items:
-            $ref: '#/components/schemas/Responses.PreviewSection'
-          description: All questions with their answers for this response.
+            $ref: '#/components/schemas/Responses.ResponseSections'
+          description: The section list of the response, order by the form workflow.
       description: Response model for getting a specific form response
     Responses.GetQuestionResponse:
       type: object
       required:
         - id
-        - questionAnswerPair
+        - answer
       properties:
         id:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: Response ID that this question answer belongs to.
-        questionAnswerPair:
-          anyOf:
-            - $ref: '#/components/schemas/Responses.StringAnswer'
-            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
-            - $ref: '#/components/schemas/Responses.ScaleAnswer'
-            - $ref: '#/components/schemas/Responses.DateAnswer'
-            - $ref: '#/components/schemas/Responses.OauthAnswer'
-          description: A question with its answer for this response..
-      description: Response model for getting an answer of a specific question.
-      examples:
-        - id: a269d06a-5f41-4d1f-a0a1-3d4007ffd633
-          questionAnswerPair:
-            questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
-            questionType: RANKING
-            value:
-              - Full Stack Intro Training
-              - Full Stack Advanced Training
+        answer:
+          $ref: '#/components/schemas/Responses.AnswerPayload'
     Responses.ListResponse:
       type: object
       required:
@@ -2742,27 +2701,6 @@ components:
             $ref: '#/components/schemas/Responses.Response'
           description: All responses for this form.
       description: Response model for listing all responses of a form
-    Responses.ListSectionResponse:
-      type: object
-      required:
-        - sections
-      properties:
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.ResponseSections'
-          description: The section list of the response.
-      description: Response model for listing all sections of a response
-      examples:
-        - sections:
-            - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-              title: Group Info
-              progress: SUBMITTED
-              questions: []
-            - id: 0f9e8d7c-6b5a-4321-0fed-cba987654321
-              title: Self Introduction
-              progress: DRAFT
-              questions: []
     Responses.OauthAnswer:
       type: object
       required:
@@ -2798,48 +2736,6 @@ components:
           value:
             username: johndoe
             avatarUrl: https://example.com/avatar.jpg
-    Responses.PreviewQuestion:
-      type: object
-      required:
-        - question
-        - displayValue
-      properties:
-        question:
-          allOf:
-            - $ref: '#/components/schemas/Forms.QuestionResponse'
-          description: The question details.
-        displayValue:
-          type: string
-          description: The formatted answer value for display.
-        answerData:
-          anyOf:
-            - $ref: '#/components/schemas/Responses.StringAnswer'
-            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
-            - $ref: '#/components/schemas/Responses.ScaleAnswer'
-            - $ref: '#/components/schemas/Responses.DateAnswer'
-            - $ref: '#/components/schemas/Responses.OauthAnswer'
-          description: The structured answer data for submission. Null if not answered yet.
-      description: Model for a question with its answer in preview view
-    Responses.PreviewSection:
-      type: object
-      required:
-        - sectionTitle
-        - progress
-        - questionAnswerPairs
-      properties:
-        sectionTitle:
-          type: string
-          description: The section title.
-        progress:
-          allOf:
-            - $ref: '#/components/schemas/Responses.SectionProgress'
-          description: The answering progress of this section.
-        questionAnswerPairs:
-          type: array
-          items:
-            $ref: '#/components/schemas/Responses.PreviewQuestion'
-          description: All questions with their answers in this section.
-      description: Model for a single section in preview view
     Responses.QuestionFilesUploadRequest:
       type: object
       properties:
@@ -2855,15 +2751,15 @@ components:
       type: object
       required:
         - id
-        - questionAnswerPair
+        - answer
       properties:
         id:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The response's unique identifier.
-        questionAnswerPair:
+        answer:
           allOf:
-            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+            - $ref: '#/components/schemas/Responses.AnswerPayload'
           description: The auto-created/updated answer with file URLs.
       description: Response model for the uploaded files and auto-created answer
     Responses.Response:
@@ -2903,7 +2799,7 @@ components:
         - id
         - title
         - progress
-        - questions
+        - answerDetails
       properties:
         id:
           allOf:
@@ -2916,10 +2812,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Responses.SectionProgress'
           description: The answering progress of this section.
-        questions:
+        answerDetails:
           type: array
           items:
-            $ref: '#/components/schemas/Forms.QuestionResponse'
+            $ref: '#/components/schemas/Responses.AnswersDetail'
           description: The questions of the section.
       description: Response model for a single section in response sections view
     Responses.ScaleAnswer:
@@ -2954,9 +2850,11 @@ components:
     Responses.SectionProgress:
       type: string
       enum:
+        - SKIPPED
+        - NOT_STARTED
         - DRAFT
-        - SUBMITTED
-      description: The current progress of a section
+        - COMPLETED
+      description: The current progress of a section, notStarted -> draft -> completed, or skipped if user doesn't need to answer this section.
     Responses.StringAnswer:
       type: object
       required:
