@@ -17,10 +17,10 @@ namespace CoreSystem.Forms {
 	@example(#{ title: "Enter SDC Form", description: "If you want to join us, just fill in this form!", messageAfterSubmission: "Thank you for your submission!" })
 	model FormRequest {
 		@doc("The title of the form.")
-		title: string;
+		title?: string;
 
 		@doc("The description of the form.")
-		description: string;
+		description?: string;
 
 		@doc("(Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.")
 		previewMessage?: string;
@@ -32,7 +32,7 @@ namespace CoreSystem.Forms {
 		publishTime?: utcDateTime;
 
 		@doc("The message to show after user's submission.")
-		messageAfterSubmission: string;
+		messageAfterSubmission?: string;
 
 		@doc("The dressing of the form.")
 		dressing?: FormDressing;
@@ -185,7 +185,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Response model for listing all sections and questions in a form.")
-	@example(#{ 
+	@example(#{
 		sections: #[
 			#{
 				id: "b23f2668-c2dc-4213-88fe-eceedff46398",
