@@ -17,7 +17,7 @@ namespace CoreSystem.Forms {
 	@summary("Update Form")
 	@doc("Update an existing form by its unique identifier.")
 	@route("/forms/{formId}")
-	@put
+	@patch(#{implicitOptionality: true})
 	op updateForm(@path formId: uuid, @body updateFormRequest: FormRequest): Form;
 
 	@summary("Delete Form")
