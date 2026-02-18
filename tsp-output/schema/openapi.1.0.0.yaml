@@ -216,7 +216,7 @@ paths:
                 $ref: '#/components/schemas/Forms.Form'
       tags:
         - Forms
-    put:
+    patch:
       operationId: Forms_updateForm
       summary: Update Form
       description: Update an existing form by its unique identifier.
@@ -240,7 +240,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Forms.FormRequest'
+              $ref: '#/components/schemas/Forms.FormRequestUpdate'
     delete:
       operationId: Forms_deleteForm
       summary: Delete Form
@@ -2053,8 +2053,48 @@ components:
       type: object
       required:
         - title
-        - description
-        - messageAfterSubmission
+      properties:
+        title:
+          type: string
+          description: The title of the form.
+        description:
+          type: string
+          description: The description of the form.
+        previewMessage:
+          type: string
+          description: (Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The image path returned by the upload API.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this form's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+      description: The request body for creating/updating a form.
+      examples:
+        - title: Enter SDC Form
+          description: If you want to join us, just fill in this form!
+          messageAfterSubmission: Thank you for your submission!
+    Forms.FormRequestUpdate:
+      type: object
       properties:
         title:
           type: string
