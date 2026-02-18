@@ -17,7 +17,7 @@ namespace CoreSystem.Forms {
 	@example(#{ title: "Enter SDC Form", description: "If you want to join us, just fill in this form!", messageAfterSubmission: "Thank you for your submission!" })
 	model FormRequest {
 		@doc("The title of the form.")
-		title?: string;
+		title: string;
 
 		@doc("The description of the form.")
 		description?: string;
