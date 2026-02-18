@@ -3160,7 +3160,7 @@ components:
         payload:
           allOf:
             - $ref: '#/components/schemas/Responses.AnswerPayload'
-          description: All answers for this question.
+          description: All answers for this question, if user has not filled this question, this field will be null.
       description: Contains the question details and the corresponding answer for a specific question in a response
       examples:
         - question:
