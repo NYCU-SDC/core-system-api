@@ -160,7 +160,7 @@ namespace CoreSystem.Responses {
 		@doc("The question details.")
 		question: CoreSystem.Forms.QuestionResponse;
 
-		@doc("All answers for this question.")
+		@doc("All answers for this question, if user has not filled this question, this field will be null.")
 		payload: AnswerPayload;
 	}
 
