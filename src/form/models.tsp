@@ -14,7 +14,7 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for creating/updating a form.")
-	@example(#{ title: "Enter SDC Form", description: "If you want to join us, just fill in this form!", messageAfterSubmission: "Thank you for your submission!" })
+	@example(#{ title: "Enter SDC Form", description: "If you want to join us, just fill in this form!", messageAfterSubmission: "Thank you for your submission!", visibility: FormVisibility.public })
 	model FormRequest {
 		@doc("The title of the form.")
 		title: string;
@@ -44,7 +44,7 @@ namespace CoreSystem.Forms {
 		googleSheetUrl?: string;
 
 		@doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
-		visibility?: FormVisibility;
+		visibility: FormVisibility;
 	}
 
 	@doc("The structure of a form.")
@@ -60,7 +60,7 @@ namespace CoreSystem.Forms {
 		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
 		messageAfterSubmission: "Thank you for your application! We'll get back to you soon.",
 		dressing: #{ color: "#0066cc", headerFont: "LINESeedTW", questionFont: "LINESeedTW", textFont: "LINESeedTW" },
-	coverImage: "https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment",
+		coverImage: "https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment",
 		googleSheetUrl: "https://docs.google.com/spreadsheets/d/1ABC123/edit",
 		visibility: FormVisibility.public,
 		createdAt: utcDateTime.fromISO("2025-01-15T10:00:00Z"),
@@ -155,6 +155,16 @@ namespace CoreSystem.Forms {
 
 		@doc("The questions of the section.")
 		questions: QuestionResponse[];
+	}
+
+	@doc("The request body for updating a section.")
+	@example(#{ title: "Personal Information", description: "Please provide your basic information" })
+	model SectionRequest {
+		@doc("Section title (e.g., 'Group Info').")
+		title: string;
+
+		@doc("Section description.")
+		description?: string;
 	}
 
 	@doc("The current progress of a section")
@@ -571,7 +581,7 @@ namespace CoreSystem.Forms {
 					}
 				],
 			}
-		]
+		],
 	})
 	model ListSectionsResponse {
 		sections: Section[];

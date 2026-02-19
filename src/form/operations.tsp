@@ -17,7 +17,7 @@ namespace CoreSystem.Forms {
 	@summary("Update Form")
 	@doc("Update an existing form by its unique identifier.")
 	@route("/forms/{formId}")
-	@patch(#{implicitOptionality: true})
+	@patch(#{ implicitOptionality: true })
 	op updateForm(@path formId: uuid, @body updateFormRequest: FormRequest): Form;
 
 	@summary("Delete Form")
@@ -68,6 +68,12 @@ namespace CoreSystem.Forms {
 	@route("/forms/{formId}/sections")
 	@get
 	op listSections(@path formId: uuid): ListSectionsResponse[];
+
+	@summary("Update Section")
+	@doc("Update an existing section by its unique identifier.")
+	@route("/forms/{formId}/sections/{sectionId}")
+	@patch(#{ implicitOptionality: true })
+	op updateSection(@path formId: uuid, @path sectionId: uuid, @body updateSectionRequest: SectionRequest): Section;
 
 	// === Google Sheet Operations ===
 	@summary("Get Google Sheet Email")
