@@ -495,7 +495,11 @@ Content-Type: application/json
     "title": "Rank your work location preferences",
     "description": "Order the options based on your preference (most preferred first)",
     "order": 11,
-    "sourceId": "{{singleChoiceQuestionId}}"
+    "choices": [
+        { "name": "Remote" },
+        { "name": "On-site" },
+        { "name": "Hybrid" }
+    ]
 }
 
 {{
@@ -509,13 +513,17 @@ Content-Type: application/json
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'RANKING', 'Type should be RANKING');
         equal(data.required, true, 'Required should be true');
-        equal(data.sourceId, singleChoiceQuestionId, 'Source ID should match the single choice question');
+        equal(data.choices.length, 3, 'Should have 3 choices');
+        equal(data.choices[0].name, 'Remote', 'First choice should be Remote');
+        equal(data.choices[1].name, 'On-site', 'Second choice should be On-site');
+        equal(data.choices[2].name, 'Hybrid', 'Third choice should be Hybrid');
         
         console.log('Created RANKING question:', data.id);
     });
 
     const data = JSON.parse(response.body);
     exports.rankingQuestionId = data.id;
+    exports.rankingOptions = data.choices;
 }}
 
 ###

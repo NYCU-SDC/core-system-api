@@ -110,7 +110,7 @@ Content-Type: application/json
             equal(answer.createdAt !== undefined, true, `Answer ${index + 1} should have createdAt`);
             equal(answer.updatedAt !== undefined, true, `Answer ${index + 1} should have updatedAt`);
             equal(answer.responseId, responseId, `Answer ${index + 1} responseId should match`);
-            equal(answer.questionId !== undefined, true, `Answer ${index + 1} should have questionId`);
+            equal(answer.answer.questionId !== undefined, true, `Answer ${index + 1} should have questionId`);
         });
 
         console.log('All answers have required metadata fields');
@@ -119,7 +119,6 @@ Content-Type: application/json
     test('Each answer has correct nested answer structure', () => {
         data.answers.forEach((answer, index) => {
             equal(answer.answer !== undefined, true, `Answer ${index + 1} should have nested answer object`);
-            equal(answer.answer.questionId, answer.questionId, `Answer ${index + 1} nested questionId should match outer questionId`);
             equal(answer.answer.questionType !== undefined, true, `Answer ${index + 1} should have questionType`);
             equal(answer.answer.value !== undefined, true, `Answer ${index + 1} should have value`);
             equal(answer.displayValue !== undefined, true, `Answer ${index + 1} should have displayValue`);
@@ -129,9 +128,8 @@ Content-Type: application/json
     });
 
     test('Short text answer content is correct', () => {
-        const shortTextAnswer = data.answers.find(a => a.questionId === shortTextQuestionId);
+        const shortTextAnswer = data.answers.find(a => a.answer.questionId === shortTextQuestionId);
         equal(shortTextAnswer !== undefined, true, 'Short text answer should exist');
-        equal(shortTextAnswer.questionId, shortTextQuestionId, 'Question ID should match');
         equal(shortTextAnswer.answer.questionId, shortTextQuestionId, 'Nested questionId should match');
         equal(shortTextAnswer.answer.questionType, 'SHORT_TEXT', 'Question type should be SHORT_TEXT');
         equal(shortTextAnswer.answer.value, 'John Doe456', 'Value should match');
@@ -141,9 +139,8 @@ Content-Type: application/json
     });
 
     test('Long text answer content is correct', () => {
-        const longTextAnswer = data.answers.find(a => a.questionId === longTextQuestionId);
+        const longTextAnswer = data.answers.find(a => a.answer.questionId === longTextQuestionId);
         equal(longTextAnswer !== undefined, true, 'Long text answer should exist');
-        equal(longTextAnswer.questionId, longTextQuestionId, 'Question ID should match');
         equal(longTextAnswer.answer.questionId, longTextQuestionId, 'Nested questionId should match');
         equal(longTextAnswer.answer.questionType, 'LONG_TEXT', 'Question type should be LONG_TEXT');
         equal(longTextAnswer.answer.value.includes('Bachelor'), true, 'Value should contain expected text');
@@ -153,9 +150,8 @@ Content-Type: application/json
     });
 
     test('Hyperlink answer content is correct', () => {
-        const hyperlinkAnswer = data.answers.find(a => a.questionId === hyperlinkQuestionId);
+        const hyperlinkAnswer = data.answers.find(a => a.answer.questionId === hyperlinkQuestionId);
         equal(hyperlinkAnswer !== undefined, true, 'Hyperlink answer should exist');
-        equal(hyperlinkAnswer.questionId, hyperlinkQuestionId, 'Question ID should match');
         equal(hyperlinkAnswer.answer.questionId, hyperlinkQuestionId, 'Nested questionId should match');
         equal(hyperlinkAnswer.answer.questionType, 'HYPERLINK', 'Question type should be HYPERLINK');
         equal(hyperlinkAnswer.answer.value, 'https://github.com/johndoe', 'Value should match');
@@ -185,7 +181,7 @@ GET {{BASE_URL}}/responses/{{responseId}}/questions/{{shortTextQuestionId}}
         equal(answer.createdAt !== undefined, true, 'Should have createdAt');
         equal(answer.updatedAt !== undefined, true, 'Should have updatedAt');
         equal(answer.responseId, responseId, 'responseId should match');
-        equal(answer.questionId, shortTextQuestionId, 'questionId should match');
+        equal(answer.answer.questionId, shortTextQuestionId, 'questionId should match');
         
         console.log('Answer metadata verified');
     });
@@ -257,7 +253,7 @@ Content-Type: application/json
             equal(answer.createdAt !== undefined, true, `Answer ${index + 1} should have createdAt`);
             equal(answer.updatedAt !== undefined, true, `Answer ${index + 1} should have updatedAt`);
             equal(answer.responseId, responseId, `Answer ${index + 1} responseId should match`);
-            equal(answer.questionId !== undefined, true, `Answer ${index + 1} should have questionId`);
+            equal(answer.answer.questionId !== undefined, true, `Answer ${index + 1} should have questionId`);
         });
 
         console.log('All answers have required metadata fields');
@@ -266,7 +262,6 @@ Content-Type: application/json
     test('Each answer has correct nested answer structure', () => {
         data.answers.forEach((answer, index) => {
             equal(answer.answer !== undefined, true, `Answer ${index + 1} should have nested answer object`);
-            equal(answer.answer.questionId, answer.questionId, `Answer ${index + 1} nested questionId should match outer questionId`);
             equal(answer.answer.questionType !== undefined, true, `Answer ${index + 1} should have questionType`);
             equal(Array.isArray(answer.answer.value), true, `Answer ${index + 1} value should be an array for choice questions`);
             equal(answer.displayValue !== undefined, true, `Answer ${index + 1} should have displayValue`);
@@ -276,9 +271,8 @@ Content-Type: application/json
     });
 
     test('Single choice answer content is correct', () => {
-        const singleChoiceAnswer = data.answers.find(a => a.questionId === singleChoiceQuestionId);
+        const singleChoiceAnswer = data.answers.find(a => a.answer.questionId === singleChoiceQuestionId);
         equal(singleChoiceAnswer !== undefined, true, 'Single choice answer should exist');
-        equal(singleChoiceAnswer.questionId, singleChoiceQuestionId, 'Question ID should match');
         equal(singleChoiceAnswer.answer.questionId, singleChoiceQuestionId, 'Nested questionId should match');
         equal(singleChoiceAnswer.answer.questionType, 'SINGLE_CHOICE', 'Question type should be SINGLE_CHOICE');
         equal(singleChoiceAnswer.answer.value.length, 1, 'Should have exactly 1 selected option');
@@ -289,9 +283,8 @@ Content-Type: application/json
     });
 
     test('Multiple choice answer content is correct', () => {
-        const multipleChoiceAnswer = data.answers.find(a => a.questionId === multipleChoiceQuestionId);
+        const multipleChoiceAnswer = data.answers.find(a => a.answer.questionId === multipleChoiceQuestionId);
         equal(multipleChoiceAnswer !== undefined, true, 'Multiple choice answer should exist');
-        equal(multipleChoiceAnswer.questionId, multipleChoiceQuestionId, 'Question ID should match');
         equal(multipleChoiceAnswer.answer.questionId, multipleChoiceQuestionId, 'Nested questionId should match');
         equal(multipleChoiceAnswer.answer.questionType, 'MULTIPLE_CHOICE', 'Question type should be MULTIPLE_CHOICE');
         equal(multipleChoiceAnswer.answer.value.length, 2, 'Should have 2 selected options');
@@ -303,9 +296,8 @@ Content-Type: application/json
     });
 
     test('Dropdown answer content is correct', () => {
-        const dropdownAnswer = data.answers.find(a => a.questionId === dropdownQuestionId);
+        const dropdownAnswer = data.answers.find(a => a.answer.questionId === dropdownQuestionId);
         equal(dropdownAnswer !== undefined, true, 'Dropdown answer should exist');
-        equal(dropdownAnswer.questionId, dropdownQuestionId, 'Question ID should match');
         equal(dropdownAnswer.answer.questionId, dropdownQuestionId, 'Nested questionId should match');
         equal(dropdownAnswer.answer.questionType, 'DROPDOWN', 'Question type should be DROPDOWN');
         equal(dropdownAnswer.answer.value.length, 1, 'Should have exactly 1 selected option');
@@ -353,19 +345,19 @@ Content-Type: application/json
         equal(data.answers.length, 2, 'Should have 2 answers');
         
         // Verify LINEAR_SCALE answer
-        const linearScaleAnswer = data.answers.find(a => a.questionId === linearScaleQuestionId);
+        const linearScaleAnswer = data.answers.find(a => a.answer.questionId === linearScaleQuestionId);
         equal(linearScaleAnswer !== undefined, true, 'LINEAR_SCALE answer should exist');
         equal(linearScaleAnswer.responseId, responseId, 'Response ID should match');
-        equal(linearScaleAnswer.questionId, linearScaleQuestionId, 'Question ID should match');
+        equal(linearScaleAnswer.answer.questionId, linearScaleQuestionId, 'Question ID should match');
         equal(linearScaleAnswer.answer.questionType, 'LINEAR_SCALE', 'Question type should be LINEAR_SCALE');
         equal(linearScaleAnswer.answer.value, 8, 'Value should be 8');
         equal(linearScaleAnswer.displayValue, '8 (1-10)', 'Display value should be formatted correctly');
         
         // Verify RATING answer
-        const ratingAnswer = data.answers.find(a => a.questionId === ratingQuestionId);
+        const ratingAnswer = data.answers.find(a => a.answer.questionId === ratingQuestionId);
         equal(ratingAnswer !== undefined, true, 'RATING answer should exist');
         equal(ratingAnswer.responseId, responseId, 'Response ID should match');
-        equal(ratingAnswer.questionId, ratingQuestionId, 'Question ID should match');
+        equal(ratingAnswer.answer.questionId, ratingQuestionId, 'Question ID should match');
         equal(ratingAnswer.answer.questionType, 'RATING', 'Question type should be RATING');
         equal(ratingAnswer.answer.value, 4, 'Value should be 4');
         equal(ratingAnswer.displayValue, '4 (1-5)', 'Display value should be formatted correctly');
@@ -404,7 +396,7 @@ Content-Type: application/json
         const data = JSON.parse(response.body);
         equal(Array.isArray(data.answers), true, 'Answers should be an array');
         
-        const dateAnswer = data.answers.find(a => a.questionId === dateQuestionId);
+        const dateAnswer = data.answers.find(a => a.answer.questionId === dateQuestionId);
         equal(dateAnswer.responseId, responseId, 'Response ID should match');
         equal(dateAnswer !== undefined, true, 'Date answer should exist');
         equal(dateAnswer.answer.questionType, 'DATE', 'Question type should be DATE');
@@ -428,7 +420,7 @@ Content-Type: application/json
         {
             "questionId": "{{rankingQuestionId}}",
             "questionType": "RANKING",
-            "value": ["{{singleChoiceOptions[2].id}}", "{{singleChoiceOptions[0].id}}", "{{singleChoiceOptions[1].id}}"]
+            "value": ["{{rankingOptions[2].id}}", "{{rankingOptions[0].id}}", "{{rankingOptions[1].id}}"]
         }
     ]
 }
@@ -438,13 +430,47 @@ Content-Type: application/json
     test.hasResponseBody();
 
     const { equal } = require('assert');
+    const data = JSON.parse(response.body);
 
-    test('Draft ranking answer saved', () => {
-        const data = JSON.parse(response.body);
-        equal(data.id, responseId, 'Response ID should match');
-        equal(Array.isArray(data.answers), true, 'Answers should be an array');
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
         
-        console.log('Saved ranking answer (auto-save)');
+        console.log('Saved 1 ranking answer (auto-save)');
+    });
+
+    test('Answer has required metadata fields', () => {
+        const answer = data.answers[0];
+        equal(answer.createdAt !== undefined, true, 'Answer should have createdAt');
+        equal(answer.updatedAt !== undefined, true, 'Answer should have updatedAt');
+        equal(answer.responseId, responseId, 'Answer responseId should match');
+        equal(answer.answer.questionId !== undefined, true, 'Answer should have questionId');
+
+        console.log('Answer has required metadata fields');
+    });
+
+    test('Answer has correct nested answer structure', () => {
+        const answer = data.answers[0];
+        equal(answer.answer !== undefined, true, 'Should have nested answer object');
+        equal(answer.answer.questionType !== undefined, true, 'Should have questionType');
+        equal(Array.isArray(answer.answer.value), true, 'Value should be an array for ranking question');
+        equal(answer.displayValue !== undefined, true, 'Should have displayValue');
+        
+        console.log('Answer has correct nested structure');
+    });
+
+    test('Ranking answer content is correct', () => {
+        const rankingAnswer = data.answers[0];
+        equal(rankingAnswer !== undefined, true, 'Ranking answer should exist');
+        equal(rankingAnswer.answer.questionId, rankingQuestionId, 'Nested questionId should match');
+        equal(rankingAnswer.answer.questionType, 'RANKING', 'Question type should be RANKING');
+        equal(rankingAnswer.answer.value.length, 3, 'Should have 3 ranked options');
+        equal(rankingAnswer.answer.value[0], rankingOptions[2].id, 'First ranked option should match');
+        equal(rankingAnswer.answer.value[1], rankingOptions[0].id, 'Second ranked option should match');
+        equal(rankingAnswer.answer.value[2], rankingOptions[1].id, 'Third ranked option should match');
+        equal(rankingAnswer.displayValue.includes('>'), true, 'Display value should show ranking with > separator');
+        
+        console.log('Ranking answer:', rankingAnswer.displayValue);
     });
 }}
 
@@ -473,13 +499,46 @@ Content-Type: application/json
     test.hasResponseBody();
 
     const { equal } = require('assert');
+    const data = JSON.parse(response.body);
 
-    test('Draft detailed multiple choice answer saved', () => {
-        const data = JSON.parse(response.body);
-        equal(data.id, responseId, 'Response ID should match');
-        equal(Array.isArray(data.answers), true, 'Answers should be an array');
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
         
-        console.log('Saved detailed multiple choice answer (auto-save)');
+        console.log('Saved 1 detailed multiple choice answer (auto-save)');
+    });
+
+    test('Answer has required metadata fields', () => {
+        const answer = data.answers[0];
+        equal(answer.createdAt !== undefined, true, 'Answer should have createdAt');
+        equal(answer.updatedAt !== undefined, true, 'Answer should have updatedAt');
+        equal(answer.responseId, responseId, 'Answer responseId should match');
+        equal(answer.answer.questionId !== undefined, true, 'Answer should have questionId');
+
+        console.log('Answer has required metadata fields');
+    });
+
+    test('Answer has correct nested answer structure', () => {
+        const answer = data.answers[0];
+        equal(answer.answer !== undefined, true, 'Should have nested answer object');
+        equal(answer.answer.questionType !== undefined, true, 'Should have questionType');
+        equal(Array.isArray(answer.answer.value), true, 'Value should be an array for detailed multiple choice question');
+        equal(answer.displayValue !== undefined, true, 'Should have displayValue');
+        
+        console.log('Answer has correct nested structure');
+    });
+
+    test('Detailed multiple choice answer content is correct', () => {
+        const detailedAnswer = data.answers[0];
+        equal(detailedAnswer !== undefined, true, 'Detailed multiple choice answer should exist');
+        equal(detailedAnswer.answer.questionId, detailedMultipleChoiceQuestionId, 'Nested questionId should match');
+        equal(detailedAnswer.answer.questionType, 'DETAILED_MULTIPLE_CHOICE', 'Question type should be DETAILED_MULTIPLE_CHOICE');
+        equal(detailedAnswer.answer.value.length, 2, 'Should have 2 selected options');
+        equal(detailedAnswer.answer.value.includes(detailedMultipleChoiceOptions[0].id), true, 'Should include first selected option');
+        equal(detailedAnswer.answer.value.includes(detailedMultipleChoiceOptions[2].id), true, 'Should include second selected option');
+        equal(detailedAnswer.displayValue.includes(','), true, 'Display value should show comma-separated options');
+        
+        console.log('Detailed multiple choice answer:', detailedAnswer.displayValue);
     });
 }}
 
@@ -549,13 +608,13 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         equal(data.id, responseId, 'Response ID should match');
         equal(data.formId, formId, 'Form ID should match');
         equal(data.progress, 'DRAFT', 'Progress should still be DRAFT before submission');
-        equal(Array.isArray(data.questionAnswerPairs), true, 'Question answer pairs should be an array');
-        equal(data.questionAnswerPairs.length > 0, true, 'Should have at least one section');
-        
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+        equal(data.sections.length > 0, true, 'Should have at least one section');
+
         console.log('Response ID:', data.id);
         console.log('Form ID:', data.formId);
         console.log('Progress:', data.progress);
-        console.log('Number of sections:', data.questionAnswerPairs.length);
+        console.log('Number of sections:', data.sections.length);
     });
 }}
 
@@ -575,17 +634,17 @@ Content-Type: application/json
         {
             "questionId": "{{shortTextQuestionId}}",
             "questionType": "SHORT_TEXT",
-            "value": ["John Doe"]
+            "value": "John Doe"
         },
         {
             "questionId": "{{longTextQuestionId}}",
             "questionType": "LONG_TEXT",
-            "value": ["I have a Bachelor's degree in Computer Science from National Yang Ming Chiao Tung University. I have been working as a full-stack developer for 3 years, specializing in React, Node.js, and cloud infrastructure."]
+            "value": "I have a Bachelor's degree in Computer Science from National Yang Ming Chiao Tung University. I have been working as a full-stack developer for 3 years, specializing in React, Node.js, and cloud infrastructure."
         },
         {
             "questionId": "{{hyperlinkQuestionId}}",
             "questionType": "HYPERLINK",
-            "value": ["https://github.com/johndoe"]
+            "value": "https://github.com/johndoe"
         },
         {
             "questionId": "{{singleChoiceQuestionId}}",
@@ -610,7 +669,7 @@ Content-Type: application/json
         {
             "questionId": "{{dateQuestionId}}",
             "questionType": "DATE",
-            "value": ["2024-06-15"]
+            "value": "2024-06-15"
         },
         {
             "questionId": "{{linearScaleQuestionId}}",
@@ -625,7 +684,7 @@ Content-Type: application/json
         {
             "questionId": "{{rankingQuestionId}}",
             "questionType": "RANKING",
-            "value": ["{{singleChoiceOptions[2].id}}", "{{singleChoiceOptions[0].id}}", "{{singleChoiceOptions[1].id}}"]
+            "value": ["{{rankingOptions[2].id}}", "{{rankingOptions[0].id}}", "{{rankingOptions[1].id}}"]
         }
     ]
 }
@@ -660,7 +719,7 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         equal(data.id, responseId, 'Response ID should match');
         equal(data.formId, formId, 'Form ID should match');
         equal(data.progress, 'SUBMITTED', 'Progress should be SUBMITTED after submission');
-        equal(Array.isArray(data.questionAnswerPairs), true, 'Question answer pairs should be an array');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
         
         console.log('Response ID:', data.id);
         console.log('Progress:', data.progress);
