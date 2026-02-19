@@ -78,15 +78,15 @@ namespace CoreSystem.Forms {
 	// === Google Sheet Operations ===
 	@summary("Get Google Sheet Email")
 	@doc("Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.")
-	@route("/forms/google-sheet-email")
+	@route("/forms/{formId}/google-sheet-email")
 	@get
-	op getGoogleSheetEmail(): GoogleSheetEmailResponse;
+	op getGoogleSheetEmail(@path formId: uuid): GoogleSheetEmailResponse;
 
 	@summary("Verify Google Sheet")
 	@doc("Verify the Google Sheet URL and whether the system can access it.")
-	@route("/forms/google-sheet/verify")
+	@route("/forms/{formId}/google-sheet/verify")
 	@post
-	op verifyGoogleSheet(@body req: GoogleSheetVerifyRequest): GoogleSheetVerifyResponse;
+	op verifyGoogleSheet(@path formId: uuid, @body req: GoogleSheetVerifyRequest): GoogleSheetVerifyResponse;
 
 	@summary("Get Form Fonts")
 	@doc("Get available fonts list for forms dressing.")
