@@ -1703,12 +1703,6 @@ components:
           description: The label for the node
           examples:
             - 開始表單
-        title:
-          type: string
-          description: Section title shown to respondents. Only applicable for section nodes.
-        description:
-          type: string
-          description: Section description shown to respondents. Only applicable for section nodes.
         conditionRule:
           allOf:
             - $ref: '#/components/schemas/FormWorkflow.ConditionRule'
@@ -1756,12 +1750,6 @@ components:
           description: The label for the node
           examples:
             - 開始表單
-        title:
-          type: string
-          description: Section title shown to respondents. Only applicable for section nodes.
-        description:
-          type: string
-          description: Section description shown to respondents. Only applicable for section nodes.
         conditionRule:
           allOf:
             - $ref: '#/components/schemas/FormWorkflow.ConditionRule'
@@ -1783,8 +1771,6 @@ components:
         - id: b23f2668-c2dc-4213-88fe-eceedff46398
           type: SECTION
           label: Personal Information
-          title: Personal Information
-          description: Please provide your basic information
           conditionRule:
             source: NON_CHOICE
             question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
