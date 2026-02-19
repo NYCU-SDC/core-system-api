@@ -471,6 +471,37 @@ paths:
                   $ref: '#/components/schemas/Forms.ListSectionsResponse'
       tags:
         - Forms
+  /api/forms/{formId}/sections/{sectionId}:
+    patch:
+      operationId: Forms_updateSection
+      summary: Update Section
+      description: Update an existing section by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Section'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.SectionRequest'
   /api/forms/{formId}/workflow:
     get:
       operationId: FormWorkflow_getWorkflow
@@ -2067,6 +2098,7 @@ components:
       type: object
       required:
         - title
+        - visibility
       properties:
         title:
           type: string
@@ -2107,6 +2139,7 @@ components:
         - title: Enter SDC Form
           description: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
+          visibility: PUBLIC
     Forms.FormRequestUpdate:
       type: object
       properties:
@@ -2149,6 +2182,7 @@ components:
         - title: Enter SDC Form
           description: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
+          visibility: PUBLIC
     Forms.FormStatus:
       type: string
       enum:
@@ -2992,6 +3026,19 @@ components:
         - DRAFT
         - SUBMITTED
       description: The current progress of a section
+    Forms.SectionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        description:
+          type: string
+          description: Section description.
+      description: The request body for updating a section.
+      examples:
+        - title: Personal Information
+          description: Please provide your basic information
     Forms.UploadFileOption:
       type: object
       required:
