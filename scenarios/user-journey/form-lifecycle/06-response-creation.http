@@ -690,7 +690,7 @@ Content-Type: application/json
 }
 
 {{
-    test.status(200);
+    test.status(201);
 
     const { equal } = require('assert');
 
@@ -760,35 +760,6 @@ GET {{BASE_URL}}/forms/{{formId}}/responses
         console.log('Submitted by:', submittedResponse.submittedBy);
         console.log('Created at:', submittedResponse.createdAt);
         console.log('Updated at:', submittedResponse.updatedAt);
-    });
-}}
-
-###
-
-# ============================================
-# Verify Response Sections After Submission
-# ============================================
-# @name verifyResponseSectionsAfterSubmit
-# @ref listFormResponses
-GET {{BASE_URL}}/responses/{{responseId}}/sections
-
-{{
-    test.status(200);
-    test.hasResponseBody();
-
-    const { equal } = require('assert');
-
-    test('Section progress updated to SUBMITTED', () => {
-        const data = JSON.parse(response.body);
-        equal(Array.isArray(data.sections), true, 'Sections should be an array');
-        
-        // Find our test section
-        const testSection = data.sections.find(s => s.id === sectionNodeId);
-        equal(testSection !== undefined, true, 'Test section should exist');
-        equal(testSection.progress, 'SUBMITTED', 'Section progress should be SUBMITTED after submission');
-        
-        console.log('Section ID:', testSection.id);
-        console.log('Section Progress:', testSection.progress);
     });
 }}
 

@@ -129,7 +129,7 @@ GET {{BASE_URL}}/forms
 # ============================================
 # @name updateForm
 # @ref listForms
-PUT {{BASE_URL}}/forms/{{formId}}
+PATCH {{BASE_URL}}/forms/{{formId}}
 Content-Type: application/json
 
 {
