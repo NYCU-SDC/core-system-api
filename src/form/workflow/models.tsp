@@ -86,12 +86,6 @@ namespace CoreSystem.FormWorkflow {
 		@example("開始表單")
 		label: string;
 
-		@doc("Section title shown to respondents. Only applicable for section nodes.")
-		title?: string;
-
-		@doc("Section description shown to respondents. Only applicable for section nodes.")
-		description?: string;
-
 		@doc("The condition rule for the node, only for condition nodes")
 		conditionRule?: ConditionRule;
 
@@ -110,8 +104,6 @@ namespace CoreSystem.FormWorkflow {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		type: NodeType.section,
 		label: "Personal Information",
-		title: "Personal Information",
-		description: "Please provide your basic information",
 		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
 		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
 		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
@@ -119,12 +111,6 @@ namespace CoreSystem.FormWorkflow {
 	})
 	model NodeResponse {
 		...NodeStructure;
-
-		@doc("Section title shown to respondents. Only applicable for section nodes.")
-		title?: string;
-
-		@doc("Section description shown to respondents. Only applicable for section nodes.")
-		description?: string;
 
 		@doc("The condition rule for the node, only for condition nodes")
 		conditionRule: ConditionRule;
