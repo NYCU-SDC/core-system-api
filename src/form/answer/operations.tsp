@@ -29,7 +29,7 @@ namespace CoreSystem.Responses {
 	};
 
 	@summary("Upload Question Files")
-	@doc("Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs.")
+	@doc("Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs. The limit for each question is 10 files, and each file must be less than 10MB.")
 	@route("/responses/{responseId}/questions/{questionId}/files")
 	@post
 	op uploadQuestionFiles(@path responseId: uuid, @path questionId: uuid, @header("content-type") contentType: "multipart/form-data", @multipartBody body: QuestionFilesUploadRequest): {

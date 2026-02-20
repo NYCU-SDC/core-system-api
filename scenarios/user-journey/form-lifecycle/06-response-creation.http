@@ -544,49 +544,45 @@ Content-Type: application/json
 
 ###
 
-# # ============================================
-# # Upload Files for File Upload Question
-# # ============================================
-# # NOTE: This test may fail if file upload is not configured
-# # @name uploadQuestionFiles
-# # @ref saveDraftDetailedMultipleChoiceAnswer
-# POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/files
-# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+# ============================================
+# Upload Files for File Upload Question
+# ============================================
+# @name uploadQuestionFiles
+# @ref saveDraftDetailedMultipleChoiceAnswer
+POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/files
+Content-Type: multipart/form-data; boundary=WebKitFormBoundary
 
-# ------WebKitFormBoundary7MA4YWxkTrZu0gW
-# Content-Disposition: form-data; name="files"; filename="resume.pdf"
-# Content-Type: application/pdf
+--WebKitFormBoundary
+Content-Disposition: form-data; name="file"; filename="resume.pdf"
+Content-Type: application/pdf
 
-# %PDF-1.4 Mock PDF content for testing
-# ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+%PDF-1.4 Mock PDF content for testing
+--WebKitFormBoundary--
 
-# {{
-#     const statusCode = response.statusCode;
-#     const isSuccess = statusCode === 200;
-#     const isError = statusCode >= 400;
-    
-#     if (isSuccess) {
-#         test.status(200);
-#         test.hasResponseBody();
+{{
+    test.status(201);
+    test.hasResponseBody();
 
-#         const { equal } = require('assert');
+    const { equal } = require('assert');
 
-#         test('File uploaded and answer auto-created', () => {
-#             const data = JSON.parse(response.body);
-#             equal(data.id, responseId, 'Response ID should match');
-#             equal(data.questionAnswerPair.questionId, uploadFileQuestionId, 'Question ID should match');
-#             equal(data.questionAnswerPair.questionType, 'UPLOAD_FILE', 'Question type should be UPLOAD_FILE');
-#             equal(Array.isArray(data.questionAnswerPair.value), true, 'Value should be an array of URLs');
-#             equal(data.questionAnswerPair.value.length > 0, true, 'Should have at least one file URL');
-            
-#             console.log('File uploaded successfully');
-#             console.log('File URLs:', data.questionAnswerPair.value);
-#         });
-#     } else if (isError) {
-#         console.warn('⚠️  File upload test skipped - upload not configured or failed');
-#         console.warn('Status:', statusCode);
-#     }
-# }}
+    test('File upload response has files array', () => {
+        const data = JSON.parse(response.body);
+        equal(Array.isArray(data.files), true, 'Response should have a files array');
+        equal(data.files.length > 0, true, 'Should have at least one uploaded file');
+    });
+
+    test('Uploaded file metadata is correct', () => {
+        const data = JSON.parse(response.body);
+        const file = data.files[0];
+        equal(file.fileId !== undefined, true, 'File should have a fileId');
+        equal(file.originalFilename, 'resume.pdf', 'Original filename should match');
+        equal(file.contentType !== undefined, true, 'File should have a contentType');
+        equal(typeof file.size === 'number', true, 'File size should be a number');
+
+        console.log('File uploaded successfully:', file.originalFilename);
+        console.log('File ID:', file.fileId);
+    });
+}}
 
 ###
 

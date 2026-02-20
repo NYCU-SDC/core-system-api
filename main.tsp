@@ -75,6 +75,13 @@ import "./src/form/answer/models.tsp";
 import "./src/form/answer/operations.tsp";
 
 // ═════════════════════════════════════════════════
+// === File ===
+// ═════════════════════════════════════════════════
+// --- File ---
+import "./src/file/models.tsp";
+import "./src/file/operations.tsp";
+
+// ═════════════════════════════════════════════════
 // === Inbox ===
 // ═════════════════════════════════════════════════
 // import "./src/inbox/models.tsp";
