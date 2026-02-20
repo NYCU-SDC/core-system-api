@@ -97,26 +97,35 @@ namespace CoreSystem.Responses {
 	@doc("Request model for uploading files as answers to a specific question in a response.")
 	model QuestionFilesUploadRequest {
 		@doc("The file(s) being uploaded.")
-		files: HttpPart<bytes[]>;
+		files: HttpPart<bytes>[];
 	}
 
-	@doc("Response model for the uploaded files and auto-created answer")
+	@doc("Response model for the uploaded files")
 	@example(#{
-		id: "a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
-		answer: #{
-			createdAt: utcDateTime.fromISO("2025-02-15T10:00:00Z"),
-			updatedAt: utcDateTime.fromISO("2025-02-17T16:45:00Z"),
-			responseId: "a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
-			answer: #{ questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd", questionType: CoreSystem.Forms.QuestionTypes.shortText, value: "John Doe" },
-			displayValue: "John Doe",
-		},
+		files: #[
+			#{
+				fileId: "a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
+				originalFilename: "resume.pdf",
+				contentType: "application/pdf",
+				size: 204800,
+			},
+		],
 	})
 	model QuestionFilesUploadResponse {
-		@doc("The response's unique identifier.")
-		id: uuid;
+		@doc("Metadata of each successfully uploaded file.")
+		files: {
+			@doc("The unique identifier of the uploaded file.")
+			fileId: uuid;
 
-		@doc("The auto-created/updated answer with file URLs.")
-		answer: AnswerPayload;
+			@doc("The original filename as provided by the client.")
+			originalFilename: string;
+
+			@doc("The MIME content type of the uploaded file.")
+			contentType: string;
+
+			@doc("The size of the uploaded file in bytes.")
+			size: int64;
+		}[];
 	}
 
 	@example(#{
