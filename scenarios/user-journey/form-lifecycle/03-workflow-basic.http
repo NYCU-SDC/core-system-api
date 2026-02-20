@@ -237,10 +237,6 @@ GET {{BASE_URL}}/forms/{{formId}}/workflow
         equal(data.workflow !== undefined, true, 'Workflow should exist');
         equal(Array.isArray(data.workflow), true, 'Workflow should be an array');
         equal(data.info.length, 0, 'There should be no validation errors');
-        
-        console.log('=== Final Workflow Structure ===');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('=== End Final Workflow ===');
     });
 
     test('Workflow validation errors resolved', () => {

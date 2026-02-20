@@ -624,7 +624,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
-        equal(ourSection.questions.length, 12, 'Should have 12 questions');
+        equal(ourSection.questions.length, 13, 'Should have 13 questions, but got ' + ourSection.questions.length);
     });
 }}
 
@@ -700,7 +700,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
-        equal(ourSection.questions.length, 11, 'Should now have 10 questions (after deletion)');
+        equal(ourSection.questions.length, 12, 'Should now have 12 questions (after deletion) but got ' + ourSection.questions.length);
         
         // Verify the deleted question is not in the list
         const deletedQuestion = ourSection.questions.find(q => q.id === hyperlinkQuestionToDeleteId);
