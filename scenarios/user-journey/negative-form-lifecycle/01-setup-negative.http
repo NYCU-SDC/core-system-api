@@ -17,7 +17,6 @@ GET {{BASE_URL}}/orgs/NONEXISTENT_ORG
 
 ?? status == 404
 {{
-    test.status(404);
     test.hasResponseBody();
 
     const { equal } = require('assert');
