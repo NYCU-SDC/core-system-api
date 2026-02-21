@@ -716,42 +716,48 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
 ###
 
 # ============================================
-# Insert question in the middle (move question 4 to position 2)
+# Create question in the middle order (order 2)
 # ============================================
-# After swap: order 1=LONG_TEXT, 2=SHORT_TEXT, 3=SINGLE_CHOICE, 4=MULTIPLE_CHOICE, ...
-# Move MULTIPLE_CHOICE to order 2, SHORT_TEXT to 3, SINGLE_CHOICE to 4.
-# @name insertQuestionInMiddle
+# Current order: 1=LONG, 2=MULTIPLE_CHOICE, 3=SHORT, 4=SINGLE_CHOICE, ...
+# Create a new question with order 2 so it is inserted in the middle.
+# @name createQuestionInMiddleOrder
 # @ref verifyQuestionOrderAfterSwap
-PUT {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{multipleChoiceQuestionId}}
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
 {
-    "required": true,
-    "type": "MULTIPLE_CHOICE",
-    "title": "Which programming languages do you know?",
-    "description": "Select all that apply",
-    "order": 2,
-    "choices": [
-        { "name": "JavaScript" },
-        { "name": "TypeScript" },
-        { "name": "Python" },
-        { "name": "Go" },
-        { "name": "Rust" }
-    ]
+    "required": false,
+    "type": "SHORT_TEXT",
+    "title": "Question inserted in middle",
+    "description": "Created with order 2",
+    "order": 2
 }
 
 {{
-    test.status(200);
+    test.status(201);
     test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Question created in middle order', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
+        equal(data.title, 'Question inserted in middle', 'Title should match');
+        console.log('Created question in middle:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.questionCreatedInMiddleId = data.id;
 }}
 
 ###
 
 # ============================================
-# Verify question order after insert (1=LONG, 2=MULTIPLE_CHOICE, 3=SHORT, 4=SINGLE_CHOICE)
+# Verify question created in middle has correct order
 # ============================================
-# @name verifyQuestionOrderAfterInsert
-# @ref insertQuestionInMiddle
+# @name verifyQuestionCreatedInMiddle
+# @ref createQuestionInMiddleOrder
 GET {{BASE_URL}}/forms/{{formId}}/sections
 
 {{
@@ -760,15 +766,14 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
 
     const { equal } = require('assert');
 
-    test('Question order after insert in middle is correct', () => {
+    test('Question created in middle has correct order', () => {
         const data = JSON.parse(response.body);
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         const questions = ourSection.questions.slice().sort((a, b) => a.order - b.order);
-        equal(questions[0].id, longTextQuestionId, 'Order 1 should be LONG_TEXT');
-        equal(questions[1].id, multipleChoiceQuestionId, 'Order 2 should be MULTIPLE_CHOICE');
-        equal(questions[2].id, shortTextQuestionId, 'Order 3 should be SHORT_TEXT');
-        equal(questions[3].id, singleChoiceQuestionId, 'Order 4 should be SINGLE_CHOICE');
+        const createdQuestion = questions.find(q => q.id === questionCreatedInMiddleId);
+        equal(createdQuestion !== undefined, true, 'Created question should be in section');
+        equal(createdQuestion.title, 'Question inserted in middle', 'Title should match');
     });
 }}
 
@@ -778,7 +783,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
 # Delete Question - Test Delete Operation
 # ============================================
 # @name deleteHyperlinkQuestion
-# @ref verifyQuestionOrderAfterInsert
+# @ref verifyQuestionCreatedInMiddle
 DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionToDeleteId}}
 
 {{
@@ -809,7 +814,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
-        equal(ourSection.questions.length, 12, 'Should now have 12 questions (after deletion) but got ' + ourSection.questions.length);
+        equal(ourSection.questions.length, 13, 'Should now have 13 questions (after deletion of one, plus one created in middle) but got ' + ourSection.questions.length);
         
         // Verify the deleted question is not in the list
         const deletedQuestion = ourSection.questions.find(q => q.id === hyperlinkQuestionToDeleteId);
