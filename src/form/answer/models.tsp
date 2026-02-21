@@ -63,7 +63,7 @@ namespace CoreSystem.Responses {
 	@example(#{
 		questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
 		questionType: CoreSystem.Forms.QuestionTypes.oauthConnect,
-		value: #{ username: "johndoe", avatarUrl: "https://example.com/avatar.jpg" },
+		value: #{ username: "johndoe", email: "johndoe@example.com", avatarUrl: "https://example.com/avatar.jpg", provider: "google", providerId: "1234567890" },
 	})
 	@doc("Response model for an OAuth answer")
 	model OauthAnswer {
@@ -74,8 +74,17 @@ namespace CoreSystem.Responses {
 		questionType: CoreSystem.Forms.QuestionTypes.oauthConnect;
 
 		value: {
+			@doc("The OAuth provider, e.g., 'google', 'github'.")
+			provider: string;
+
+			@doc("The unique identifier from the OAuth provider for the connected account.")
+			providerId: string;
+
 			@doc("The avatar URL from the OAuth provider.")
 			avatarUrl: string;
+
+			@doc("The email from the OAuth provider.")
+			email: string;
 
 			@doc("The username from the OAuth provider.")
 			username: string;
