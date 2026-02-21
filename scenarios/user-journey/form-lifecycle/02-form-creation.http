@@ -15,9 +15,48 @@
 ###
 
 # ============================================
+# Add User to Organization (if not already a member)
+# ============================================
+# @name addUserToOrg
+# @ref verifyOrg
+POST {{BASE_URL}}/orgs/{{orgSlug}}/members
+Content-Type: application/json
+{
+    "email": "{{userEmail}}"
+}
+?? status <= 201
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('User added to organization successfully', () => {
+        const data = JSON.parse(response.body);
+        equal(data.member.id, userId, 'User ID should match');
+        equal(data.orgId, orgId, 'Organization ID should match');
+    });
+}}
+
+
+###
+
+# ============================================
+# List Forms of Current User (Should be empty initially)
+# ============================================
+# @name listUserForms
+# @ref addUserToOrg
+GET {{BASE_URL}}/forms/me
+
+?? status == 200
+?? js Array.isArray(response.body)
+
+###
+
+# ============================================
 # Get Available Fonts
 # ============================================
 # @name getFonts
+# @ref listUserForms
 GET {{BASE_URL}}/forms/fonts
 
 {{

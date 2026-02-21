@@ -578,7 +578,7 @@ Content-Type: application/json
     "type": "HYPERLINK",
     "title": "Need to delete this question",
     "description": "Please provide a link to your portfolio, GitHub, or LinkedIn profile",
-    "order": 12
+    "order": 13
 }
 
 {{
@@ -666,10 +666,124 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Swap two question orders (1 and 2)
+# ============================================
+# Put SHORT_TEXT at order 2 and LONG_TEXT at order 1.
+# @name swapTwoQuestionOrders
+# @ref updateShortTextQuestion
+PUT {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{shortTextQuestionId}}
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "SHORT_TEXT",
+    "title": "What is your full name? (Updated)",
+    "description": "Please enter your first and last name - this field is now optional",
+    "order": 2
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+}}
+
+
+###
+
+# ============================================
+# Verify question order after swap (1=LONG_TEXT, 2=SHORT_TEXT)
+# ============================================
+# @name verifyQuestionOrderAfterSwap
+# @ref swapTwoQuestionOrders
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Question order after swap is correct', () => {
+        const data = JSON.parse(response.body);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
+        equal(ourSection !== undefined, true, 'Our section should exist');
+        const questions = ourSection.questions.slice().sort((a, b) => a.order - b.order);
+        equal(questions[0].id, longTextQuestionId, 'Order 1 should be LONG_TEXT');
+        equal(questions[1].id, shortTextQuestionId, 'Order 2 should be SHORT_TEXT');
+    });
+}}
+
+###
+
+# ============================================
+# Create question in the middle order (order 2)
+# ============================================
+# Current order: 1=LONG, 2=MULTIPLE_CHOICE, 3=SHORT, 4=SINGLE_CHOICE, ...
+# Create a new question with order 2 so it is inserted in the middle.
+# @name createQuestionInMiddleOrder
+# @ref verifyQuestionOrderAfterSwap
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "SHORT_TEXT",
+    "title": "Question inserted in middle",
+    "description": "Created with order 2",
+    "order": 2
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Question created in middle order', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
+        equal(data.title, 'Question inserted in middle', 'Title should match');
+        console.log('Created question in middle:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.questionCreatedInMiddleId = data.id;
+}}
+
+###
+
+# ============================================
+# Verify question created in middle has correct order
+# ============================================
+# @name verifyQuestionCreatedInMiddle
+# @ref createQuestionInMiddleOrder
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Question created in middle has correct order', () => {
+        const data = JSON.parse(response.body);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
+        equal(ourSection !== undefined, true, 'Our section should exist');
+        const questions = ourSection.questions.slice().sort((a, b) => a.order - b.order);
+        const createdQuestion = questions.find(q => q.id === questionCreatedInMiddleId);
+        equal(createdQuestion !== undefined, true, 'Created question should be in section');
+        equal(createdQuestion.title, 'Question inserted in middle', 'Title should match');
+    });
+}}
+
+###
+
+# ============================================
 # Delete Question - Test Delete Operation
 # ============================================
 # @name deleteHyperlinkQuestion
-# @ref updateShortTextQuestion
+# @ref verifyQuestionCreatedInMiddle
 DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionToDeleteId}}
 
 {{
@@ -700,7 +814,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
-        equal(ourSection.questions.length, 12, 'Should now have 12 questions (after deletion) but got ' + ourSection.questions.length);
+        equal(ourSection.questions.length, 13, 'Should now have 13 questions (after deletion of one, plus one created in middle) but got ' + ourSection.questions.length);
         
         // Verify the deleted question is not in the list
         const deletedQuestion = ourSection.questions.find(q => q.id === hyperlinkQuestionToDeleteId);
