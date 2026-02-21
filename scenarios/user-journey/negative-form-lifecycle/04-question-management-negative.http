@@ -1,0 +1,229 @@
+# ============================================
+# Negative Question Management - Error paths for question CRUD
+# ============================================
+# Variables (formId, sectionNodeId, shortTextQuestionId, etc.) come from the positive flow.
+
+# @import ../form-lifecycle/04-question-management.http
+
+###
+
+# ============================================
+# Create question with non-existent section ID (expect 404)
+# ============================================
+# @name createQuestionNonExistentSection
+# @ref verifyQuestionDeletion
+POST {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Should Not Be Created",
+    "description": "Non-existent section",
+    "order": 1
+}
+
+?? status == 404
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Not Found', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Not Found', 'Response title should be Not Found');
+        equal(data.status, 404, 'Status in body should be 404');
+    });
+}}
+
+###
+
+# ============================================
+# Create question with invalid type (expect 400)
+# ============================================
+# @name createQuestionInvalidType
+# @ref createQuestionNonExistentSection
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "INVALID_QUESTION_TYPE",
+    "title": "Invalid type test",
+    "order": 1
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question with missing required fields (expect 400)
+# ============================================
+# @name createQuestionMissingTitle
+# @ref createQuestionInvalidType
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "order": 1
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question with missing type (expect 400)
+# ============================================
+# @name createQuestionMissingType
+# @ref createQuestionMissingTitle
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "title": "No type provided",
+    "order": 1
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Update question with non-existent section ID (expect 404)
+# ============================================
+# @name updateQuestionNonExistentSection
+# @ref createQuestionMissingType
+PUT {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions/{{shortTextQuestionId}}
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "SHORT_TEXT",
+    "title": "Should Not Update",
+    "order": 1
+}
+
+?? status == 404
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Not Found', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Not Found', 'Response title should be Not Found');
+        equal(data.status, 404, 'Status in body should be 404');
+    });
+}}
+
+###
+
+# ============================================
+# Update question with non-existent question ID (expect 404)
+# ============================================
+# @name updateQuestionNonExistentQuestion
+# @ref updateQuestionNonExistentSection
+PUT {{BASE_URL}}/sections/{{sectionNodeId}}/questions/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "SHORT_TEXT",
+    "title": "Should Not Update",
+    "order": 1
+}
+
+?? status == 404
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Not Found', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Not Found', 'Response title should be Not Found');
+        equal(data.status, 404, 'Status in body should be 404');
+    });
+}}
+
+###
+
+# ============================================
+# Delete question with non-existent section ID (expect 204 - idempotent)
+# ============================================
+# API returns 204 No Content even when section/question does not exist.
+# @name deleteQuestionNonExistentSection
+# @ref updateQuestionNonExistentQuestion
+DELETE {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions/{{shortTextQuestionId}}
+
+?? status == 204
+
+###
+
+# ============================================
+# Delete question with non-existent question ID (expect 204 - idempotent)
+# ============================================
+# API returns 204 No Content even when question does not exist.
+# @name deleteQuestionNonExistentQuestion
+# @ref deleteQuestionNonExistentSection
+DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/00000000-0000-0000-0000-000000000000
+
+?? status == 204
+
+###
+
+# ============================================
+# Get sections for non-existent form ID (expect 404)
+# ============================================
+# @name getSectionsNonExistentForm
+# @ref deleteQuestionNonExistentQuestion
+GET {{BASE_URL}}/forms/00000000-0000-0000-0000-000000000000/sections
+
+?? status == 404
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Not Found', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Not Found', 'Response title should be Not Found');
+        equal(data.status, 404, 'Status in body should be 404');
+    });
+}}
