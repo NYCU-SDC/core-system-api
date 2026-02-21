@@ -666,10 +666,119 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Swap two question orders (1 and 2)
+# ============================================
+# Put SHORT_TEXT at order 2 and LONG_TEXT at order 1.
+# @name swapTwoQuestionOrders
+# @ref updateShortTextQuestion
+PUT {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{shortTextQuestionId}}
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "SHORT_TEXT",
+    "title": "What is your full name? (Updated)",
+    "description": "Please enter your first and last name - this field is now optional",
+    "order": 2
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+}}
+
+
+###
+
+# ============================================
+# Verify question order after swap (1=LONG_TEXT, 2=SHORT_TEXT)
+# ============================================
+# @name verifyQuestionOrderAfterSwap
+# @ref swapTwoQuestionOrders
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Question order after swap is correct', () => {
+        const data = JSON.parse(response.body);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
+        equal(ourSection !== undefined, true, 'Our section should exist');
+        const questions = ourSection.questions.slice().sort((a, b) => a.order - b.order);
+        equal(questions[0].id, longTextQuestionId, 'Order 1 should be LONG_TEXT');
+        equal(questions[1].id, shortTextQuestionId, 'Order 2 should be SHORT_TEXT');
+    });
+}}
+
+###
+
+# ============================================
+# Insert question in the middle (move question 4 to position 2)
+# ============================================
+# After swap: order 1=LONG_TEXT, 2=SHORT_TEXT, 3=SINGLE_CHOICE, 4=MULTIPLE_CHOICE, ...
+# Move MULTIPLE_CHOICE to order 2, SHORT_TEXT to 3, SINGLE_CHOICE to 4.
+# @name insertQuestionInMiddle
+# @ref verifyQuestionOrderAfterSwap
+PUT {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{multipleChoiceQuestionId}}
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "MULTIPLE_CHOICE",
+    "title": "Which programming languages do you know?",
+    "description": "Select all that apply",
+    "order": 2,
+    "choices": [
+        { "name": "JavaScript" },
+        { "name": "TypeScript" },
+        { "name": "Python" },
+        { "name": "Go" },
+        { "name": "Rust" }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+}}
+
+###
+
+# ============================================
+# Verify question order after insert (1=LONG, 2=MULTIPLE_CHOICE, 3=SHORT, 4=SINGLE_CHOICE)
+# ============================================
+# @name verifyQuestionOrderAfterInsert
+# @ref insertQuestionInMiddle
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Question order after insert in middle is correct', () => {
+        const data = JSON.parse(response.body);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
+        equal(ourSection !== undefined, true, 'Our section should exist');
+        const questions = ourSection.questions.slice().sort((a, b) => a.order - b.order);
+        equal(questions[0].id, longTextQuestionId, 'Order 1 should be LONG_TEXT');
+        equal(questions[1].id, multipleChoiceQuestionId, 'Order 2 should be MULTIPLE_CHOICE');
+        equal(questions[2].id, shortTextQuestionId, 'Order 3 should be SHORT_TEXT');
+        equal(questions[3].id, singleChoiceQuestionId, 'Order 4 should be SINGLE_CHOICE');
+    });
+}}
+
+###
+
+# ============================================
 # Delete Question - Test Delete Operation
 # ============================================
 # @name deleteHyperlinkQuestion
-# @ref updateShortTextQuestion
+# @ref verifyQuestionOrderAfterInsert
 DELETE {{BASE_URL}}/sections/{{sectionNodeId}}/questions/{{hyperlinkQuestionToDeleteId}}
 
 {{
