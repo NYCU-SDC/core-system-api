@@ -711,7 +711,67 @@ Content-Type: application/json
         equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
         equal(data.status, 400, 'Status in body should be 400');
     });
+}}
+
+###
+
+# ============================================
+# Create question: order zero (expect 400 if order must be positive)
+# ============================================
+# @name createQuestionOrderZero
+# @ref createQuestionNegativeOrder
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Order zero",
+    "description": "Invalid order",
+    "order": 0
+}
+
+?? status == 400
+{{
     test.hasResponseBody();
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: duplicate order (expect 400 if order is unique per section)
+# ============================================
+# Section already has a question with order 1 from the positive flow; creating another with order 1.
+# @name createQuestionDuplicateOrder
+# @ref createQuestionOrderZero
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Duplicate order",
+    "description": "Same order as existing question",
+    "order": 1
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
 }}
 
 ###
@@ -720,7 +780,7 @@ Content-Type: application/json
 # Update question with non-existent section ID (expect 404)
 # ============================================
 # @name updateQuestionNonExistentSection
-# @ref createQuestionNegativeOrder
+# @ref createQuestionDuplicateOrder
 PUT {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions/{{shortTextQuestionId}}
 Content-Type: application/json
 
