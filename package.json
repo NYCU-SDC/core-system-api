@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@redocly/cli": "^2.15.0",
+		"httpyac": "^6.16.7",
 		"orval": "^8.2.0",
 		"typedoc": "^0.28.16",
 		"typedoc-rhineai-theme": "^1.2.0"
