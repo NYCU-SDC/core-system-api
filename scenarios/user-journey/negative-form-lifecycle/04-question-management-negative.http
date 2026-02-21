@@ -125,10 +125,219 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Create question: SINGLE_CHOICE without choices (expect 400)
+# ============================================
+# Choice-based type requires choices array.
+# @name createQuestionSingleChoiceMissingChoices
+# @ref createQuestionMissingType
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SINGLE_CHOICE",
+    "title": "Pick one",
+    "description": "Missing choices for single choice",
+    "order": 1
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: SINGLE_CHOICE with empty choices (expect 400)
+# ============================================
+# @name createQuestionSingleChoiceEmptyChoices
+# @ref createQuestionSingleChoiceMissingChoices
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SINGLE_CHOICE",
+    "title": "Pick one",
+    "description": "Empty choices",
+    "order": 1,
+    "choices": []
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: SINGLE_CHOICE with invalid choice structure (expect 400)
+# ============================================
+# Choices must have "name"; wrong structure should be rejected.
+# @name createQuestionInvalidChoiceStructure
+# @ref createQuestionSingleChoiceEmptyChoices
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SINGLE_CHOICE",
+    "title": "Pick one",
+    "description": "Invalid choice structure",
+    "order": 1,
+    "choices": [
+        { "label": "Option A" },
+        { "value": "Option B" }
+    ]
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: LINEAR_SCALE scale not in 1~10 - maxVal > 10 (expect 400)
+# ============================================
+# ScaleOption maxVal must be between 2 and 10.
+# @name createQuestionLinearScaleOutOfRange
+# @ref createQuestionInvalidChoiceStructure
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "LINEAR_SCALE",
+    "title": "Rate 1-20",
+    "description": "Invalid: maxVal 20 not in 1~10",
+    "order": 1,
+    "scale": {
+        "minVal": 1,
+        "maxVal": 20,
+        "minValueLabel": "Low",
+        "maxValueLabel": "High"
+    }
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: LINEAR_SCALE minVal invalid (expect 400)
+# ============================================
+# minVal can be 0 or 1 only; minVal > maxVal is invalid.
+# @name createQuestionLinearScaleInvalidMinMax
+# @ref createQuestionLinearScaleOutOfRange
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "LINEAR_SCALE",
+    "title": "Invalid range",
+    "description": "minVal 5 > maxVal 3",
+    "order": 1,
+    "scale": {
+        "minVal": 5,
+        "maxVal": 3
+    }
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: RATING icon not found (expect 400)
+# ============================================
+# Invalid or unsupported icon name for rating question.
+# @name createQuestionRatingIconNotFound
+# @ref createQuestionLinearScaleInvalidMinMax
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "RATING",
+    "title": "Rate with invalid icon",
+    "description": "Icon not found",
+    "order": 1,
+    "scale": {
+        "icon": "nonexistent_icon_xyz",
+        "minVal": 1,
+        "maxVal": 5
+    }
+}
+
+?? status == 400
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Validation Problem', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
+    });
+}}
+
+###
+
+# ============================================
 # Update question with non-existent section ID (expect 404)
 # ============================================
 # @name updateQuestionNonExistentSection
-# @ref createQuestionMissingType
+# @ref createQuestionRatingIconNotFound
 PUT {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions/{{shortTextQuestionId}}
 Content-Type: application/json
 
