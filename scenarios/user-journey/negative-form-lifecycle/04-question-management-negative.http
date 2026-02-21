@@ -746,11 +746,113 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create question: duplicate order (expect 400 if order is unique per section)
+# Get question list length before jump order create
+# ============================================
+# @name getQuestionCountBeforeJumpOrder
+# @ref createQuestionOrderZero
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+?? status == 200
+{{
+    test.hasResponseBody();
+    const data = JSON.parse(response.body);
+    const ourSection = data.find(s => s.section.id === sectionNodeId);
+    if (ourSection && Array.isArray(ourSection.questions)) {
+        exports.questionCountBeforeJumpOrder = ourSection.questions.length;
+    }
+}}
+
+###
+
+# ============================================
+# Create question: jump order
+# ============================================
+# Creating with order questionCountBeforeJumpOrder + 2 so we jump order (section already has 1, 2, 3, ...).
+# When creation succeeds (201), verify question is at questionCountBeforeJumpOrder + 1 position.
+# @name createQuestionJumpOrder
+# @ref getQuestionCountBeforeJumpOrder
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Jump order",
+    "description": "Order 100",
+    "order": 100
+}
+
+?? status == 201
+{{
+    test.hasResponseBody();
+    const data = JSON.parse(response.body);
+    if (data.id) {
+        exports.jumpOrderQuestionId = data.id;
+    }
+}}
+
+
+###
+
+# ============================================
+# Create question: correct order (order N+10) after jump order (order N+50)
+# ============================================
+# Create with order questionCountBeforeJumpOrder + 10; should be placed after the jump-order question (order N+50).
+# @name createQuestionCorrectOrder
+# @ref createQuestionJumpOrder
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Correct order",
+    "description": "Order 50",
+    "order": 50
+}
+
+?? status == 201
+{{
+    test.hasResponseBody();
+    const data = JSON.parse(response.body);
+    if (data.id) {
+        exports.correctOrderQuestionId = data.id;
+    }
+}}
+
+###
+
+# ============================================
+# Verify order after correct-order creation
+# ============================================
+# Orders: 1..N, 100, 50. So jump-order question at index N, correct-order question at N+1.
+# @name verifyOrderAfterCorrectOrder
+# @ref createQuestionCorrectOrder
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+?? status == 200
+{{
+    test.hasResponseBody();
+    const { equal } = require('assert');
+    test('Count is N+2; jump-order question at index N, correct-order question at index N+1', () => {
+        const data = JSON.parse(response.body);
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
+        equal(ourSection !== undefined, true, 'Our section should exist');
+        equal(ourSection.questions.length, questionCountBeforeJumpOrder + 2, 'Question count should be N+2');
+        equal(ourSection.questions[questionCountBeforeJumpOrder].id, jumpOrderQuestionId, 'Jump order question should be at index N');
+        equal(ourSection.questions[questionCountBeforeJumpOrder + 1].id, correctOrderQuestionId, 'Correct order question should be at index N+1');
+    });
+}}
+
+###
+
+# ============================================
+# Create question: duplicate order (API pushes others to 2..N+1)
 # ============================================
 # Section already has a question with order 1 from the positive flow; creating another with order 1.
+# API should accept and push existing questions back so orders become 2, 3, ..., N+1.
 # @name createQuestionDuplicateOrder
-# @ref createQuestionOrderZero
+# @ref verifyOrderAfterCorrectOrder
 POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
@@ -758,19 +860,39 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Duplicate order",
-    "description": "Same order as existing question",
+    "description": "Same order as existing question - API pushes others to 2..N+1",
     "order": 1
 }
 
-?? status == 400
+?? status == 201
+{{
+    test.hasResponseBody();
+    const data = JSON.parse(response.body);
+    if (data.id) {
+        exports.duplicateOrderQuestionId = data.id;
+    }
+}}
+
+###
+
+# ============================================
+# Verify order after duplicate-order create (new at 1, others at 2..N+1)
+# ============================================
+# @name verifyOrderAfterDuplicateOrder
+# @ref createQuestionDuplicateOrder
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+?? status == 200
 {{
     test.hasResponseBody();
     const { equal } = require('assert');
-
-    test('Error body indicates Validation Problem', () => {
+    test('New question at order 1 (index 0), previous order-1 question at index 1, count N+3', () => {
         const data = JSON.parse(response.body);
-        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
-        equal(data.status, 400, 'Status in body should be 400');
+        const ourSection = data.find(s => s.section.id === sectionNodeId);
+        equal(ourSection !== undefined, true, 'Our section should exist');
+        equal(ourSection.questions.length, questionCountBeforeJumpOrder + 3, 'Question count should be N+3 after duplicate-order create');
+        equal(ourSection.questions[0].id, duplicateOrderQuestionId, 'New question (order 1) should be at index 0');
+        equal(ourSection.questions[1].id, shortTextQuestionId, 'Previous order-1 question should be pushed to index 1 (order 2)');
     });
 }}
 
@@ -780,7 +902,7 @@ Content-Type: application/json
 # Update question with non-existent section ID (expect 404)
 # ============================================
 # @name updateQuestionNonExistentSection
-# @ref createQuestionDuplicateOrder
+# @ref verifyOrderAfterDuplicateOrder
 PUT {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions/{{shortTextQuestionId}}
 Content-Type: application/json
 
