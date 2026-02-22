@@ -10,7 +10,7 @@ namespace CoreSystem.User {
 		avatarUrl: "https://avatars.githubusercontent.com/u/12345678",
 		emails: #["john.doe@example.com", "john@gmail.com"],
 		roles: #[Role.user],
-		is_onboarded: true,
+		require_onboarding: true,
 	})
 	model User {
 		@doc("The user's unique identifier.")
@@ -35,8 +35,8 @@ namespace CoreSystem.User {
 		@doc("Global role of the user.")
 		roles: Role[];
 
-		@doc("The user is onboareded or not")
-		is_onboarded: boolean;
+		@doc("The user needs to onboard and has not completed onboarding yet.")
+		require_onboarding: boolean;
 	}
 
 	@example(#{ username: "jane_smith", name: "Jane Smith" })

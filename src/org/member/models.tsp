@@ -14,7 +14,7 @@ namespace CoreSystem.Unit {
 			avatarUrl: "https://avatars.githubusercontent.com/u/87654321",
 			emails: #["alice@example.com"],
 			roles: #[CoreSystem.User.Role.user],
-			is_onboarded: true,
+			require_onboarding: true,
 		},
 	})
 	model OrgMemberResponse {
