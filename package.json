@@ -22,8 +22,7 @@
 		"httpyac": "^6.16.7",
 		"orval": "^8.2.0",
 		"typedoc": "^0.28.16",
-		"typedoc-rhineai-theme": "^1.2.0",
-		"typescript": "^5.9.3"
+		"typedoc-rhineai-theme": "^1.2.0"
 	},
 	"devDependencies": {
 		"@stoplight/prism-cli": "^5.14.2",
