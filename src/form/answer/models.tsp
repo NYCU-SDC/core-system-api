@@ -97,7 +97,7 @@ namespace CoreSystem.Responses {
 	@doc("Request model for uploading files as answers to a specific question in a response.")
 	model QuestionFilesUploadRequest {
 		@doc("The file(s) being uploaded.")
-		files: HttpPart<bytes>[];
+		files: HttpPart<bytes[]>;
 	}
 
 	@doc("Response model for the uploaded files")
