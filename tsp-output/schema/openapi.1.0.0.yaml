@@ -4114,7 +4114,7 @@ components:
               - alice@example.com
             roles:
               - USER
-            is_onboarded: true
+            require_onboarding: true
     Unit.Organization:
       type: object
       required:
@@ -4401,7 +4401,7 @@ components:
         - avatarUrl
         - emails
         - roles
-        - is_onboarded
+        - require_onboarding
       properties:
         id:
           allOf:
@@ -4430,9 +4430,9 @@ components:
           items:
             $ref: '#/components/schemas/User.Role'
           description: Global role of the user.
-        is_onboarded:
+        require_onboarding:
           type: boolean
-          description: The user is onboareded or not
+          description: The user needs to onboard and has not completed onboarding yet.
       examples:
         - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
           username: john_doe
@@ -4443,7 +4443,7 @@ components:
             - john@gmail.com
           roles:
             - USER
-          is_onboarded: true
+          require_onboarding: true
     Versions:
       type: string
       enum:
