@@ -3,7 +3,7 @@ using Http;
 namespace CoreSystem.Forms {
 	@doc("The request body for uploading a cover image. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.")
 	model FormCoverUploadRequest {
-		coverImage: HttpPart<bytes>;
+		coverImage: HttpPart<bytes[]>;
 	}
 
 	@doc("Response after uploading a cover image.")
