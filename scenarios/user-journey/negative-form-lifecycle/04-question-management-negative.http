@@ -892,7 +892,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(ourSection.questions.length, questionCountBeforeJumpOrder + 3, 'Question count should be N+3 after duplicate-order create');
         equal(ourSection.questions[0].id, duplicateOrderQuestionId, 'New question (order 1) should be at index 0');
-        equal(ourSection.questions[1].id, shortTextQuestionId, 'Previous order-1 question should be pushed to index 1 (order 2)');
+        equal(ourSection.questions[1].id, longTextQuestionId, 'Previous order-1 question (LONG_TEXT) should be pushed to index 1 (order 2)');
     });
 }}
 
