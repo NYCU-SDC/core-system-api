@@ -1,0 +1,120 @@
+# ============================================
+# Question Management - Simplified (form-workflow-condition)
+# ============================================
+# Section A: only 1 question (the condition "Go to branch B or C?" from 01).
+# Section B and Section C: add one question each so branches have content.
+
+# Import condition workflow (formId, sectionNodeId, sectionBNodeId, sectionCNodeId, getFinalWorkflowWithCondition)
+# @import ./01-workflow-condition.http
+
+###
+
+# ============================================
+# Create Question in Section B (SHORT_TEXT)
+# ============================================
+# @name createSectionBQuestion
+# @ref getFinalWorkflowWithCondition
+POST {{BASE_URL}}/sections/{{sectionBNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Branch B: What is your name?",
+    "description": "You chose Section B",
+    "order": 1
+}
+
+?? status == 201
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Section B question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
+        equal(data.required, true, 'Section B question should be required');
+        equal(data.sectionId, sectionBNodeId, 'Section ID should match');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.sectionBQuestionId = data.id;
+}}
+
+###
+
+# ============================================
+# Create Question in Section C (LONG_TEXT)
+# ============================================
+# @name createSectionCQuestion
+# @ref createSectionBQuestion
+POST {{BASE_URL}}/sections/{{sectionCNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "LONG_TEXT",
+    "title": "Branch C: Tell us more",
+    "description": "You chose Section C",
+    "order": 1
+}
+
+?? status == 201
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Section C question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'LONG_TEXT', 'Type should be LONG_TEXT');
+        equal(data.required, true, 'Section C question should be required');
+        equal(data.sectionId, sectionCNodeId, 'Section ID should match');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.sectionCQuestionId = data.id;
+}}
+
+###
+
+# ============================================
+# Verify Questions in All Sections
+# ============================================
+# @name verifyQuestionDeletion
+# @ref createSectionCQuestion
+GET {{BASE_URL}}/forms/{{formId}}/sections
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Sections have expected questions', () => {
+        const data = JSON.parse(response.body);
+        equal(Array.isArray(data), true, 'Response should be an array');
+
+        const sectionA = data.find(s => s.section.id === sectionNodeId);
+        const sectionB = data.find(s => s.section.id === sectionBNodeId);
+        const sectionC = data.find(s => s.section.id === sectionCNodeId);
+
+        equal(sectionA !== undefined, true, 'Section A should exist');
+        equal(Array.isArray(sectionA.questions), true, 'Section A questions should be array');
+        equal(sectionA.questions.length, 1, 'Section A should have 1 question (condition only), got ' + sectionA.questions.length);
+        equal(sectionA.questions[0].required, true, 'Section A (condition) question should be required');
+
+        equal(sectionB !== undefined, true, 'Section B should exist');
+        equal(Array.isArray(sectionB.questions), true, 'Section B questions should be array');
+        equal(sectionB.questions.length, 1, 'Section B should have 1 question, got ' + sectionB.questions.length);
+        equal(sectionB.questions[0].required, true, 'Section B question should be required');
+
+        equal(sectionC !== undefined, true, 'Section C should exist');
+        equal(Array.isArray(sectionC.questions), true, 'Section C questions should be array');
+        equal(sectionC.questions.length, 1, 'Section C should have 1 question, got ' + sectionC.questions.length);
+        equal(sectionC.questions[0].required, true, 'Section C question should be required');
+    });
+}}
