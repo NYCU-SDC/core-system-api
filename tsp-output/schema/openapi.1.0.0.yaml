@@ -23,6 +23,7 @@ tags:
   - name: Forms
   - name: Form Workflow
   - name: Responses
+  - name: Files
 paths:
   /api/auth/login/internal:
     post:
@@ -111,6 +112,135 @@ paths:
           description: The server cannot find the requested resource.
       tags:
         - Auth
+  /api/files:
+    get:
+      operationId: Files_listFiles
+      summary: List All Files
+      description: List all files with pagination. Requires authentication.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of files to return. Defaults to 20.
+          schema:
+            type: integer
+            format: int32
+          explode: false
+        - name: offset
+          in: query
+          required: false
+          description: Number of files to skip. Defaults to 0.
+          schema:
+            type: integer
+            format: int32
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Files.ListFilesResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - Files
+  /api/files/me:
+    get:
+      operationId: Files_listMyFiles
+      summary: List My Files
+      description: List files uploaded by the currently authenticated user.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Files.FileResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - Files
+  /api/files/{id}:
+    get:
+      operationId: Files_downloadFile
+      summary: Download File
+      description: Download a file by its ID. Returns the raw file content with appropriate Content-Type and Content-Disposition headers.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          headers:
+            Content-Disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            '*/*':
+              schema:
+                contentMediaType: '*/*'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Files
+  /api/files/{id}/info:
+    get:
+      operationId: Files_getFileInfo
+      summary: Get File Info
+      description: Get metadata of a file by its ID, without downloading the binary content.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Files.FileResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Files
   /api/forms:
     get:
       operationId: Forms_listForms
@@ -321,6 +451,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
+            encoding:
+              coverImage:
+                contentType: application/json
   /api/forms/{formId}/publish:
     post:
       operationId: Forms_publishForm
@@ -1338,7 +1471,7 @@ paths:
     post:
       operationId: Responses_uploadQuestionFiles
       summary: Upload Question Files
-      description: Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs.
+      description: Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs. The limit for each question is 10 files, and each file must be less than 10MB.
       parameters:
         - name: responseId
           in: path
@@ -1612,6 +1745,81 @@ components:
           status: 400
           type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
           detail: The request body contains invalid data
+    Files.FileResponse:
+      type: object
+      required:
+        - id
+        - originalFilename
+        - contentType
+        - size
+        - createdAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the file.
+        originalFilename:
+          type: string
+          description: The original filename as provided by the client.
+        contentType:
+          type: string
+          description: The MIME content type of the file.
+        size:
+          type: integer
+          format: int64
+          description: The size of the file in bytes.
+        uploadedBy:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The ID of the user who uploaded the file. Null if uploaded anonymously.
+        createdAt:
+          type: string
+          description: The creation timestamp of the file in RFC 3339 format.
+      description: File metadata response.
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          originalFilename: resume.pdf
+          contentType: application/pdf
+          size: 204800
+          uploadedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          createdAt: '2025-01-20T10:00:00Z'
+    Files.ListFilesResponse:
+      type: object
+      required:
+        - files
+        - total
+        - limit
+        - offset
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/Files.FileResponse'
+          description: The list of files.
+        total:
+          type: integer
+          format: int64
+          description: Total number of files matching the query.
+        limit:
+          type: integer
+          format: int32
+          description: Maximum number of files returned per page.
+        offset:
+          type: integer
+          format: int32
+          description: Number of files skipped.
+      description: Paginated list of file metadata.
+      examples:
+        - files:
+            - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+              originalFilename: resume.pdf
+              contentType: application/pdf
+              size: 204800
+              uploadedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+              createdAt: '2025-01-20T10:00:00Z'
+          total: 1
+          limit: 20
+          offset: 0
     FormWorkflow.ConditionRule:
       type: object
       required:
@@ -3430,29 +3638,40 @@ components:
     Responses.QuestionFilesUploadResponse:
       type: object
       required:
-        - id
-        - answer
+        - files
       properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The response's unique identifier.
-        answer:
-          allOf:
-            - $ref: '#/components/schemas/Responses.AnswerPayload'
-          description: The auto-created/updated answer with file URLs.
-      description: Response model for the uploaded files and auto-created answer
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              fileId:
+                allOf:
+                  - $ref: '#/components/schemas/uuid'
+                description: The unique identifier of the uploaded file.
+              originalFilename:
+                type: string
+                description: The original filename as provided by the client.
+              contentType:
+                type: string
+                description: The MIME content type of the uploaded file.
+              size:
+                type: integer
+                format: int64
+                description: The size of the uploaded file in bytes.
+            required:
+              - fileId
+              - originalFilename
+              - contentType
+              - size
+          description: Metadata of each successfully uploaded file.
+      description: Response model for the uploaded files
       examples:
-        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
-          answer:
-            createdAt: '2025-02-15T10:00:00Z'
-            updatedAt: '2025-02-17T16:45:00Z'
-            responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
-            answer:
-              questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
-              questionType: SHORT_TEXT
-              value: John Doe
-            displayValue: John Doe
+        - files:
+            - fileId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+              originalFilename: resume.pdf
+              contentType: application/pdf
+              size: 204800
     Responses.Response:
       type: object
       required:
