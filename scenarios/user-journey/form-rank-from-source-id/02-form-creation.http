@@ -27,7 +27,7 @@ Content-Type: application/json
     "visibility": "PUBLIC"
 }
 
-?? status <= 201
+?? status == 201
 {{
     test.hasResponseBody();
 
