@@ -1,0 +1,12 @@
+name: Bug Report
+description: Report a problem or unexpected behavior
+labels: ["bug"]
+title: "[bug] "
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What went wrong?
+      description: Describe the problem, including steps to reproduce if possible.
+    validations:
+      required: true

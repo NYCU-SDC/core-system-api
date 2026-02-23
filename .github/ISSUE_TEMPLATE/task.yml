@@ -1,0 +1,12 @@
+name: Task
+description: 僅限 EM 內部使用，用於追蹤任務與工作項目。
+labels: ["task"]
+title: "[task] "
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Task description
+      description: Describe the task to be done.
+    validations:
+      required: true
