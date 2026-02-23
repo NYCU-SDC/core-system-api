@@ -98,23 +98,33 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const data = JSON.parse(response.body);
         equal(Array.isArray(data), true, 'Response should be an array');
 
-        const sectionA = data.find(s => s.section.id === sectionNodeId);
-        const sectionB = data.find(s => s.section.id === sectionBNodeId);
-        const sectionC = data.find(s => s.section.id === sectionCNodeId);
-
-        equal(sectionA !== undefined, true, 'Section A should exist');
-        equal(Array.isArray(sectionA.questions), true, 'Section A questions should be array');
-        equal(sectionA.questions.length, 1, 'Section A should have 1 question (condition only), got ' + sectionA.questions.length);
-        equal(sectionA.questions[0].required, true, 'Section A (condition) question should be required');
-
-        equal(sectionB !== undefined, true, 'Section B should exist');
-        equal(Array.isArray(sectionB.questions), true, 'Section B questions should be array');
-        equal(sectionB.questions.length, 1, 'Section B should have 1 question, got ' + sectionB.questions.length);
-        equal(sectionB.questions[0].required, true, 'Section B question should be required');
-
-        equal(sectionC !== undefined, true, 'Section C should exist');
-        equal(Array.isArray(sectionC.questions), true, 'Section C questions should be array');
-        equal(sectionC.questions.length, 1, 'Section C should have 1 question, got ' + sectionC.questions.length);
-        equal(sectionC.questions[0].required, true, 'Section C question should be required');
+        const sectionChecks = [{ 
+            nodeId: sectionNodeId, 
+            label: 'Section A', 
+            expectedCount: 1, 
+            countDesc: '1 question (condition only)', 
+            requiredLabel: 'Section A (condition)' 
+        },
+        { 
+            nodeId: sectionBNodeId, 
+            label: 'Section B', 
+            expectedCount: 1, 
+            countDesc: '1 question', 
+            requiredLabel: 'Section B' 
+        },
+        { 
+            nodeId: sectionCNodeId, 
+            label: 'Section C', 
+            expectedCount: 1, 
+            countDesc: '1 question', 
+            requiredLabel: 'Section C' 
+        }];
+        for (const c of sectionChecks) {
+            const section = data.find(s => s.section.id === c.nodeId);
+            equal(section !== undefined, true, c.label + ' should exist');
+            equal(Array.isArray(section.questions), true, c.label + ' questions should be array');
+            equal(section.questions.length, c.expectedCount, c.label + ' should have ' + c.countDesc + ', got ' + section.questions.length);
+            equal(section.questions[0].required, true, c.requiredLabel + ' question should be required');
+        }
     });
 }}
