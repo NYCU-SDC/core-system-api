@@ -177,11 +177,44 @@ POST {{BASE_URL}}/forms/{{formId}}/responses
 ###
 
 # ============================================
+# [B] Verify - GET response for Scenario B, before submitting any answers
+# Expected: Ranking choices should be empty (no DMC answer submitted yet)
+# ============================================
+# @name getResponseBBefore
+# @ref createResponseB
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseIdB}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Response B has correct structure', () => {
+        equal(data.id, responseIdB, 'Response ID should match');
+        equal(data.formId, formId, 'Form ID should match');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+        equal(data.sections.length, 1, 'Should have exactly 1 section');
+    });
+
+    test('[B] Ranking question has no choice before DMC answer is submitted', () => {
+        const section = data.sections[0];
+        const rankDetail = section.answerDetails.find(a => a.question.id === rankingQuestionId);
+        equal(rankDetail !== undefined, true, 'Ranking answer should exist');
+        equal(rankDetail.question.type, 'RANKING', 'Question type should be RANKING');
+        equal(rankDetail.question.choices.length, 0, 'Ranking choices should be empty before DMC answer is submitted');
+    });
+}}
+
+###
+
+# ============================================
 # [B] Step 1 — Submit only the DETAILED_MULTIPLE_CHOICE answer
 # User selects: Backend (index 1) and Data Science (index 3)
 # ============================================
 # @name submitDmcB
-# @ref createResponseB
+# @ref getResponseBBefore
 PATCH {{BASE_URL}}/responses/{{responseIdB}}/answers
 Content-Type: application/json
 
@@ -217,12 +250,51 @@ Content-Type: application/json
 ###
 
 # ============================================
+# [B] Verify - GET response for Scenario B, after submitting DMC but before submitting Ranking
+# Expected: Ranking choices should be populated with the 2 selected DMC options (Backend + Data Science)
+# ============================================
+# @name getResponseBAfterDmcBeforeRanking
+# @ref submitDmcB
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseIdB}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Response B has correct structure', () => {
+        equal(data.id, responseIdB, 'Response ID should match');
+        equal(data.formId, formId, 'Form ID should match');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+        equal(data.sections.length, 1, 'Should have exactly 1 section');
+    });
+
+    test('[B] Ranking question has choices populated after DMC answer is submitted', () => {
+        const section = data.sections[0];
+        const rankDetail = section.answerDetails.find(a => a.question.id === rankingQuestionId);
+        equal(rankDetail !== undefined, true, 'Ranking answer should exist');
+        equal(rankDetail.question.type, 'RANKING', 'Question type should be RANKING');
+        equal(rankDetail.question.choices.length, 2, 'Ranking choices should be populated with the 2 selected DMC options');
+        const choiceIds = rankDetail.question.choices.map(c => c.id);
+        equal(choiceIds.includes(dmcChoices[1].id), true, 'Backend should be in ranking choices');
+        equal(choiceIds.includes(dmcChoices[3].id), true, 'Data Science should be in ranking choices');
+        // Frontend and DevOps were NOT selected in scenario B
+        equal(choiceIds.includes(dmcChoices[0].id), false, 'Frontend should NOT be in ranking choices');
+        equal(choiceIds.includes(dmcChoices[2].id), false, 'DevOps should NOT be in ranking choices');
+    });
+}}
+
+###
+
+# ============================================
 # [B] Step 2 — Submit only the RANKING answer
 # The backend should look up the stored DMC answer to resolve choices.
 # Ranking order: Data Science > Backend  (i.e. [3] then [1])
 # ============================================
 # @name submitRankingB
-# @ref submitDmcB
+# @ref getResponseBAfterDmcBeforeRanking
 PATCH {{BASE_URL}}/responses/{{responseIdB}}/answers
 Content-Type: application/json
 
