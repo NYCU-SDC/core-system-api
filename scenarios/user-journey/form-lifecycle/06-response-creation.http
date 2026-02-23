@@ -64,10 +64,38 @@ POST {{BASE_URL}}/forms/{{formId}}/responses
 ###
 
 # ============================================
+# Verify progress before patching answers
+# ============================================
+# @name verifyProgressBeforePatching
+# @ref createFormResponse
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Response progress is DRAFT and section progress is present', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id, responseId, 'Response ID should match');
+        equal(data.formId, formId, 'Form ID should match');
+        equal(data.progress, 'DRAFT', 'Progress should be DRAFT before any answers');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+        equal(data.sections.length, 1, 'Should have 1 section');
+
+        equal(data.sections[0].progress, 'NOT_STARTED', 'Progress should be NOT_STARTED');
+        console.log('Progress is NOT_STARTED before patching answers');
+    });
+}}
+
+###
+
+# ============================================
 # Save Draft Answers - Text Questions (Auto-save Simulation)
 # ============================================
 # @name saveDraftTextAnswers
-# @ref createFormResponse
+# @ref verifyProgressBeforePatching
 PATCH {{BASE_URL}}/responses/{{responseId}}/answers
 Content-Type: application/json
 
@@ -164,10 +192,34 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Verify progress = DRAFT after saving text answers
+# ============================================
+# @name verifyProgressDraftAfterTextAnswers
+# @ref saveDraftTextAnswers
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Response progress remains DRAFT after text answers', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id, responseId, 'Response ID should match');
+        equal(data.progress, 'DRAFT', 'Progress should be DRAFT after saving draft text answers');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+        console.log('Progress is DRAFT after text answers');
+    });
+}}
+
+###
+
+# ============================================
 # Get Specific Question Answer
 # ============================================
 # @name getShortTextAnswer
-# @ref saveDraftTextAnswers
+# @ref verifyProgressDraftAfterTextAnswers
 GET {{BASE_URL}}/responses/{{responseId}}/questions/{{shortTextQuestionId}}
 
 {{
@@ -617,11 +669,36 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
 ###
 
 # ============================================
+# Verify section progress before submit
+# ============================================
+# @name verifySectionProgress
+# @ref getResponsePreview
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Section progress is COMPLETED', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id, responseId, 'Response ID should match');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+        equal(data.sections.length, 1, 'Should have 1 section');
+        equal(data.sections[0].progress, 'COMPLETED', 'Progress should be COMPLETED');
+        console.log('Progress is COMPLETED after patching answers');
+    });
+}}
+
+###
+
+# ============================================
 # Submit Response with Final Answers
 # ============================================
 # NOTE: This sends all answers again as per the design
 # @name submitResponse
-# @ref getResponsePreview
+# @ref verifySectionProgress
 POST {{BASE_URL}}/responses/{{responseId}}/submit
 Content-Type: application/json
 
