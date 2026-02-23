@@ -80,9 +80,14 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         equal(Array.isArray(data.sections), true, 'Sections should be an array');
         equal(data.sections.length, 3, 'Should have 3 sections (A, B, C)');
 
-        equal(data.sections[0].progress, 'NOT_STARTED', 'Progress should be NOT_STARTED for Section A');
-        equal(data.sections[1].progress, 'SKIPPED', 'Progress should be SKIPPED for Section B');
-        equal(data.sections[2].progress, 'SKIPPED', 'Progress should be SKIPPED for Section C');
+        const sectionProgressChecks = [
+            { index: 0, progress: 'NOT_STARTED', label: 'Section A' },
+            { index: 1, progress: 'SKIPPED', label: 'Section B' },
+            { index: 2, progress: 'SKIPPED', label: 'Section C' },
+        ];
+        for (const s of sectionProgressChecks) {
+            equal(data.sections[s.index].progress, s.progress, 'Progress should be ' + s.progress + ' for ' + s.label);
+        }
         console.log('Progress is SKIPPED for Section B and Section C before patching answers');
     });
 }}
@@ -151,9 +156,14 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         const data = JSON.parse(response.body);
         equal(data.id, responseId, 'Response ID should match');
         equal(data.progress, 'DRAFT', 'Progress should be DRAFT');
-        equal(data.sections[0].progress, 'COMPLETED', 'Progress should be COMPLETED for Section A');
-        equal(data.sections[1].progress, 'NOT_STARTED', 'Progress should be NOT_STARTED for Section B');
-        equal(data.sections[2].progress, 'NOT_STARTED', 'Progress should be NOT_STARTED for Section C');
+        const sectionProgressChecks = [
+            { index: 0, progress: 'COMPLETED', label: 'Section A' },
+            { index: 1, progress: 'NOT_STARTED', label: 'Section B' },
+            { index: 2, progress: 'NOT_STARTED', label: 'Section C' },
+        ];
+        for (const s of sectionProgressChecks) {
+            equal(data.sections[s.index].progress, s.progress, 'Progress should be ' + s.progress + ' for ' + s.label);
+        }
         console.log('Progress is DRAFT after draft answers');
     });
 }}
@@ -212,9 +222,14 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         equal(data.id, responseId, 'Response ID should match');
         equal(Array.isArray(data.sections), true, 'Sections should be an array');
         equal(data.sections.length, 3, 'Should have 3 sections (A, B, C)');
-        equal(data.sections[0].progress, 'COMPLETED', 'Section A (condition) should be COMPLETED');
-        equal(data.sections[1].progress, 'NOT_STARTED', 'Section C should be NOT_STARTED');
-        equal(data.sections[2].progress, 'SKIPPED', 'Section B should be SKIPPED');
+        const sectionProgressChecks = [
+            { index: 0, progress: 'COMPLETED', label: 'Section A (condition)' },
+            { index: 1, progress: 'NOT_STARTED', label: 'Section C' },
+            { index: 2, progress: 'SKIPPED', label: 'Section B' },
+        ];
+        for (const c of sectionProgressChecks) {
+            equal(data.sections[c.index].progress, c.progress, c.label + ' should be ' + c.progress);
+        }
         console.log('Section progress verified after patching Section A answer');
     });
 }}
@@ -309,9 +324,14 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         equal(data.id, responseId, 'Response ID should match');
         equal(Array.isArray(data.sections), true, 'Sections should be an array');
         equal(data.sections.length, 3, 'Should have 3 sections (A, B, C)');
-        equal(data.sections[0].progress, 'COMPLETED', 'Section A (condition) should be COMPLETED');
-        equal(data.sections[1].progress, 'COMPLETED', 'Section B should be COMPLETED');
-        equal(data.sections[2].progress, 'SKIPPED', 'Section C should be SKIPPED');
+        const sectionProgressChecks = [
+            { index: 0, progress: 'COMPLETED', label: 'Section A (condition)' },
+            { index: 1, progress: 'COMPLETED', label: 'Section B' },
+            { index: 2, progress: 'SKIPPED', label: 'Section C' },
+        ];
+        for (const s of sectionProgressChecks) {
+            equal(data.sections[s.index].progress, s.progress, s.label + ' should be ' + s.progress);
+        }
         console.log('Sections A (condition) COMPLETED, Section B SKIPPED, Section C COMPLETED after patching answers');
     });
 }}
@@ -369,13 +389,34 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         equal(data.id, responseId, 'Response ID should match');
         equal(data.formId, formId, 'Form ID should match');
         equal(data.progress, 'SUBMITTED', 'Progress should be SUBMITTED after submission');
-        equal(data.sections[0].progress, 'COMPLETED', 'Section A (condition) should be COMPLETED');
-        equal(data.sections[1].progress, 'COMPLETED', 'Section C should be COMPLETED');
-        equal(data.sections[2].progress, 'SKIPPED', 'Section B should be SKIPPED');
-        equal(data.sections[0].answerDetails[0].payload !== undefined && data.sections[0].answerDetails[0].payload !== null, true, 'Section A (condition) should exist with 1 question and 1 answer with payload');
-        equal(data.sections[1].answerDetails[0].payload !== undefined && data.sections[1].answerDetails[0].payload !== null, true, 'Section C should exist with 1 question and 1 answer with payload');
-        equal(data.sections[2].answerDetails[0].payload == null, true, 'Section B should exist with 1 question but 0 answer');
-        
+
+        const sectionChecks = [{ 
+            index: 0,
+            progress: 'COMPLETED', 
+            hasPayload: true, 
+            progressLabel: 'Section A (condition)', 
+            payloadMsg: 'Section A (condition) should exist with 1 question and 1 answer with payload' 
+        },
+        { 
+            index: 1, 
+            progress: 'COMPLETED', 
+            hasPayload: true, 
+            progressLabel: 'Section C', 
+            payloadMsg: 'Section C should exist with 1 question and 1 answer with payload' 
+        },
+        { 
+            index: 2, 
+            progress: 'SKIPPED', 
+            hasPayload: false, 
+            progressLabel: 'Section B', 
+            payloadMsg: 'Section B should exist with 1 question but 0 answer' 
+        }];
+        for (const s of sectionChecks) {
+            equal(data.sections[s.index].progress, s.progress, s.progressLabel + ' should be ' + s.progress);
+            const hasPayload = data.sections[s.index].answerDetails[0].payload !== undefined && data.sections[s.index].answerDetails[0].payload !== null;
+            equal(hasPayload, s.hasPayload, s.payloadMsg);
+        }
+
         console.log('Response ID:', data.id);
         console.log('Progress:', data.progress);
         console.log('Section A (condition) COMPLETED, Section B SKIPPED, Section C COMPLETED after submission');
