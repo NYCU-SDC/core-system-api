@@ -17,6 +17,7 @@ namespace CoreSystem.Responses {
 		questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3",
 		questionType: CoreSystem.Forms.QuestionTypes.multipleChoice,
 		value: #["f421cfc2-2b84-4da9-9629-011af609935a", "2ca86a6d-7735-4f17-8676-29b4724b524f"],
+		otherText: "I also work with Rust",
 	})
 	@doc("Request model for submitting an individual answer")
 	model StringArrayAnswer {
@@ -33,6 +34,9 @@ namespace CoreSystem.Responses {
 
 		@doc("The answer value (format depends on questionType from questionId).")
 		value: string[];
+
+		@doc("The custom text entered for the 'Other' choice, if applicable.")
+		otherText?: string;
 	}
 
 	@example(#{ questionId: "2b2bc4f4-71c1-478b-9e36-516eac6b36c3", questionType: CoreSystem.Forms.QuestionTypes.date, value: utcDateTime.fromISO("2024-05-06T12:20-12Z") })

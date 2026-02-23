@@ -144,17 +144,20 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("A choice option for creating/updating choice-based questions.")
-	@example(#{ name: "Option A", description: "This is option A" })
+	@example(#{ name: "Option A", description: "This is option A", isOther: false })
 	model ChoiceOption {
 		@doc("The name/text of the choice option.")
 		name: string;
 
 		@doc("Optional description for the choice.")
 		description?: string;
+
+		@doc("Whether this choice represents the built-in 'Other' option.")
+		isOther?: boolean;
 	}
 
 	@doc("A choice with ID and name for choice-based questions.")
-	@example(#{ id: "f421cfc2-2b84-4da9-9629-011af609935a", name: "Backend", description: "Backend development team" })
+	@example(#{ id: "f421cfc2-2b84-4da9-9629-011af609935a", name: "Backend", description: "Backend development team", isOther: false })
 	model Choice {
 		@doc("The unique identifier of the choice.")
 		id: uuid;
@@ -164,6 +167,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Optional description for the choice.")
 		description?: string;
+
+		@doc("Whether this choice represents the built-in 'Other' option.")
+		isOther?: boolean;
 	}
 
 	@doc("Options for date questions.")
@@ -249,7 +255,7 @@ namespace CoreSystem.Forms {
 		title: "What's your preferred work location?",
 		description: "Choose one option",
 		order: 3,
-		choices: #[#{ name: "Remote" }, #{ name: "On-site" }, #{ name: "Hybrid" }],
+		choices: #[#{ name: "Remote" }, #{ name: "On-site" }, #{ name: "Hybrid" }, #{ name: "Other", isOther: true }],
 	})
 	@example(#{
 		required: true,
