@@ -1,0 +1,258 @@
+# ============================================
+# Phase 3: Publish Form & Submit Answers
+# ============================================
+# Covers two scenarios for how the Ranking answer can be submitted:
+#
+#   Scenario A — Same-batch submission:
+#     PATCH answers with DETAILED_MULTIPLE_CHOICE + RANKING in one request.
+#     The backend resolves the Ranking choices from the same request batch.
+#
+#   Scenario B — Two-step submission:
+#     First PATCH with only DETAILED_MULTIPLE_CHOICE, then a separate PATCH
+#     with only RANKING.  The backend resolves the Ranking choices from the
+#     stored DMC answer (DB fallback path).
+#
+# Each scenario uses its own independent response so the tests are isolated.
+
+# Import form creation from Phase 2
+# @import ./02-form-creation.http
+
+###
+
+# ============================================
+# Publish Form
+# ============================================
+# @name publishForm
+# @ref createRankingWithSourceId
+POST {{BASE_URL}}/forms/{{formId}}/publish
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Form published successfully', () => {
+        const data = JSON.parse(response.body);
+        equal(data.visibility !== undefined, true, 'Response should contain visibility');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.formVisibility = data.visibility;
+}}
+
+###
+
+# ============================================
+# Verify Form is Published
+# ============================================
+# @name verifyFormPublished
+# @ref publishForm
+GET {{BASE_URL}}/forms/{{formId}}
+
+{{
+    test.status(200);
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Form status is PUBLISHED', () => {
+        equal(data.status, 'PUBLISHED', 'Form should be PUBLISHED before accepting responses');
+    });
+}}
+
+###
+# ============================================
+# SCENARIO A: Same-batch submission
+# ============================================
+
+# ============================================
+# [A] Create Response
+# ============================================
+# @name createResponseA
+# @ref verifyFormPublished
+POST {{BASE_URL}}/forms/{{formId}}/responses
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Response A created successfully', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Response ID should exist');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.responseIdA = data.id;
+}}
+
+###
+
+# ============================================
+# [A] Submit DMC + Ranking in the same PATCH batch
+# User selects: Frontend (index 0) and DevOps (index 2)
+# Ranking order: DevOps > Frontend  (i.e. [2] then [0])
+# ============================================
+# @name submitBatchA
+# @ref createResponseA
+PATCH {{BASE_URL}}/responses/{{responseIdA}}/answers
+Content-Type: application/json
+
+{
+    "answers": [
+        {
+            "questionId": "{{dmcQuestionId}}",
+            "questionType": "DETAILED_MULTIPLE_CHOICE",
+            "value": ["{{dmcChoices[0].id}}", "{{dmcChoices[2].id}}"]
+        },
+        {
+            "questionId": "{{rankingQuestionId}}",
+            "questionType": "RANKING",
+            "value": ["{{dmcChoices[2].id}}", "{{dmcChoices[0].id}}"]
+        }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Batch A accepted', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 2, 'Should have 2 answers');
+    });
+
+    test('DMC answer in batch A is correct', () => {
+        const dmcAnswer = data.answers.find(a => a.answer.questionId === dmcQuestionId);
+        equal(dmcAnswer !== undefined, true, 'DMC answer should exist');
+        equal(dmcAnswer.answer.questionType, 'DETAILED_MULTIPLE_CHOICE', 'Type should be DETAILED_MULTIPLE_CHOICE');
+        equal(dmcAnswer.answer.value.length, 2, 'Should have 2 selected choices');
+        equal(dmcAnswer.answer.value.includes(dmcChoices[0].id), true, 'Frontend should be selected');
+        equal(dmcAnswer.answer.value.includes(dmcChoices[2].id), true, 'DevOps should be selected');
+    });
+
+    test('Ranking answer in batch A is correct', () => {
+        const rankingAnswer = data.answers.find(a => a.answer.questionId === rankingQuestionId);
+        equal(rankingAnswer !== undefined, true, 'Ranking answer should exist');
+        equal(rankingAnswer.answer.questionType, 'RANKING', 'Type should be RANKING');
+        equal(rankingAnswer.answer.value.length, 2, 'Should have 2 ranked choices');
+        equal(rankingAnswer.answer.value[0], dmcChoices[2].id, 'DevOps should be ranked first');
+        equal(rankingAnswer.answer.value[1], dmcChoices[0].id, 'Frontend should be ranked second');
+        equal(rankingAnswer.displayValue, 'DevOps > Frontend', 'Display value should show rank order');
+    });
+}}
+
+###
+# ============================================
+# SCENARIO B: Two-step submission
+# ============================================
+
+# ============================================
+# [B] Create Response
+# ============================================
+# @name createResponseB
+# @ref verifyFormPublished
+POST {{BASE_URL}}/forms/{{formId}}/responses
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Response B created successfully', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Response ID should exist');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.responseIdB = data.id;
+}}
+
+###
+
+# ============================================
+# [B] Step 1 — Submit only the DETAILED_MULTIPLE_CHOICE answer
+# User selects: Backend (index 1) and Data Science (index 3)
+# ============================================
+# @name submitDmcB
+# @ref createResponseB
+PATCH {{BASE_URL}}/responses/{{responseIdB}}/answers
+Content-Type: application/json
+
+{
+    "answers": [
+        {
+            "questionId": "{{dmcQuestionId}}",
+            "questionType": "DETAILED_MULTIPLE_CHOICE",
+            "value": ["{{dmcChoices[1].id}}", "{{dmcChoices[3].id}}"]
+        }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('DMC answer (step 1) accepted', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
+
+        const dmcAnswer = data.answers[0];
+        equal(dmcAnswer.answer.questionId, dmcQuestionId, 'questionId should match');
+        equal(dmcAnswer.answer.questionType, 'DETAILED_MULTIPLE_CHOICE', 'Type should be DETAILED_MULTIPLE_CHOICE');
+        equal(dmcAnswer.answer.value.includes(dmcChoices[1].id), true, 'Backend should be selected');
+        equal(dmcAnswer.answer.value.includes(dmcChoices[3].id), true, 'Data Science should be selected');
+    });
+}}
+
+###
+
+# ============================================
+# [B] Step 2 — Submit only the RANKING answer
+# The backend should look up the stored DMC answer to resolve choices.
+# Ranking order: Data Science > Backend  (i.e. [3] then [1])
+# ============================================
+# @name submitRankingB
+# @ref submitDmcB
+PATCH {{BASE_URL}}/responses/{{responseIdB}}/answers
+Content-Type: application/json
+
+{
+    "answers": [
+        {
+            "questionId": "{{rankingQuestionId}}",
+            "questionType": "RANKING",
+            "value": ["{{dmcChoices[3].id}}", "{{dmcChoices[1].id}}"]
+        }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Ranking answer (step 2) accepted via DB fallback', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
+
+        const rankingAnswer = data.answers[0];
+        equal(rankingAnswer.answer.questionId, rankingQuestionId, 'questionId should match');
+        equal(rankingAnswer.answer.questionType, 'RANKING', 'Type should be RANKING');
+        equal(rankingAnswer.answer.value.length, 2, 'Should have 2 ranked choices');
+        equal(rankingAnswer.answer.value[0], dmcChoices[3].id, 'Data Science should be ranked first');
+        equal(rankingAnswer.answer.value[1], dmcChoices[1].id, 'Backend should be ranked second');
+        equal(rankingAnswer.displayValue, 'Data Science > Backend', 'Display value should show rank order');
+    });
+}}
