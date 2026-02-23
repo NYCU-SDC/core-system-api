@@ -2074,11 +2074,15 @@ components:
         description:
           type: string
           description: Optional description for the choice.
+        isOther:
+          type: boolean
+          description: Whether this choice represents the built-in 'Other' option.
       description: A choice with ID and name for choice-based questions.
       examples:
         - id: f421cfc2-2b84-4da9-9629-011af609935a
           name: Backend
           description: Backend development team
+          isOther: false
     Forms.ChoiceOption:
       type: object
       required:
@@ -2090,10 +2094,14 @@ components:
         description:
           type: string
           description: Optional description for the choice.
+        isOther:
+          type: boolean
+          description: Whether this choice represents the built-in 'Other' option.
       description: A choice option for creating/updating choice-based questions.
       examples:
         - name: Option A
           description: This is option A
+          isOther: false
     Forms.DateOption:
       type: object
       required:
@@ -3003,6 +3011,8 @@ components:
             - name: Remote
             - name: On-site
             - name: Hybrid
+            - name: Other
+              isOther: true
         - required: true
           type: LONG_TEXT
           title: Tell us about yourself
@@ -3839,6 +3849,9 @@ components:
           items:
             type: string
           description: The answer value (format depends on questionType from questionId).
+        otherText:
+          type: string
+          description: The custom text entered for the 'Other' choice, if applicable.
       description: Request model for submitting an individual answer
       examples:
         - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
@@ -3846,6 +3859,7 @@ components:
           value:
             - f421cfc2-2b84-4da9-9629-011af609935a
             - 2ca86a6d-7735-4f17-8676-29b4724b524f
+          otherText: I also work with Rust
     Responses.UpdateResponse:
       type: object
       required:
