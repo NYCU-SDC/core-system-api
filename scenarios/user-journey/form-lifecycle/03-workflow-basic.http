@@ -28,11 +28,6 @@ GET {{BASE_URL}}/forms/{{formId}}/workflow
         const data = JSON.parse(response.body);
         equal(data.workflow !== undefined, true, 'Workflow should exist');
         equal(Array.isArray(data.workflow), true, 'Workflow should be an array');
-        
-        // Log the initial workflow structure
-        console.log('=== Initial Workflow Structure ===');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('=== End Initial Workflow ===');
     });
 
     const data = JSON.parse(response.body);
@@ -77,10 +72,6 @@ Content-Type: application/json
         equal(data.id !== undefined, true, 'Section node ID should exist');
         equal(data.type, 'SECTION', 'Node type should be SECTION');
         equal(data.label !== undefined, true, 'Node label should exist');
-        
-        console.log('=== Created Section Node ===');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('=== End Section Node ===');
     });
 
     const data = JSON.parse(response.body);
