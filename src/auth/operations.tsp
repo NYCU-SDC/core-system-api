@@ -24,15 +24,10 @@ namespace CoreSystem.Auth {
 	};
 
 	@summary("Refresh Access Token")
-	@route("/auth/refresh/{refreshToken}")
+	@route("/auth/refresh")
 	@post
-	op refreshToken(
-		@doc("The refresh token to use for refreshing the access token.")
-		@path
-		refreshToken: string,
-	): {
+	op refreshToken(): {
 		@statusCode statusCode: 200;
-		@body refreshToken: RefreshToken;
 	} | {
 		@statusCode statusCode: 404;
 	};
