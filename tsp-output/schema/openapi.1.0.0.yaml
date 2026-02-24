@@ -90,24 +90,14 @@ paths:
           description: Access is unauthorized.
       tags:
         - Auth
-  /api/auth/refresh/{refreshToken}:
+  /api/auth/refresh:
     post:
       operationId: Auth_refreshToken
       summary: Refresh Access Token
-      parameters:
-        - name: refreshToken
-          in: path
-          required: true
-          description: The refresh token to use for refreshing the access token.
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Auth.RefreshToken'
         '404':
           description: The server cannot find the requested resource.
       tags:
