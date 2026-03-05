@@ -17,6 +17,10 @@ namespace CoreSystem.Auth {
 		@doc("The redirect URL for login callback.")
 		@query
 		r?: string,
+
+		@doc("Custom base URL for OAuth callback (only used in dev mode).")
+		@query
+		base?: string,
 	): {
 		@statusCode statusCode: 302;
 	} | {
