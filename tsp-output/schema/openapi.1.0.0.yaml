@@ -71,6 +71,13 @@ paths:
           schema:
             type: string
           explode: false
+        - name: base
+          in: query
+          required: false
+          description: Custom base URL for OAuth callback (only used in dev mode).
+          schema:
+            type: string
+          explode: false
       responses:
         '302':
           description: Redirection
