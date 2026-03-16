@@ -206,6 +206,33 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Files
+    delete:
+      operationId: Files_deleteFile
+      summary: Delete a File
+      description: Delete a file by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Files
   /api/files/{id}/info:
     get:
       operationId: Files_getFileInfo
