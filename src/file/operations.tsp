@@ -65,4 +65,18 @@ namespace CoreSystem.Files {
 		@statusCode statusCode: 401;
 		@body error: Unauthorized;
 	};
+
+	@summary("Delete a File")
+	@doc("Delete a file by its ID.")
+	@delete
+	@route("/files/{id}")
+	op deleteFile(@path id: uuid): {
+		@statusCode statusCode: 204;
+	} | {
+		@statusCode statusCode: 401;
+		@body error: Unauthorized;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
 }
