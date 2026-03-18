@@ -1,0 +1,4 @@
+name: "Form Workflow Condition"
+description: "User journey scenario for Form Workflow Condition."
+entry: "04-response-creation.http"
+testcase: "listFormResponses"

@@ -1,0 +1,4 @@
+name: "Form Lifecycle"
+description: "User journey scenario for Form Lifecycle."
+entry: "06-response-creation.http"
+testcase: "listFormResponses"

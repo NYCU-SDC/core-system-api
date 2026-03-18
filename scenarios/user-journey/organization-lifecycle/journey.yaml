@@ -1,0 +1,4 @@
+name: "Organization Lifecycle"
+description: "User journey scenario for Organization Lifecycle."
+entry: "02-organization-deletion.http"
+testcase: "deleteOrg"

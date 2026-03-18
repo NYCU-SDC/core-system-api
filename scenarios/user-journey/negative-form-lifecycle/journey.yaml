@@ -1,0 +1,4 @@
+name: "Negative Form Lifecycle"
+description: "User journey scenario for Negative Form Lifecycle."
+entry: "06-response-creation-negative.http"
+testcase: "listResponsesNonExistentForm"
