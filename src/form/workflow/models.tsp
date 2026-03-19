@@ -96,7 +96,7 @@ namespace CoreSystem.FormWorkflow {
 
 		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
 		@example(#{ x: 1, y: 2 })
-		payload?: NodePayload;
+		payload: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
 		conditionRule?: ConditionRule;
