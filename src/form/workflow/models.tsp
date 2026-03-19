@@ -72,6 +72,18 @@ namespace CoreSystem.FormWorkflow {
 		type: CreateNodeRequestType;
 	}
 
+	@doc("Payload for a node. Used for layout and UI settings.")
+	@example(#{ x: 1, y: 2 })
+	model NodePayload {
+		@doc("The x position of the node.")
+		@example(1)
+		x: int32;
+
+		@doc("The y position of the node.")
+		@example(2)
+		y: int32;
+	}
+
 	@doc("Workflow node request model with linked list connections")
 	@example(#{ id: "b23f2668-c2dc-4213-88fe-eceedff46398", label: "Personal Information Section", next: "c34g3779-d3ed-5c24-99gf-fdffegg57409" })
 	model NodeRequest {
@@ -83,7 +95,8 @@ namespace CoreSystem.FormWorkflow {
 		label: string;
 
 		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
-		payload?: Record<string>;
+		@example(#{ x: 1, y: 2 })
+		payload?: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
 		conditionRule?: ConditionRule;
