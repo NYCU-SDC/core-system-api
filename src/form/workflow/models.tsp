@@ -116,6 +116,7 @@ namespace CoreSystem.FormWorkflow {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		type: NodeType.section,
 		label: "Personal Information",
+		payload: #{ x: 1, y: 2 },
 		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
 		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
 		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
@@ -124,8 +125,7 @@ namespace CoreSystem.FormWorkflow {
 	model NodeResponse {
 		...NodeStructure;
 
-		@doc("Payload for this node. Used for layout and UI settings.")
-		@example(#{ x: 1, y: 2 })
+		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
 		payload: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
