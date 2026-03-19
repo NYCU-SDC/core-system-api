@@ -126,18 +126,23 @@ namespace CoreSystem.FormWorkflow {
 		...NodeStructure;
 
 		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
+		@example(#{ x: 1, y: 2 })
 		payload: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
+		@example(#{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" })
 		conditionRule: ConditionRule;
 
 		@doc("Next node id for sequential flow (for start and section nodes)")
+		@example("c34g3779-d3ed-5c24-99gf-fdffegg57409")
 		next: uuid;
 
 		@doc("Next node id when condition is true (for condition nodes)")
+		@example("d45h4880-e4fe-6d35-00hg-gegffhh68510")
 		nextTrue: uuid;
 
 		@doc("Next node id when condition is false (for condition nodes)")
+		@example("e56i5991-f5gf-7e46-11ih-hfhggii79621")
 		nextFalse: uuid;
 	}
 
