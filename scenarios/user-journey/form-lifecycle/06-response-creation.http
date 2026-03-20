@@ -363,10 +363,106 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Save Draft Answers - Choice With Other Questions
+# ============================================
+# @name saveDraftChoiceWithOtherAnswers
+# @ref saveDraftChoiceAnswers
+PATCH {{BASE_URL}}/responses/{{responseId}}/answers
+Content-Type: application/json
+
+{
+    "answers": [
+        {
+            "questionId": "{{singleChoiceWithOtherQuestionId}}",
+            "questionType": "SINGLE_CHOICE",
+            "value": ["{{singleChoiceWithOtherOptions[3].id}}"],
+            "otherText": "Digital Nomad"
+        },
+        {
+            "questionId": "{{multipleChoiceWithOtherQuestionId}}",
+            "questionType": "MULTIPLE_CHOICE",
+            "value": ["{{multipleChoiceWithOtherOptions[0].id}}", "{{multipleChoiceWithOtherOptions[5].id}}"],
+            "otherText": "Swift"
+        },
+        {
+            "questionId": "{{dropdownWithOtherQuestionId}}",
+            "questionType": "DROPDOWN",
+            "value": ["{{dropdownWithOtherOptions[4].id}}"],
+            "otherText": "Expert (7+ years)"
+        }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 3, 'Should have 3 answers');
+        
+        console.log('Saved 3 choice-with-other answers (auto-save)');
+    });
+
+    test('Each answer has required metadata fields', () => {
+        data.answers.forEach((answer, index) => {
+            equal(answer.createdAt !== undefined, true, `Answer ${index + 1} should have createdAt`);
+            equal(answer.updatedAt !== undefined, true, `Answer ${index + 1} should have updatedAt`);
+            equal(answer.responseId, responseId, `Answer ${index + 1} responseId should match`);
+            equal(answer.answer.questionId !== undefined, true, `Answer ${index + 1} should have questionId`);
+        });
+
+        console.log('All answers have required metadata fields');
+    });
+
+    test('Single choice with other answer content is correct', () => {
+        const answer = data.answers.find(a => a.answer.questionId === singleChoiceWithOtherQuestionId);
+        equal(answer !== undefined, true, 'Single choice with other answer should exist');
+        equal(answer.answer.questionType, 'SINGLE_CHOICE', 'Question type should be SINGLE_CHOICE');
+        equal(answer.answer.value.length, 1, 'Should have 1 selected option');
+        equal(answer.answer.value[0], singleChoiceWithOtherOptions[3].id, 'Should select the Other option');
+        equal(answer.answer.otherText, 'Digital Nomad', 'otherText should match');
+        equal(answer.displayValue, 'Digital Nomad', 'Display value should show otherText');
+        
+        console.log('Single choice with other answer:', answer.displayValue);
+    });
+
+    test('Multiple choice with other answer content is correct', () => {
+        const answer = data.answers.find(a => a.answer.questionId === multipleChoiceWithOtherQuestionId);
+        equal(answer !== undefined, true, 'Multiple choice with other answer should exist');
+        equal(answer.answer.questionType, 'MULTIPLE_CHOICE', 'Question type should be MULTIPLE_CHOICE');
+        equal(answer.answer.value.length, 2, 'Should have 2 selected options');
+        equal(answer.answer.value.includes(multipleChoiceWithOtherOptions[0].id), true, 'Should include JavaScript');
+        equal(answer.answer.value.includes(multipleChoiceWithOtherOptions[5].id), true, 'Should include Other option');
+        equal(answer.answer.otherText, 'Swift', 'otherText should match');
+        equal(answer.displayValue.includes('Swift'), true, 'Display value should include otherText');
+        
+        console.log('Multiple choice with other answer:', answer.displayValue);
+    });
+
+    test('Dropdown with other answer content is correct', () => {
+        const answer = data.answers.find(a => a.answer.questionId === dropdownWithOtherQuestionId);
+        equal(answer !== undefined, true, 'Dropdown with other answer should exist');
+        equal(answer.answer.questionType, 'DROPDOWN', 'Question type should be DROPDOWN');
+        equal(answer.answer.value.length, 1, 'Should have 1 selected option');
+        equal(answer.answer.value[0], dropdownWithOtherOptions[4].id, 'Should select the Other option');
+        equal(answer.answer.otherText, 'Expert (7+ years)', 'otherText should match');
+        equal(answer.displayValue, 'Expert (7+ years)', 'Display value should show otherText');
+        
+        console.log('Dropdown with other answer:', answer.displayValue);
+    });
+}}
+
+###
+
+# ============================================
 # Save Draft Answers - Scale Questions
 # ============================================
 # @name saveDraftScaleAnswers
-# @ref saveDraftChoiceAnswers
+# @ref saveDraftChoiceWithOtherAnswers
 PATCH {{BASE_URL}}/responses/{{responseId}}/answers
 Content-Type: application/json
 
@@ -529,10 +625,64 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Save Draft Answers - Ranking With Other Question
+# ============================================
+# @name saveDraftRankingWithOtherAnswer
+# @ref saveDraftRankingAnswer
+PATCH {{BASE_URL}}/responses/{{responseId}}/answers
+Content-Type: application/json
+
+{
+    "answers": [
+        {
+            "questionId": "{{rankingWithOtherQuestionId}}",
+            "questionType": "RANKING",
+            "value": ["{{rankingWithOtherOptions[2].id}}", "{{rankingWithOtherOptions[0].id}}", "{{rankingWithOtherOptions[1].id}}", "{{rankingWithOtherOptions[3].id}}"],
+            "otherText": "Fully Distributed"
+        }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
+        
+        console.log('Saved 1 ranking-with-other answer (auto-save)');
+    });
+
+    test('Ranking with other answer content is correct', () => {
+        const answer = data.answers[0];
+        equal(answer !== undefined, true, 'Ranking with other answer should exist');
+        equal(answer.responseId, responseId, 'Response ID should match');
+        equal(answer.answer.questionId, rankingWithOtherQuestionId, 'Nested questionId should match');
+        equal(answer.answer.questionType, 'RANKING', 'Question type should be RANKING');
+        equal(answer.answer.value.length, 4, 'Should have 4 ranked options');
+        equal(answer.answer.value[0], rankingWithOtherOptions[2].id, 'First ranked option should be Hybrid');
+        equal(answer.answer.value[1], rankingWithOtherOptions[0].id, 'Second ranked option should be Remote');
+        equal(answer.answer.value[2], rankingWithOtherOptions[1].id, 'Third ranked option should be On-site');
+        equal(answer.answer.value[3], rankingWithOtherOptions[3].id, 'Fourth ranked option should be Other');
+        equal(answer.answer.otherText, 'Fully Distributed', 'otherText should match');
+        equal(answer.displayValue.includes('>'), true, 'Display value should show ranking with > separator');
+        equal(answer.displayValue.includes('Fully Distributed'), true, 'Display value should include otherText');
+        
+        console.log('Ranking with other answer:', answer.displayValue);
+    });
+}}
+
+###
+
+# ============================================
 # Save Draft Answers - Detailed Multiple Choice Question
 # ============================================
 # @name saveDraftDetailedMultipleChoiceAnswer
-# @ref saveDraftRankingAnswer
+# @ref saveDraftRankingWithOtherAnswer
 PATCH {{BASE_URL}}/responses/{{responseId}}/answers
 Content-Type: application/json
 
@@ -597,10 +747,62 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Save Draft Answers - Detailed Multiple Choice With Other Question
+# ============================================
+# @name saveDraftDetailedMultipleChoiceWithOtherAnswer
+# @ref saveDraftDetailedMultipleChoiceAnswer
+PATCH {{BASE_URL}}/responses/{{responseId}}/answers
+Content-Type: application/json
+
+{
+    "answers": [
+        {
+            "questionId": "{{detailedMultipleChoiceWithOtherQuestionId}}",
+            "questionType": "DETAILED_MULTIPLE_CHOICE",
+            "value": ["{{detailedMultipleChoiceWithOtherOptions[0].id}}", "{{detailedMultipleChoiceWithOtherOptions[2].id}}", "{{detailedMultipleChoiceWithOtherOptions[4].id}}"],
+            "otherText": "Mobile Development"
+        }
+    ]
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Response structure is correct', () => {
+        equal(Array.isArray(data.answers), true, 'Response should have answers array');
+        equal(data.answers.length, 1, 'Should have 1 answer');
+        
+        console.log('Saved 1 detailed-multiple-choice-with-other answer (auto-save)');
+    });
+
+    test('Detailed multiple choice with other answer content is correct', () => {
+        const answer = data.answers[0];
+        equal(answer !== undefined, true, 'Detailed multiple choice with other answer should exist');
+        equal(answer.responseId, responseId, 'Response ID should match');
+        equal(answer.answer.questionId, detailedMultipleChoiceWithOtherQuestionId, 'Nested questionId should match');
+        equal(answer.answer.questionType, 'DETAILED_MULTIPLE_CHOICE', 'Question type should be DETAILED_MULTIPLE_CHOICE');
+        equal(answer.answer.value.length, 3, 'Should have 3 selected options');
+        equal(answer.answer.value.includes(detailedMultipleChoiceWithOtherOptions[0].id), true, 'Should include Frontend Development');
+        equal(answer.answer.value.includes(detailedMultipleChoiceWithOtherOptions[2].id), true, 'Should include DevOps');
+        equal(answer.answer.value.includes(detailedMultipleChoiceWithOtherOptions[4].id), true, 'Should include Other option');
+        equal(answer.answer.otherText, 'Mobile Development', 'otherText should match');
+        equal(answer.displayValue.includes('Mobile Development'), true, 'Display value should include otherText');
+        
+        console.log('Detailed multiple choice with other answer:', answer.displayValue);
+    });
+}}
+
+###
+
+# ============================================
 # Upload Files for File Upload Question
 # ============================================
 # @name uploadQuestionFiles
-# @ref saveDraftDetailedMultipleChoiceAnswer
+# @ref saveDraftDetailedMultipleChoiceWithOtherAnswer
 POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/files
 Content-Type: multipart/form-data; boundary=WebKitFormBoundary
 
@@ -642,7 +844,7 @@ Content-Type: application/pdf
 # Get Full Response Preview Before Submission
 # ============================================
 # @name getResponsePreview
-# @ref saveDraftDetailedMultipleChoiceAnswer
+# @ref saveDraftDetailedMultipleChoiceWithOtherAnswer
 GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
 
 {{
@@ -758,6 +960,36 @@ Content-Type: application/json
             "questionId": "{{rankingQuestionId}}",
             "questionType": "RANKING",
             "value": ["{{rankingOptions[2].id}}", "{{rankingOptions[0].id}}", "{{rankingOptions[1].id}}"]
+        },
+        {
+            "questionId": "{{singleChoiceWithOtherQuestionId}}",
+            "questionType": "SINGLE_CHOICE",
+            "value": ["{{singleChoiceWithOtherOptions[3].id}}"],
+            "otherText": "Digital Nomad"
+        },
+        {
+            "questionId": "{{multipleChoiceWithOtherQuestionId}}",
+            "questionType": "MULTIPLE_CHOICE",
+            "value": ["{{multipleChoiceWithOtherOptions[0].id}}", "{{multipleChoiceWithOtherOptions[5].id}}"],
+            "otherText": "Swift"
+        },
+        {
+            "questionId": "{{dropdownWithOtherQuestionId}}",
+            "questionType": "DROPDOWN",
+            "value": ["{{dropdownWithOtherOptions[4].id}}"],
+            "otherText": "Expert (7+ years)"
+        },
+        {
+            "questionId": "{{detailedMultipleChoiceWithOtherQuestionId}}",
+            "questionType": "DETAILED_MULTIPLE_CHOICE",
+            "value": ["{{detailedMultipleChoiceWithOtherOptions[0].id}}", "{{detailedMultipleChoiceWithOtherOptions[2].id}}", "{{detailedMultipleChoiceWithOtherOptions[4].id}}"],
+            "otherText": "Mobile Development"
+        },
+        {
+            "questionId": "{{rankingWithOtherQuestionId}}",
+            "questionType": "RANKING",
+            "value": ["{{rankingWithOtherOptions[2].id}}", "{{rankingWithOtherOptions[0].id}}", "{{rankingWithOtherOptions[1].id}}", "{{rankingWithOtherOptions[3].id}}"],
+            "otherText": "Fully Distributed"
         }
     ]
 }
