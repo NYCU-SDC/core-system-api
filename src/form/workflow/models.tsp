@@ -65,11 +65,15 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Request body for creating a new node for a workflow")
-	@example(#{ type: CreateNodeRequestType.section })
+	@example(#{ type: CreateNodeRequestType.section, payload: #{ x: 1, y: 2 } })
 	model CreateNodeRequest {
 		@doc("Type of the node")
 		@example(CreateNodeRequestType.section)
 		type: CreateNodeRequestType;
+
+		@doc("Payload for node layout/UI settings.")
+		@example(#{ x: 1, y: 2 })
+		payload: NodePayload;
 	}
 
 	@doc("Payload for a node. Used for layout and UI settings.")
