@@ -1,19 +1,24 @@
 # ============================================
 # Phase 4: Question Management - Create All Question Types
 # ============================================
-# This file creates all 12 non-OAuth question types (OAuth excluded as per requirements):
+# This file creates all 17 non-OAuth question types (OAuth excluded as per requirements):
 # 1. SHORT_TEXT
 # 2. LONG_TEXT
 # 3. SINGLE_CHOICE
-# 4. MULTIPLE_CHOICE
-# 5. DROPDOWN
-# 6. DETAILED_MULTIPLE_CHOICE
-# 7. DATE
-# 8. UPLOAD_FILE
-# 9. LINEAR_SCALE
-# 10. RATING
-# 11. RANKING
-# 12. HYPERLINK
+# 4. SINGLE_CHOICE_WITH_OTHER
+# 5. MULTIPLE_CHOICE
+# 6. MULTIPLE_CHOICE_WITH_OTHER
+# 7. DROPDOWN
+# 8. DROPDOWN_WITH_OTHER
+# 9. DETAILED_MULTIPLE_CHOICE
+# 10. DETAILED_MULTIPLE_CHOICE_WITH_OTHER
+# 11. DATE
+# 12. UPLOAD_FILE
+# 13. LINEAR_SCALE
+# 14. RATING
+# 15. RANKING
+# 16. RANKING_WITH_OTHER
+# 17. HYPERLINK
 
 # Import setup from Phase 3
 # @import ./03-workflow-basic.http
@@ -141,10 +146,55 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 4: MULTIPLE_CHOICE
+# Create Question 4: SINGLE_CHOICE_WITH_OTHER
+# ============================================
+# @name createSingleChoiceWithOtherQuestion
+# @ref createSingleChoiceQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SINGLE_CHOICE",
+    "title": "What is your preferred work location?",
+    "description": "Select one option that best describes your preference",
+    "order": 4,
+    "choices": [
+        { "name": "Remote"},
+        { "name": "On-site"},
+        { "name": "Hybrid"},
+        { "name": "Other", "isOther": true }
+    ]
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Single choice question with other option created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'SINGLE_CHOICE', 'Type should be SINGLE_CHOICE');
+        equal(Array.isArray(data.choices), true, 'Choices should be an array');
+        equal(data.choices.length, 4, 'Should have 4 choices');
+        
+        console.log('Created SINGLE_CHOICE question with other option:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.singleChoiceWithOtherQuestionId = data.id;
+    exports.singleChoiceWithOtherOptions = data.choices;
+}}
+
+###
+
+# ============================================
+# Create Question 5: MULTIPLE_CHOICE
 # ============================================
 # @name createMultipleChoiceQuestion
-# @ref createSingleChoiceQuestion
+# @ref createSingleChoiceWithOtherQuestion
 POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
@@ -153,7 +203,7 @@ Content-Type: application/json
     "type": "MULTIPLE_CHOICE",
     "title": "Which programming languages do you know?",
     "description": "Select all that apply",
-    "order": 4,
+    "order": 5,
     "choices": [
         { "name": "JavaScript" },
         { "name": "TypeScript" },
@@ -187,10 +237,57 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 5: DROPDOWN
+# Create Question 6: MULTIPLE_CHOICE_WITH_OTHER
+# ============================================
+# @name createMultipleChoiceWithOtherQuestion
+# @ref createMultipleChoiceQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "MULTIPLE_CHOICE",
+    "title": "Which programming languages do you know?",
+    "description": "Select all that apply",
+    "order": 6,
+    "choices": [
+        { "name": "JavaScript" },
+        { "name": "TypeScript" },
+        { "name": "Python" },
+        { "name": "Go" },
+        { "name": "Rust" },
+        { "name": "", "isOther": true }
+    ]
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Multiple choice question with other option created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'MULTIPLE_CHOICE', 'Type should be MULTIPLE_CHOICE');
+        equal(Array.isArray(data.choices), true, 'Choices should be an array');
+        equal(data.choices.length, 6, 'Should have 6 choices');
+        
+        console.log('Created MULTIPLE_CHOICE question with other option:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.multipleChoiceWithOtherQuestionId = data.id;
+    exports.multipleChoiceWithOtherOptions = data.choices;
+}}
+
+###
+
+# ============================================
+# Create Question 7: DROPDOWN
 # ============================================
 # @name createDropdownQuestion
-# @ref createMultipleChoiceQuestion
+# @ref createMultipleChoiceWithOtherQuestion
 POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
@@ -199,7 +296,7 @@ Content-Type: application/json
     "type": "DROPDOWN",
     "title": "What is your experience level?",
     "description": "Choose from the dropdown menu",
-    "order": 5,
+    "order": 7,
     "choices": [
         { "name": "Beginner (0-1 years)" },
         { "name": "Intermediate (1-3 years)" },
@@ -233,10 +330,57 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 6: DETAILED_MULTIPLE_CHOICE
+# Create Question 8: DROPDOWN_WITH_OTHER
+# ============================================
+# @name createDropdownWithOtherQuestion
+# @ref createDropdownQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": false,
+    "type": "DROPDOWN",
+    "title": "What is your experience level?",
+    "description": "Choose from the dropdown menu",
+    "order": 8,
+    "choices": [
+        { "name": "Beginner (0-1 years)" },
+        { "name": "Intermediate (1-3 years)" },
+        { "name": "Advanced (3-5 years)" },
+        { "name": "Expert (5+ years)" },
+        { "name": "", "isOther": true }
+    ]
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Dropdown question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'DROPDOWN', 'Type should be DROPDOWN');
+        equal(data.required, false, 'Required should be false');
+        equal(Array.isArray(data.choices), true, 'Choices should be an array');
+        equal(data.choices.length, 5, 'Should have 5 choices');
+        
+        console.log('Created DROPDOWN question with other option:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.dropdownWithOtherQuestionId = data.id;
+    exports.dropdownWithOtherOptions = data.choices;
+}}
+
+###
+
+# ============================================
+# Create Question 9: DETAILED_MULTIPLE_CHOICE
 # ============================================
 # @name createDetailedMultipleChoiceQuestion
-# @ref createDropdownQuestion
+# @ref createDropdownWithOtherQuestion
 POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
@@ -245,7 +389,7 @@ Content-Type: application/json
     "type": "DETAILED_MULTIPLE_CHOICE",
     "title": "Which technologies are you interested in?",
     "description": "Select all areas that interest you",
-    "order": 6,
+    "order": 9,
     "choices": [
         { 
             "name": "Frontend Development", 
@@ -294,10 +438,76 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 7: DATE
+# Create Question 10: DETAILED_MULTIPLE_CHOICE_WITH_OTHER
+# ============================================
+# @name createDetailedMultipleChoiceWithOtherQuestion
+# @ref createDetailedMultipleChoiceQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "DETAILED_MULTIPLE_CHOICE",
+    "title": "Which technologies are you interested in?",
+    "description": "Select all areas that interest you",
+    "order": 10,
+    "choices": [
+        { 
+            "name": "Frontend Development", 
+            "description": "React, Vue, Angular, and modern UI frameworks" 
+        },
+        { 
+            "name": "Backend Development", 
+            "description": "Node.js, Go, Python, and server-side technologies" 
+        },
+        { 
+            "name": "DevOps", 
+            "description": "CI/CD, Docker, Kubernetes, cloud infrastructure" 
+        },
+        { 
+            "name": "Data Science", 
+            "description": "Machine learning, data analysis, and AI" 
+        },
+        {
+            "name": "",
+            "description": "",
+            "isOther": true
+        }
+    ]
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Detailed multiple choice question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'DETAILED_MULTIPLE_CHOICE', 'Type should be DETAILED_MULTIPLE_CHOICE');
+        equal(Array.isArray(data.choices), true, 'Choices should be an array');
+        equal(data.choices.length, 5, 'Should have 5 choices');
+        
+        // Verify descriptions exist
+        const hasDescriptions = data.choices.every(c => c.isOther || (c.description !== undefined && c.description !== ''));
+        equal(hasDescriptions, true, 'All choices other than "Other" should have descriptions');
+        
+        console.log('Created DETAILED_MULTIPLE_CHOICE question with other option:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.detailedMultipleChoiceWithOtherQuestionId = data.id;
+    exports.detailedMultipleChoiceWithOtherOptions = data.choices;
+}}
+
+###
+
+# ============================================
+# Create Question 11: DATE
 # ============================================
 # @name createDateQuestion
-# @ref createDetailedMultipleChoiceQuestion
+# @ref createDetailedMultipleChoiceWithOtherQuestion
 POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
@@ -306,7 +516,7 @@ Content-Type: application/json
     "type": "DATE",
     "title": "When can you start?",
     "description": "Please select your preferred start date",
-    "order": 7,
+    "order": 11,
     "date": {
         "hasYear": true,
         "hasMonth": true,
@@ -344,7 +554,7 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 8: UPLOAD_FILE
+# Create Question 12: UPLOAD_FILE
 # ============================================
 # @name createUploadFileQuestion
 # @ref createDateQuestion
@@ -356,7 +566,7 @@ Content-Type: application/json
     "type": "UPLOAD_FILE",
     "title": "Upload your resume/CV",
     "description": "Please upload your resume in PDF or Word format",
-    "order": 8,
+    "order": 12,
     "uploadFile": {
         "allowedFileTypes": ["PDF", "DOC", "DOCX"],
         "maxFileAmount": 1,
@@ -390,7 +600,7 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 9: LINEAR_SCALE
+# Create Question 13: LINEAR_SCALE
 # ============================================
 # @name createLinearScaleQuestion
 # @ref createUploadFileQuestion
@@ -402,7 +612,7 @@ Content-Type: application/json
     "type": "LINEAR_SCALE",
     "title": "Rate your proficiency in TypeScript",
     "description": "On a scale of 1 to 10, how proficient are you?",
-    "order": 9,
+    "order": 13,
     "scale": {
         "minVal": 1,
         "maxVal": 10,
@@ -436,7 +646,7 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 10: RATING
+# Create Question 14: RATING
 # ============================================
 # @name createRatingQuestion
 # @ref createLinearScaleQuestion
@@ -448,7 +658,7 @@ Content-Type: application/json
     "type": "RATING",
     "title": "How satisfied are you with your current role?",
     "description": "Rate your satisfaction level using stars",
-    "order": 10,
+    "order": 14,
     "scale": {
         "icon": "star",
         "minVal": 1,
@@ -482,7 +692,7 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 11: RANKING (with sourceId from single choice)
+# Create Question 15: RANKING (with sourceId from single choice)
 # ============================================
 # @name createRankingQuestion
 # @ref createRatingQuestion
@@ -494,7 +704,7 @@ Content-Type: application/json
     "type": "RANKING",
     "title": "Rank your work location preferences",
     "description": "Order the options based on your preference (most preferred first)",
-    "order": 11,
+    "order": 15,
     "choices": [
         { "name": "Remote" },
         { "name": "On-site" },
@@ -529,10 +739,59 @@ Content-Type: application/json
 ###
 
 # ============================================
-# Create Question 12: HYPERLINK
+# Create Question 16: RANKING_WITH_OTHER (with sourceId from single choice)
+# ============================================
+# @name createRankingQuestionWithOther
+# @ref createRankingQuestion
+POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "RANKING",
+    "title": "Rank your work location preferences",
+    "description": "Order the options based on your preference (most preferred first)",
+    "order": 16,
+    "choices": [
+        { "name": "Remote" },
+        { "name": "On-site" },
+        { "name": "Hybrid" },
+        { "name": "", "isOther": true}
+    ]
+}
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Ranking question created', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Question ID should exist');
+        equal(data.type, 'RANKING', 'Type should be RANKING');
+        equal(data.required, true, 'Required should be true');
+        equal(data.choices.length, 4, 'Should have 4 choices');
+        equal(data.choices[0].name, 'Remote', 'First choice should be Remote');
+        equal(data.choices[1].name, 'On-site', 'Second choice should be On-site');
+        equal(data.choices[2].name, 'Hybrid', 'Third choice should be Hybrid');
+        equal(data.choices[3].isOther, true, 'Fourth choice should be Other');
+        
+        console.log('Created RANKING question with Other option:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.rankingWithOtherQuestionId = data.id;
+    exports.rankingWithOtherOptions = data.choices;
+}}
+
+###
+
+# ============================================
+# Create Question 17: HYPERLINK
 # ============================================
 # @name createHyperlinkQuestion
-# @ref createRankingQuestion
+# @ref createRankingQuestionWithOther
 POST {{BASE_URL}}/sections/{{sectionNodeId}}/questions
 Content-Type: application/json
 
@@ -541,7 +800,7 @@ Content-Type: application/json
     "type": "HYPERLINK",
     "title": "Portfolio or personal website",
     "description": "Please provide a link to your portfolio, GitHub, or LinkedIn profile",
-    "order": 12
+    "order": 17
 }
 
 {{
@@ -624,7 +883,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
-        equal(ourSection.questions.length, 13, 'Should have 13 questions, but got ' + ourSection.questions.length);
+        equal(ourSection.questions.length, 18, 'Should have 18 questions, but got ' + ourSection.questions.length);
     });
 }}
 
@@ -814,7 +1073,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const ourSection = data.find(s => s.section.id === sectionNodeId);
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
-        equal(ourSection.questions.length, 13, 'Should now have 13 questions (after deletion of one, plus one created in middle) but got ' + ourSection.questions.length);
+        equal(ourSection.questions.length, 18, 'Should now have 18 questions (19 after middle insert, minus 1 deleted) but got ' + ourSection.questions.length);
         
         // Verify the deleted question is not in the list
         const deletedQuestion = ourSection.questions.find(q => q.id === hyperlinkQuestionToDeleteId);
