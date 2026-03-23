@@ -45,6 +45,36 @@ namespace CoreSystem.Auth {
 		@statusCode statusCode: 401;
 	};
 
+	@summary("Link different OAuth accounts to the same user")
+	@route("/auth/link")
+	@post
+	op link( 
+		@doc("The name of the existing user.")
+		@query
+		name: string,
+
+		@doc("The OAuth2 provider to use for login.")
+		@query
+		oauthProvider: OAuthLoginProviders,
+		
+		@doc("The email of the existing user.")
+		@query
+		email: string
+	): {
+		@statusCode statusCode: 200;
+ 	} | {
+		@statusCode statusCode: 401;
+	};
+
+	@summary("Abort the account linking process")
+	@route("/auth/link/abort")
+	@post
+	op abortLink(): {
+		@statusCode statusCode: 200;
+ 	} | {
+		@statusCode statusCode: 401;
+	};
+
 	@summary("Internal Login (Debug)")
 	@route("/auth/login/internal")
 	@post
