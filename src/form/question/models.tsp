@@ -198,7 +198,8 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.shortText,
 		title: "What's your name?",
-		description: "Please enter your full name",
+		description: "Please enter your **full name**",
+		descriptionHtml: "<p>Please enter your <strong>full name</strong></p>",
 		createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 		updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 	})
@@ -218,8 +219,11 @@ namespace CoreSystem.Forms {
 		@doc("What is the question.")
 		title: string;
 
-		@doc("More details of this question.")
-		description: string;
+		@doc("The question description in Markdown, for admin editing.")
+		description: CoreSystem.MarkdownContent;
+
+		@doc("The question description rendered as HTML for frontend form display and preview.")
+		descriptionHtml?: CoreSystem.HtmlContent;
 
 		@doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
 		choices?: Choice[];
@@ -247,8 +251,8 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for creating/updating a question.")
-	@example(#{ required: true, type: QuestionTypes.shortText, title: "What's your name?", description: "Please enter your name", order: 1 })
-	@example(#{ required: true, type: QuestionTypes.longText, title: "Tell us about yourself", description: "Please share your background and experience", order: 2 })
+	@example(#{ required: true, type: QuestionTypes.shortText, title: "What's your name?", description: "Please enter your **name**", order: 1 })
+	@example(#{ required: true, type: QuestionTypes.longText, title: "Tell us about yourself", description: "Please share your **background** and experience", order: 2 })
 	@example(#{
 		required: true,
 		type: QuestionTypes.singleChoice,
@@ -341,8 +345,8 @@ namespace CoreSystem.Forms {
 		@doc("What is the question.")
 		title: string;
 
-		@doc("More details of this question.")
-		description: string;
+		@doc("The question description in Markdown, edited and stored by the admin interface.")
+		description: CoreSystem.MarkdownContent;
 
 		@doc("What is the number of this question in the form.")
 		order: int32;

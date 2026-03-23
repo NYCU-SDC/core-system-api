@@ -19,8 +19,8 @@ namespace CoreSystem.Forms {
 		@doc("The title of the form.")
 		title: string;
 
-		@doc("The description of the form.")
-		description?: string;
+		@doc("The form description in Markdown, edited and stored by the admin interface.")
+		description?: CoreSystem.MarkdownContent;
 
 		@doc("(Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.")
 		previewMessage?: string;
@@ -51,7 +51,8 @@ namespace CoreSystem.Forms {
 	@example(#{
 		id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "SDC 2025 Recruitment Form",
-		description: "Join us for an exciting journey in software development!",
+		description: "Join us for an exciting journey in **software development**!",
+		descriptionHtml: "<p>Join us for an exciting journey in <strong>software development</strong>!</p>",
 		previewMessage: "Join us for an exciting journey",
 		status: FormStatus.published,
 		unitId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
@@ -73,8 +74,11 @@ namespace CoreSystem.Forms {
 		@doc("The title of the form.")
 		title: string;
 
-		@doc("The description written in the form to show user info.")
-		description: string;
+		@doc("The form description in Markdown, for admin editing.")
+		description: CoreSystem.MarkdownContent;
+
+		@doc("The form description rendered as HTML for frontend form display and preview.")
+		descriptionHtml?: CoreSystem.HtmlContent;
 
 		@doc("Preview text. If not provided, fallback to first 25 characters of description.")
 		previewMessage: string;
@@ -137,7 +141,8 @@ namespace CoreSystem.Forms {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "Personal Information",
-		description: "Please provide your basic information",
+		description: "Please provide your **basic information**",
+		descriptionHtml: "<p>Please provide your <strong>basic information</strong></p>",
 		questions: #[],
 	})
 	model Section {
@@ -150,21 +155,24 @@ namespace CoreSystem.Forms {
 		@doc("Section title (e.g., 'Group Info').")
 		title: string;
 
-		@doc("Section description.")
-		description?: string;
+		@doc("The section description in Markdown, for admin editing.")
+		description?: CoreSystem.MarkdownContent;
+
+		@doc("The section description rendered as HTML for frontend form display and preview.")
+		descriptionHtml?: CoreSystem.HtmlContent;
 
 		@doc("The questions of the section.")
 		questions: QuestionResponse[];
 	}
 
 	@doc("The request body for updating a section.")
-	@example(#{ title: "Personal Information", description: "Please provide your basic information" })
+	@example(#{ title: "Personal Information", description: "Please provide your **basic information**" })
 	model SectionRequest {
 		@doc("Section title (e.g., 'Group Info').")
 		title: string;
 
-		@doc("Section description.")
-		description?: string;
+		@doc("The section description in Markdown, edited and stored by the admin interface.")
+		description?: CoreSystem.MarkdownContent;
 	}
 
 	@doc("The current progress of a section")
