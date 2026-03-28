@@ -1,6 +1,7 @@
 # ============================================
 # Workflow Condition Node with Branches
 # ============================================
+# Choice-option UUID validation in condition patterns is enforced on activation validation (see GET workflow `info` / publish), not necessarily on every draft PUT.
 # Builds on form-lifecycle Phase 3 (03-workflow-basic). Tests condition nodes with branching:
 # START -> Section A -> Condition1 (ref Section A question)
 #   - choose B -> nextTrue  -> Section B -> END
@@ -273,6 +274,19 @@ Content-Type: application/json
         equal(condition2Node.conditionRule !== undefined, true, 'Condition 2 should have conditionRule');
         equal(condition2Node.conditionRule.question, sectionAQuestionId, 'Condition 2 rule should reference Section A question');
         equal(condition2Node.conditionRule.pattern.includes(sectionAChoiceSectionCId), true, 'Condition 2 pattern should match choice C');
+
+        // GET/PUT responses enrich condition labels from question title + pattern
+        const sectionAQuestionTitle = 'Choose Team B / C';
+        equal(
+            conditionNode.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionBId}`,
+            'Condition 1 label should be enriched',
+        );
+        equal(
+            condition2Node.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionCId}`,
+            'Condition 2 label should be enriched',
+        );
     });
 }}
 
@@ -307,6 +321,18 @@ GET {{BASE_URL}}/forms/{{formId}}/workflow
         equal(condition2Node.nextFalse, endNodeId, 'Condition 2 nextFalse -> END');
         equal(conditionNode.conditionRule.question, sectionAQuestionId, 'Condition 1 references Section A question');
         equal(condition2Node.conditionRule.question, sectionAQuestionId, 'Condition 2 references Section A question');
+
+        const sectionAQuestionTitle = 'Choose Team B / C';
+        equal(
+            conditionNode.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionBId}`,
+            'GET workflow: Condition 1 label should be enriched',
+        );
+        equal(
+            condition2Node.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionCId}`,
+            'GET workflow: Condition 2 label should be enriched',
+        );
     });
 }}
 

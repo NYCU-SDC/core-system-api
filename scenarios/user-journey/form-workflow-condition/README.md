@@ -2,6 +2,9 @@
 
 This directory contains automated QA tests for **workflow condition nodes with branching** in the Core System API. It extends the basic linear workflow from `../form-lifecycle/03-workflow-basic.http` to validate condition nodes, CHOICE-based rules, nextTrue/nextFalse branches, and (in a create-then-delete test) `conditionRule.nodeId` and rule cleanup when a section is deleted.
 
+- **Enriched labels** – On `GET` and `PUT` `/forms/{formId}/workflow`, CONDITION nodes should expose human-readable labels derived from the referenced question title and rule pattern, e.g. `When {questionTitle} matches {pattern}`. The httpyac tests assert these strings for the Section A choice question (“Choose Team B / C”) and each choice option UUID in the pattern.
+- **Choice-option UUID validation** – Invalid CHOICE patterns (UUIDs that are not real options for the question) are enforced when **activation** validation runs (e.g. workflow `info` on GET, or publishing). Draft `PUT` workflow may still accept some invalid patterns; do not assume every bad `PUT` returns `400`.
+
 ## Overview
 
 This journey covers the **full form lifecycle** with a **condition workflow** (branching):
@@ -31,7 +34,7 @@ Execute in order:
    - Imports `../form-lifecycle/03-workflow-basic.http`
    - Create DETAILED_MULTIPLE_CHOICE question in Section A (2 choices: Team B, Team C)
    - Create Section B and Section C nodes; create two CONDITION nodes
-   - PUT workflow: conditionRule (CHOICE, question, pattern); Section B → Condition2 so both branches can be visited; GET and verify 7-node structure
+   - PUT workflow: conditionRule (CHOICE, question, pattern); Section B → Condition2 so both branches can be visited; GET and verify 7-node structure, `conditionRule`, and **enriched condition node labels**
    - **Create-then-delete:** Create temp section, question on it, temp condition node with rule (question, pattern, nodeId = temp section); PUT workflow including temp nodes; **delete section first**; GET workflow and verify temp condition’s rule has `question` nil; delete temp condition node
 
 2. **`02-question-management.http`** – Question management
@@ -41,7 +44,7 @@ Execute in order:
 
 3. **`03-form-publishing.http`** – Publishing and lifecycle
    - Imports `./02-question-management.http`
-   - Get form (DRAFT), verify workflow has 7 nodes and no validation errors; publish; verify PUBLISHED; verify form in listings; exports `getFormFinalState` for 04
+   - Get form (DRAFT), verify workflow has 7 nodes, **no validation errors in `info`**, and **enriched condition labels** before publishing; publish; verify PUBLISHED; verify form in listings; exports `getFormFinalState` for 04
 
 4. **`04-response-creation.http`** – Response and answer submission (user path: choose C only)
    - Imports `./03-form-publishing.http` (uses `getFormFinalState`)
