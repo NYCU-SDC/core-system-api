@@ -53,7 +53,7 @@ namespace CoreSystem.Auth {
 		@query
 		name: string,
 
-		@doc("The OAuth2 provider to use for login.")
+		@doc("The OAuth2 provider of the existing user.")
 		@query
 		oauthProvider: OAuthLoginProviders,
 		
