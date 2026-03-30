@@ -55,7 +55,24 @@ GET {{BASE_URL}}/forms/{{formId}}/workflow
         equal(data.workflow.length, 7, 'Workflow should have 7 nodes (START, Section A, Cond1, Cond2, Section B, Section C, END)');
         equal(Array.isArray(data.info), true, 'Info should be an array');
         equal(data.info.length, 0, 'There should be no validation errors');
-        
+
+        // PR131 / CORE-214: enriched condition labels on GET workflow
+        const sectionAQuestionTitle = 'Choose Team B / C';
+        const c1 = data.workflow.find(n => n.id === conditionNodeId);
+        const c2 = data.workflow.find(n => n.id === condition2NodeId);
+        equal(c1 !== undefined, true, 'Condition 1 node should exist');
+        equal(c2 !== undefined, true, 'Condition 2 node should exist');
+        equal(
+            c1.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionBId}`,
+            'Condition 1 label should be enriched',
+        );
+        equal(
+            c2.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionCId}`,
+            'Condition 2 label should be enriched',
+        );
+
         console.log('Workflow is valid and ready for publishing');
     });
 }}
