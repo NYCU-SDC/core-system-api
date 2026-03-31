@@ -72,7 +72,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 1, "y": 2 }
 }
 
 ?? status == 201
@@ -97,7 +98,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 1, "y": 2 }
 }
 
 ?? status == 201
@@ -350,7 +352,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 1, "y": 2 }
 }
 
 ?? status == 201
