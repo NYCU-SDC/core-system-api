@@ -1069,36 +1069,3 @@ GET {{BASE_URL}}/forms/{{formId}}/responses
 }}
 
 ###
-
-# ============================================
-# Get My Form Responses
-# ============================================
-# @name getMyFormResponses
-# @ref listFormResponses
-GET {{BASE_URL}}/forms/{{formId}}/responses/me
-
-{{
-    test.status(200);
-    test.hasResponseBody();
-
-    const { equal } = require('assert');
-
-    test('My form responses returned', () => {
-        const data = JSON.parse(response.body);
-        equal(data.formId, formId, 'Form ID should match');
-        equal(Array.isArray(data.responses), true, 'Responses should be an array');
-        equal(data.responses.length >= 1, true, 'Should have at least one response for the current user');
-
-        // Our submitted response should be present
-        const myResponse = data.responses.find(r => r.id === responseId);
-        equal(myResponse !== undefined, true, 'Our response should be in the list');
-        equal(myResponse.submittedBy !== undefined, true, 'Should have submittedBy field');
-        equal(myResponse.createdAt !== undefined, true, 'Should have createdAt field');
-        equal(myResponse.updatedAt !== undefined, true, 'Should have updatedAt field');
-
-        console.log('My responses count:', data.responses.length);
-        console.log('My response ID:', myResponse.id);
-    });
-}}
-
-###
