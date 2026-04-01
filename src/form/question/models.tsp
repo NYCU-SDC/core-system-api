@@ -198,7 +198,7 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.shortText,
 		title: "What's your name?",
-		description: "Please enter your **full name**",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "full name" }] }] },
 		descriptionHtml: "<p>Please enter your <strong>full name</strong></p>",
 		createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 		updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -219,8 +219,8 @@ namespace CoreSystem.Forms {
 		@doc("What is the question.")
 		title: string;
 
-		@doc("The question description in Markdown, for admin editing.")
-		description: CoreSystem.MarkdownContent;
+		@doc("The question description as ProseMirror JSON, for admin editing in Tiptap.")
+		description: CoreSystem.ProseMirrorDocument;
 
 		@doc("The question description rendered as HTML for frontend form display and preview.")
 		descriptionHtml?: CoreSystem.HtmlContent;
@@ -251,13 +251,13 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for creating/updating a question.")
-	@example(#{ required: true, type: QuestionTypes.shortText, title: "What's your name?", description: "Please enter your **name**", order: 1 })
-	@example(#{ required: true, type: QuestionTypes.longText, title: "Tell us about yourself", description: "Please share your **background** and experience", order: 2 })
+	@example(#{ required: true, type: QuestionTypes.shortText, title: "What's your name?", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "name" }] }] }, order: 1 })
+	@example(#{ required: true, type: QuestionTypes.longText, title: "Tell us about yourself", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please share your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "background" }, #{ type: "text", text: " and experience" }] }] }, order: 2 })
 	@example(#{
 		required: true,
 		type: QuestionTypes.singleChoice,
 		title: "What's your preferred work location?",
-		description: "Choose one option",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Choose one option" }] }] },
 		order: 3,
 		choices: #[#{ name: "Remote" }, #{ name: "On-site" }, #{ name: "Hybrid" }, #{ name: "Other", isOther: true }],
 	})
@@ -265,7 +265,7 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.multipleChoice,
 		title: "Which team you want to join???",
-		description: "Pick one of your favorite!!!",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Pick one of your favorite!!!" }] }] },
 		order: 4,
 		choices: #[#{ name: "Core System Team" }, #{ name: "Clustron Team" }, #{ name: "HPC Team" }],
 	})
@@ -273,7 +273,7 @@ namespace CoreSystem.Forms {
 		required: false,
 		type: QuestionTypes.dropdown,
 		title: "Select your experience level",
-		description: "Choose from the dropdown",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Choose from the dropdown" }] }] },
 		order: 5,
 		choices: #[#{ name: "Beginner" }, #{ name: "Intermediate" }, #{ name: "Advanced" }, #{ name: "Expert" }],
 	})
@@ -281,16 +281,16 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.detailedMultipleChoice,
 		title: "Which technologies are you familiar with?",
-		description: "Select all that apply",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all that apply" }] }] },
 		order: 6,
 		choices: #[#{ name: "TypeScript", description: "Modern programming language" }, #{ name: "React", description: "Frontend library" }, #{ name: "Node.js", description: "Backend runtime" }],
 	})
-	@example(#{ required: true, type: QuestionTypes.date, title: "When will you graduate?", description: "Please select your graduation date", order: 7 })
+	@example(#{ required: true, type: QuestionTypes.date, title: "When will you graduate?", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please select your graduation date" }] }] }, order: 7 })
 	@example(#{
 		required: false,
 		type: QuestionTypes.uploadFile,
 		title: "Upload your resume",
-		description: "Please upload your resume in PDF format",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please upload your resume in PDF format" }] }] },
 		order: 8,
 		uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 1, maxFileSizeLimit: 1024000 },
 	})
@@ -298,16 +298,16 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.linearScale,
 		title: "Rate your experience level (1-5)",
-		description: "How experienced are you?",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "How experienced are you?" }] }] },
 		order: 9,
 		scale: #{ minVal: 1, maxVal: 5, minValueLabel: "No experience", maxValueLabel: "Very experienced" },
 	})
-	@example(#{ required: true, type: QuestionTypes.rating, title: "How satisfied are you?", description: "Rate your satisfaction level", order: 10, scale: #{ icon: "star", minVal: 1, maxVal: 5 } })
+	@example(#{ required: true, type: QuestionTypes.rating, title: "How satisfied are you?", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your satisfaction level" }] }] }, order: 10, scale: #{ icon: "star", minVal: 1, maxVal: 5 } })
 	@example(#{
 		required: true,
 		type: QuestionTypes.ranking,
 		title: "Program Match",
-		description: "Sort the following programs based on your preference.",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Sort the following programs based on your preference." }] }] },
 		order: 11,
 		sourceId: "d290f1ee-6c54-4b01-90e6-d701748f0851",
 	})
@@ -315,7 +315,7 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.oauthConnect,
 		title: "Connect your GitHub account",
-		description: "Link your GitHub account to verify your identity",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link your GitHub account to verify your identity" }] }] },
 		order: 12,
 		oauthConnect: CoreSystem.Auth.OAuthProviders.github,
 	})
@@ -323,7 +323,7 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.date,
 		title: "When will you graduate?",
-		description: "Please select your graduation date",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please select your graduation date" }] }] },
 		order: 13,
 		date: #{ hasYear: true, hasMonth: true, hasDay: true },
 	})
@@ -331,7 +331,7 @@ namespace CoreSystem.Forms {
 		required: true,
 		type: QuestionTypes.date,
 		title: "Which year did you join?",
-		description: "Select year and month only",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select year and month only" }] }] },
 		order: 14,
 		date: #{ hasYear: true, hasMonth: true, hasDay: false },
 	})
@@ -345,8 +345,8 @@ namespace CoreSystem.Forms {
 		@doc("What is the question.")
 		title: string;
 
-		@doc("The question description in Markdown, edited and stored by the admin interface.")
-		description: CoreSystem.MarkdownContent;
+		@doc("The question description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.")
+		description: CoreSystem.ProseMirrorDocument;
 
 		@doc("What is the number of this question in the form.")
 		order: int32;
