@@ -14,13 +14,13 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for creating/updating a form.")
-	@example(#{ title: "Enter SDC Form", description: "If you want to join us, just fill in this form!", messageAfterSubmission: "Thank you for your submission!", visibility: FormVisibility.public })
+	@example(#{ title: "Enter SDC Form", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] }, messageAfterSubmission: "Thank you for your submission!", visibility: FormVisibility.public })
 	model FormRequest {
 		@doc("The title of the form.")
 		title: string;
 
-		@doc("The description of the form.")
-		description?: string;
+		@doc("The form description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.")
+		description?: CoreSystem.ProseMirrorDocument;
 
 		@doc("(Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.")
 		previewMessage?: string;
@@ -51,7 +51,8 @@ namespace CoreSystem.Forms {
 	@example(#{
 		id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "SDC 2025 Recruitment Form",
-		description: "Join us for an exciting journey in software development!",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Join us for an exciting journey in " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "software development" }, #{ type: "text", text: "!" }] }] },
+		descriptionHtml: "<p>Join us for an exciting journey in <strong>software development</strong>!</p>",
 		previewMessage: "Join us for an exciting journey",
 		status: FormStatus.published,
 		unitId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
@@ -73,8 +74,11 @@ namespace CoreSystem.Forms {
 		@doc("The title of the form.")
 		title: string;
 
-		@doc("The description written in the form to show user info.")
-		description: string;
+		@doc("The form description as ProseMirror JSON, for admin editing in Tiptap.")
+		description: CoreSystem.ProseMirrorDocument;
+
+		@doc("The form description rendered as HTML for frontend form display and preview.")
+		descriptionHtml?: CoreSystem.HtmlContent;
 
 		@doc("Preview text. If not provided, fallback to first 25 characters of description.")
 		previewMessage: string;
@@ -137,7 +141,8 @@ namespace CoreSystem.Forms {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "Personal Information",
-		description: "Please provide your basic information",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "basic information" }] }] },
+		descriptionHtml: "<p>Please provide your <strong>basic information</strong></p>",
 		questions: #[],
 	})
 	model Section {
@@ -150,21 +155,24 @@ namespace CoreSystem.Forms {
 		@doc("Section title (e.g., 'Group Info').")
 		title: string;
 
-		@doc("Section description.")
-		description?: string;
+		@doc("The section description as ProseMirror JSON, for admin editing in Tiptap.")
+		description?: CoreSystem.ProseMirrorDocument;
+
+		@doc("The section description rendered as HTML for frontend form display and preview.")
+		descriptionHtml?: CoreSystem.HtmlContent;
 
 		@doc("The questions of the section.")
 		questions: QuestionResponse[];
 	}
 
 	@doc("The request body for updating a section.")
-	@example(#{ title: "Personal Information", description: "Please provide your basic information" })
+	@example(#{ title: "Personal Information", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "basic information" }] }] } })
 	model SectionRequest {
 		@doc("Section title (e.g., 'Group Info').")
 		title: string;
 
-		@doc("Section description.")
-		description?: string;
+		@doc("The section description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.")
+		description?: CoreSystem.ProseMirrorDocument;
 	}
 
 	@doc("The current progress of a section")
@@ -201,7 +209,7 @@ namespace CoreSystem.Forms {
 				id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 				formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 				title: "Personal Information",
-				description: "Please provide your basic information",
+				description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your basic information" }] }] },
 				questions: #[
 					#{
 						id: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
@@ -209,7 +217,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.shortText,
 						title: "Full Name",
-						description: "Please enter your full name (in English)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your full name (in English)" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -219,7 +227,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.shortText,
 						title: "Student ID",
-						description: "Enter your student ID number",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Enter your student ID number" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -229,7 +237,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.shortText,
 						title: "Email Address",
-						description: "Please provide your email address",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your email address" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -239,7 +247,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.shortText,
 						title: "Phone Number",
-						description: "Your contact phone number",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Your contact phone number" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -249,7 +257,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.date,
 						title: "Date of Birth",
-						description: "Select your date of birth",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select your date of birth" }] }] },
 						date: #{ hasYear: true, hasMonth: true, hasDay: true, minDate: utcDateTime.fromISO("1990-01-01T00:00:00Z"), maxDate: utcDateTime.fromISO("2010-12-31T23:59:59Z") },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -260,7 +268,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.longText,
 						title: "Self Introduction",
-						description: "Tell us about yourself (200-500 words)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Tell us about yourself (200-500 words)" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					}
@@ -270,7 +278,7 @@ namespace CoreSystem.Forms {
 				id: "c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
 				formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 				title: "Academic & Experience",
-				description: "Tell us about your academic background and experience",
+				description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Tell us about your academic background and experience" }] }] },
 				questions: #[
 					#{
 						id: "a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
@@ -278,7 +286,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.dropdown,
 						title: "Current Education Level",
-						description: "Select your current education level",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select your current education level" }] }] },
 						choices: #[
 							#{ id: "ch1-1", name: "Freshman" },
 							#{ id: "ch1-2", name: "Sophomore" },
@@ -295,7 +303,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.singleChoice,
 						title: "Department/Major",
-						description: "Select your department or major",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select your department or major" }] }] },
 						choices: #[
 							#{ id: "ch2-1", name: "Computer Science" },
 							#{ id: "ch2-2", name: "Information Management" },
@@ -312,7 +320,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.date,
 						title: "Expected Graduation Date",
-						description: "When do you expect to graduate?",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "When do you expect to graduate?" }] }] },
 						date: #{ hasYear: true, hasMonth: true, hasDay: false, minDate: utcDateTime.fromISO("2025-01-01T00:00:00Z"), maxDate: utcDateTime.fromISO("2030-12-31T23:59:59Z") },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -323,7 +331,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.multipleChoice,
 						title: "Previous Experience",
-						description: "Select all that apply",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all that apply" }] }] },
 						choices: #[
 							#{ id: "ch3-1", name: "Participated in hackathons" },
 							#{ id: "ch3-2", name: "Open source contributor" },
@@ -341,7 +349,7 @@ namespace CoreSystem.Forms {
 				id: "d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
 				formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 				title: "Technical Skills",
-				description: "Tell us about your technical expertise",
+				description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Tell us about your technical expertise" }] }] },
 				questions: #[
 					#{
 						id: "e1f2a3b4-5c6d-7e8f-9a0b-1c2d3e4f5a6b",
@@ -349,7 +357,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.detailedMultipleChoice,
 						title: "Programming Languages",
-						description: "Select all programming languages you are familiar with",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all programming languages you are familiar with" }] }] },
 						choices: #[
 							#{ id: "ch4-1", name: "TypeScript/JavaScript", description: "Modern web development" },
 							#{ id: "ch4-2", name: "Python", description: "General purpose and data science" },
@@ -367,7 +375,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.linearScale,
 						title: "Backend Development Experience",
-						description: "Rate your backend development experience level",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your backend development experience level" }] }] },
 						scale: #{ minVal: 0, maxVal: 10, minValueLabel: "Beginner", maxValueLabel: "Expert" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -378,7 +386,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.linearScale,
 						title: "Frontend Development Experience",
-						description: "Rate your frontend development experience level",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your frontend development experience level" }] }] },
 						scale: #{ minVal: 0, maxVal: 10, minValueLabel: "Beginner", maxValueLabel: "Expert" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -389,7 +397,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.rating,
 						title: "DevOps & Infrastructure",
-						description: "Rate your familiarity with DevOps practices and infrastructure",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your familiarity with DevOps practices and infrastructure" }] }] },
 						scale: #{ icon: "star", minVal: 1, maxVal: 5, minValueLabel: "Novice", maxValueLabel: "Proficient" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -400,7 +408,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.multipleChoice,
 						title: "Technologies You've Worked With",
-						description: "Select all technologies you have experience with",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all technologies you have experience with" }] }] },
 						choices: #[
 							#{ id: "ch5-1", name: "Docker" },
 							#{ id: "ch5-2", name: "Kubernetes" },
@@ -422,7 +430,7 @@ namespace CoreSystem.Forms {
 				id: "e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b",
 				formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 				title: "Team Preferences",
-				description: "Help us understand your team preferences",
+				description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Help us understand your team preferences" }] }] },
 				questions: #[
 					#{
 						id: "d6e7f8a9-0b1c-2d3e-4f5a-6b7c8d9e0f1a",
@@ -430,7 +438,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.ranking,
 						title: "Team Preferences",
-						description: "Rank the following teams in order of your preference (1 = most preferred)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rank the following teams in order of your preference (1 = most preferred)" }] }] },
 						choices: #[
 							#{ id: "team-1", name: "Core System Team", description: "Backend API & infrastructure development" },
 							#{ id: "team-2", name: "Clustron Team", description: "Cluster management and distributed systems" },
@@ -446,7 +454,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.singleChoice,
 						title: "Role Preference",
-						description: "Which role are you most interested in?",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Which role are you most interested in?" }] }] },
 						choices: #[
 							#{ id: "role-1", name: "Backend Developer" },
 							#{ id: "role-2", name: "Frontend Developer" },
@@ -464,7 +472,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.longText,
 						title: "Why SDC?",
-						description: "Why do you want to join SDC? What are your expectations?",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Why do you want to join SDC? What are your expectations?" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -474,7 +482,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.rating,
 						title: "Team Collaboration",
-						description: "How comfortable are you working in a team environment?",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "How comfortable are you working in a team environment?" }] }] },
 						scale: #{ icon: "heart", minVal: 1, maxVal: 5, minValueLabel: "Prefer solo", maxValueLabel: "Love teamwork" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -485,7 +493,7 @@ namespace CoreSystem.Forms {
 				id: "f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c",
 				formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 				title: "Availability & Additional Information",
-				description: "Final section - availability and additional materials",
+				description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Final section - availability and additional materials" }] }] },
 				questions: #[
 					#{
 						id: "b0c1d2e3-4f5a-6b7c-8d9e-0f1a2b3c4d5e",
@@ -493,7 +501,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.multipleChoice,
 						title: "Weekly Availability",
-						description: "Which days are you available each week? (Select all that apply)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Which days are you available each week? (Select all that apply)" }] }] },
 						choices: #[
 							#{ id: "day-1", name: "Monday" },
 							#{ id: "day-2", name: "Tuesday" },
@@ -512,7 +520,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.linearScale,
 						title: "Time Commitment",
-						description: "How many hours per week can you commit to SDC activities?",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "How many hours per week can you commit to SDC activities?" }] }] },
 						scale: #{ minVal: 0, maxVal: 10, minValueLabel: "0-5 hours", maxValueLabel: "20+ hours" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -523,7 +531,7 @@ namespace CoreSystem.Forms {
 						required: true,
 						type: QuestionTypes.uploadFile,
 						title: "Resume/CV",
-						description: "Please upload your resume or CV",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please upload your resume or CV" }] }] },
 						uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 1, maxFileSizeLimit: 5242880 },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -534,7 +542,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.uploadFile,
 						title: "Portfolio/Projects",
-						description: "Upload any relevant portfolio materials or project documentation (optional)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Upload any relevant portfolio materials or project documentation (optional)" }] }] },
 						uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.zip], maxFileAmount: 3, maxFileSizeLimit: 10485760 },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -545,7 +553,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.hyperlink,
 						title: "GitHub Profile",
-						description: "Link to your GitHub profile (if available)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link to your GitHub profile (if available)" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -555,7 +563,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.hyperlink,
 						title: "LinkedIn Profile",
-						description: "Link to your LinkedIn profile (optional)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link to your LinkedIn profile (optional)" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -565,7 +573,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.hyperlink,
 						title: "Personal Website/Blog",
-						description: "Link to your personal website or blog (if any)",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link to your personal website or blog (if any)" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -575,7 +583,7 @@ namespace CoreSystem.Forms {
 						required: false,
 						type: QuestionTypes.longText,
 						title: "Anything Else?",
-						description: "Is there anything else you'd like us to know?",
+						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Is there anything else you'd like us to know?" }] }] },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					}

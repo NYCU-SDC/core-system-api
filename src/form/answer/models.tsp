@@ -166,7 +166,7 @@ namespace CoreSystem.Responses {
 			required: true,
 			type: CoreSystem.Forms.QuestionTypes.shortText,
 			title: "What's your name?",
-			description: "Please enter your full name",
+			description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your full name" }] }] },
 			createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 			updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 		},

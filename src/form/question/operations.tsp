@@ -4,7 +4,7 @@ using Http;
 namespace CoreSystem.Forms {
 	// for form edit - question management
 	@summary("Create Question")
-	@doc("Create a new question for a specific section.")
+	@doc("Create a new question for a specific section. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")
 	@route("/sections/{sectionId}/questions")
 	@post
 	op createQuestion(@path sectionId: uuid, @body q: QuestionRequest): {
@@ -13,7 +13,7 @@ namespace CoreSystem.Forms {
 	};
 
 	@summary("Update Question")
-	@doc("Update an existing question by its unique identifier.")
+	@doc("Update an existing question by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")
 	@route("/sections/{sectionId}/questions/{questionId}")
 	@put
 	op updateQuestion(@path sectionId: uuid, @path questionId: uuid, @body q: QuestionRequest): QuestionResponse;

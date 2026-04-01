@@ -9,13 +9,13 @@ namespace CoreSystem.Forms {
 	op listForms(): Form[];
 
 	@summary("Get Form")
-	@doc("Get a specific form by its unique identifier.")
+	@doc("Get a specific form by its unique identifier. Description fields are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend display.")
 	@route("/forms/{formId}")
 	@get
 	op getFormById(@path formId: uuid): Form;
 
 	@summary("Update Form")
-	@doc("Update an existing form by its unique identifier.")
+	@doc("Update an existing form by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")
 	@route("/forms/{formId}")
 	@patch(#{ implicitOptionality: true })
 	op updateForm(@path formId: uuid, @body updateFormRequest: FormRequest): Form;
@@ -64,13 +64,13 @@ namespace CoreSystem.Forms {
 
 	// === Section Operations ===
 	@summary("List Sections")
-	@doc("List all the questions of the sections in the form.")
+	@doc("List all the questions of the sections in the form. Descriptions are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend form display and preview.")
 	@route("/forms/{formId}/sections")
 	@get
 	op listSections(@path formId: uuid): ListSectionsResponse[];
 
 	@summary("Update Section")
-	@doc("Update an existing section by its unique identifier.")
+	@doc("Update an existing section by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")
 	@route("/forms/{formId}/sections/{sectionId}")
 	@patch(#{ implicitOptionality: true })
 	op updateSection(@path formId: uuid, @path sectionId: uuid, @body updateSectionRequest: SectionRequest): Section;
