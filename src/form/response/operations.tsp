@@ -37,6 +37,21 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Get My Form Responses")
+	@doc("Get all responses submitted by the currently logged-in user for a specific form.")
+	@route("/forms/{formId}/responses/me")
+	@get
+	op getMyFormResponses(@path formId: uuid): {
+		@statusCode statusCode: 200;
+		@body response: ListResponse;
+	} | {
+		@statusCode statusCode: 401;
+		@body error: Unauthorized;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
 	@summary("Get Form Response")
 	@doc("Get the preview answer by response ID.")
 	@route("/forms/{formId}/responses/{responseId}")
