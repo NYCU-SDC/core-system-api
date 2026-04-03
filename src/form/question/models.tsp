@@ -348,7 +348,7 @@ namespace CoreSystem.Forms {
 		@doc("The question description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.")
 		description: CoreSystem.ProseMirrorDocument;
 
-		@doc("What is the number of this question in the form.")
+		@doc("The desired position of this question within the section (1-indexed). On create, clamped to `[1, currentCount + 1]`; on update, clamped to `[1, totalCount]`. The server automatically shifts other questions to maintain a contiguous order sequence.")
 		order: int32;
 
 		@doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
