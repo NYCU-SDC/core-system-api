@@ -47,10 +47,25 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for listing all responses of a form")
-	@example(#{ formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", responses: #[] })
+	@example(#{
+		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+		totalCount: 150,
+		draftCount: 30,
+		submittedCount: 120,
+		responses: #[],
+	})
 	model ListResponse {
 		@doc("The form ID.")
 		formId: uuid;
+
+		@doc("Total number of responses for this form.")
+		totalCount: int32;
+
+		@doc("Number of responses in draft state.")
+		draftCount: int32;
+
+		@doc("Number of submitted responses.")
+		submittedCount: int32;
 
 		@doc("All responses for this form.")
 		responses: Response[];
