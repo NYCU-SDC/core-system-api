@@ -6,6 +6,7 @@ on:
       - opened
       - reopened
       - synchronize
+      - closed
 
 concurrency:
   group: pr-preview-docs-${{ github.event.pull_request.number }}
@@ -14,7 +15,7 @@ concurrency:
 jobs:
   deploy-preview:
     name: Build and deploy preview docs
-    if: github.event.pull_request.head.repo.fork == false
+    if: github.event.pull_request.head.repo.fork == false && github.event.action != 'closed'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -68,6 +69,74 @@ jobs:
           script: |
             const marker = "<!-- pr-preview-docs -->";
             const body = `${marker}\n✅ Preview docs deployed successfully.\n\n🔗 ${process.env.PREVIEW_URL}`;
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const botComment = comments.find(
+              (comment) => comment.user.type === "Bot" && comment.body.includes(marker),
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
+
+  cleanup-preview:
+    name: Remove preview docs on PR close
+    if: github.event.pull_request.head.repo.fork == false && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Remove preview directory
+        run: |
+          target="preview-${{ github.event.pull_request.number }}"
+          if [ -d "$target" ]; then
+            rm -rf "$target"
+            git add -A
+            if ! git diff --cached --quiet; then
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git commit -m "chore: remove preview for PR #${{ github.event.pull_request.number }}"
+              git push origin gh-pages
+            fi
+          fi
+
+      - name: Comment cleanup result
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview-${{ github.event.pull_request.number }}/redocly/
+        with:
+          script: |
+            const marker = "<!-- pr-preview-docs -->";
+            const body = `${marker}\n🧹 PR is closed. Preview docs removed.\n\n🔗 ${process.env.PREVIEW_URL}`;
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
