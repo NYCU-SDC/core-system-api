@@ -22,7 +22,6 @@ namespace CoreSystem.Forms {
 			#{ choiceId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890", name: "大二", count: 30 },
 		],
 	})
-	@example(#{ questionId: null, questionTitle: null, displayTitle: null, choices: #[] })
 	model HighlightResponse {
 		@doc("The highlighted question's unique identifier. Null if no highlight is configured.")
 		questionId: uuid | null;
@@ -39,8 +38,6 @@ namespace CoreSystem.Forms {
 
 	@doc("Request body for setting or clearing a form's highlight question.")
 	@example(#{ questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd", displayTitle: "年級分佈統計" })
-	@example(#{ questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd" })
-	@example(#{ questionId: null })
 	model HighlightRequest {
 		@doc("The question ID to highlight. Must be a choice-based question (singleChoice, multipleChoice, dropdown, detailedMultipleChoice). Set to null to clear the entire highlight.")
 		questionId: uuid | null;
