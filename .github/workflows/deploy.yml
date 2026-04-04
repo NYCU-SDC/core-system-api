@@ -11,9 +11,7 @@ jobs:
     name: Build & publish OpenAPI
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -37,7 +35,7 @@ jobs:
       - name: Copy OpenAPI spec
         run: |
           mkdir -p website/tsp-output/schema
-          cp tsp-output/schema/openapi.1.0.0.yaml website/tsp-output/schema/openapi.1.0.0.yaml
+          cp tsp-output/schema/openapi.1.0.0.yaml website/openapi.1.0.0.yaml
 
       - name: Build Redocly / Swagger
         run: pnpm build:redocly
@@ -48,17 +46,13 @@ jobs:
           pnpm compile:sdk
           pnpm build:typedoc
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages root
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: "website"
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./website
+          keep_files: true
 
   Deploy:
     name: Restart mock server
