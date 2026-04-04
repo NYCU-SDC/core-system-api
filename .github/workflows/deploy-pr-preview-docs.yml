@@ -88,19 +88,24 @@ jobs:
               </thead>
               <tbody>
                 <tr>
+                  <td>Scalar</td>
+                  <td><img alt="ready" src="https://img.shields.io/badge/Preview-Ready-0ea5e9"></td>
+                  <td><a href="${previewBaseUrl}" target="_blank">Open Scalar</a></td>
+                </tr>
+                <tr>
                   <td>Redocly API Docs</td>
                   <td><img alt="success" src="https://img.shields.io/badge/Deployed-Success-22c55e"></td>
-                  <td><a href="${redoclyUrl}">Open Redocly</a></td>
+                  <td><a href="${redoclyUrl}" target="_blank">Open Redocly</a></td>
                 </tr>
                 <tr>
                   <td>Swagger UI</td>
                   <td><img alt="ready" src="https://img.shields.io/badge/Preview-Ready-0ea5e9"></td>
-                  <td><a href="${swaggerUrl}">Open Swagger</a></td>
+                  <td><a href="${swaggerUrl}" target="_blank">Open Swagger</a></td>
                 </tr>
                 <tr>
                   <td>SDK TypeDoc</td>
                   <td><img alt="ready" src="https://img.shields.io/badge/API-Synced-f59e0b"></td>
-                  <td><a href="${sdkUrl}">Open SDK Docs</a></td>
+                  <td><a href="${sdkUrl}" target="_blank">Open SDK Docs</a></td>
                 </tr>
               </tbody>
             </table>
