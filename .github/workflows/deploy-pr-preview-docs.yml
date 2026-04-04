@@ -64,11 +64,48 @@ jobs:
       - name: Comment preview URL on PR
         uses: actions/github-script@v8
         env:
-          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview-${{ github.event.pull_request.number }}/redocly/
+          PREVIEW_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview-${{ github.event.pull_request.number }}/
         with:
           script: |
             const marker = "<!-- pr-preview-docs -->";
-            const body = `${marker}\n✅ Preview docs deployed successfully.\n\n🔗 ${process.env.PREVIEW_URL}`;
+            const previewBaseUrl = process.env.PREVIEW_BASE_URL;
+            const redoclyUrl = `${previewBaseUrl}redocly/`;
+            const swaggerUrl = `${previewBaseUrl}swagger/`;
+            const sdkUrl = `${previewBaseUrl}sdk/`;
+            const updatedAt = new Date().toISOString();
+
+            const body = `${marker}
+
+            ## ✅ PR Preview Deploy Success
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Target</th>
+                  <th>Status</th>
+                  <th>Preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Redocly API Docs</td>
+                  <td><img alt="success" src="https://img.shields.io/badge/Deployed-Success-22c55e"></td>
+                  <td><a href="${redoclyUrl}">Open Redocly</a></td>
+                </tr>
+                <tr>
+                  <td>Swagger UI</td>
+                  <td><img alt="ready" src="https://img.shields.io/badge/Preview-Ready-0ea5e9"></td>
+                  <td><a href="${swaggerUrl}">Open Swagger</a></td>
+                </tr>
+                <tr>
+                  <td>SDK TypeDoc</td>
+                  <td><img alt="ready" src="https://img.shields.io/badge/API-Synced-f59e0b"></td>
+                  <td><a href="${sdkUrl}">Open SDK Docs</a></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <sub>PR #${context.payload.pull_request.number} · Updated at ${updatedAt}</sub>`;
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
@@ -132,7 +169,7 @@ jobs:
       - name: Comment cleanup result
         uses: actions/github-script@v8
         env:
-          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview-${{ github.event.pull_request.number }}/redocly/
+          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview-${{ github.event.pull_request.number }}/
         with:
           script: |
             const marker = "<!-- pr-preview-docs -->";
