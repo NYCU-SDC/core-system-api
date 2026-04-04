@@ -2787,8 +2787,6 @@ components:
           description: Custom display title for the highlight. If omitted or null, the backend falls back to the question's current title. Ignored when questionId is null.
       description: Request body for setting or clearing a form's highlight question.
       examples:
-        - questionId: null
-        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
         - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
           displayTitle: 年級分佈統計
     Forms.HighlightResponse:
@@ -2821,10 +2819,6 @@ components:
           description: Response counts per choice option. Empty array if no highlight is configured.
       description: Response model for a form's highlight question statistics. When no highlight is configured, questionId is null and all other fields are null or empty.
       examples:
-        - questionId: null
-          questionTitle: null
-          displayTitle: null
-          choices: []
         - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
           questionTitle: 你的年級是？
           displayTitle: 年級分佈統計
