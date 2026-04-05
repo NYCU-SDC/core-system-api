@@ -3,10 +3,13 @@ using Http;
 @tag("Forms")
 namespace CoreSystem.Forms {
 	@summary("List Forms")
-	@doc("List all existing forms. Archived forms are excluded by default.")
+	@doc("List all existing forms.")
 	@route("/forms")
 	@get
-	op listForms(): Form[];
+	op listForms(
+		@doc("Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.")
+		@query status?: FormStatus[] = #[FormStatus.draft, FormStatus.published]
+	): Form[];
 
 	@summary("Get Form")
 	@doc("Get a specific form by its unique identifier. Description fields are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend display.")
@@ -38,10 +41,19 @@ namespace CoreSystem.Forms {
 	};
 
 	@summary("Archive Form")
-	@doc("Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.")
+	@doc("Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists.")
 	@route("/forms/{formId}/archive")
 	@post
 	op archiveForm(@path formId: uuid): {
+		@statusCode statusCode: 200;
+		@body response: Form;
+	};
+
+	@summary("Unarchive Form")
+	@doc("Unarchive a form. Set status to 'DRAFT'.")
+	@route("/forms/{formId}/unarchive")
+	@post
+	op unarchiveForm(@path formId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: Form;
 	};
