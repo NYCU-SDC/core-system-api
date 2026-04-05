@@ -569,7 +569,7 @@ Content-Type: application/json
     "order": 12,
     "uploadFile": {
         "allowedFileTypes": ["PDF", "DOC", "DOCX"],
-        "maxFileAmount": 1,
+        "maxFileAmount": 10,
         "maxFileSizeLimit": 1000000
     }
 }
