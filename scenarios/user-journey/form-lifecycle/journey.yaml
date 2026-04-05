@@ -1,4 +1,11 @@
 name: "Form Lifecycle"
-description: "User journey scenario for Form Lifecycle."
-entry: "06-response-creation.http"
-testcase: "listFormResponses"
+cases:
+  - name: "Happy Path: List Form Responses"
+    description: "Ensure users with valid permissions can retrieve the response list."
+    path: "06-response-creation.http"
+    test: "listFormResponses"
+
+  - name: "Publish Non-existed Form"
+    description: "Publish non-existed form ID"
+    path: "05-form-publishing.http"
+    test: "getFormFinalState"

@@ -1,4 +1,6 @@
 name: "Form Workflow Condition"
-description: "User journey scenario for Form Workflow Condition."
-entry: "04-response-creation.http"
-testcase: "listFormResponses"
+cases:
+  - name: "Happy Path: List Responses With Workflow Conditions"
+    description: "Verify that responses can be listed when workflow conditions are configured."
+    path: "04-response-creation.http"
+    test: "listFormResponses"
