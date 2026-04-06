@@ -266,8 +266,10 @@ Content-Type: application/json
 # ============================================
 # This step exercises the expected default nodeRenderers keys:
 # paragraph, blockquote, horizontal_rule, heading, code_block, text, hard_break,
-# ordered_list, bullet_list, list_item, variable, strong, em, link
-# Extended: underline, code (inline), emoji (text), nested blockquote+list
+# ordered_list, bullet_list, list_item, variable, strong, em, link,
+# underline, code (inline), emoji (text), nested blockquote+list,
+# extra heading levels, mixed marks, link variants, code_block multiline,
+# blockquote multi-paragraph, nested list depth, multiple variables, html sanitization text
 # @name updateFormDescriptionNodeRenderers
 # @ref updateForm
 PATCH {{BASE_URL}}/forms/{{formId}}
@@ -281,6 +283,16 @@ Content-Type: application/json
                 "type": "heading",
                 "attrs": { "level": 2 },
                 "content": [{ "type": "text", "text": "NodeRenderers Coverage" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 1 },
+                "content": [{ "type": "text", "text": "H1 title" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 3 },
+                "content": [{ "type": "text", "text": "H3 subtitle" }]
             },
             {
                 "type": "paragraph",
@@ -300,6 +312,26 @@ Content-Type: application/json
             {
                 "type": "paragraph",
                 "content": [
+                    { "type": "text", "text": "mixed marks: " },
+                    {
+                        "type": "text",
+                        "marks": [
+                            { "type": "bold" },
+                            { "type": "italic" },
+                            { "type": "link", "attrs": { "href": "https://example.com/relative/path" } }
+                        ],
+                        "text": "bold+italic+relative_link"
+                    },
+                    { "type": "text", "text": " and " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "mailto:test@example.com" } }], "text": "mailto" },
+                    { "type": "text", "text": " and " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "#hash" } }], "text": "hash" },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://example.com/#hash" } }], "text": "hash" }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": [
                     { "type": "text", "text": "line1" },
                     { "type": "hard_break" },
                     { "type": "text", "text": "line2" }
@@ -312,6 +344,10 @@ Content-Type: application/json
                     {
                         "type": "paragraph",
                         "content": [{ "type": "text", "text": "blockquote text" }]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [{ "type": "text", "text": "blockquote second paragraph" }]
                     },
                     {
                         "type": "bullet_list",
@@ -328,7 +364,7 @@ Content-Type: application/json
             },
             {
                 "type": "code_block",
-                "content": [{ "type": "text", "text": "console.log('code_block');" }]
+                "content": [{ "type": "text", "text": "line1\nline2\nconsole.log('code_block'); // <> & \" '" }]
             },
             {
                 "type": "bullet_list",
@@ -336,7 +372,18 @@ Content-Type: application/json
                     {
                         "type": "list_item",
                         "content": [
-                            { "type": "paragraph", "content": [{ "type": "text", "text": "bullet_list item" }] }
+                            { "type": "paragraph", "content": [{ "type": "text", "text": "bullet_list item" }] },
+                            {
+                                "type": "bullet_list",
+                                "content": [
+                                    {
+                                        "type": "list_item",
+                                        "content": [
+                                            { "type": "paragraph", "content": [{ "type": "text", "text": "nested ul depth-2 item" }] }
+                                        ]
+                                    }
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -357,13 +404,22 @@ Content-Type: application/json
                 "type": "paragraph",
                 "content": [
                     { "type": "text", "text": "variable: " },
-                    { "type": "variable", "attrs": { "name": "VAR_TEST" } }
+                    { "type": "variable", "attrs": { "name": "VAR_TEST" } },
+                    { "type": "text", "text": ", variable2=" },
+                    { "type": "variable", "attrs": { "name": "VAR_TEST_2" } }
                 ]
             },
             {
                 "type": "paragraph",
                 "content": [
-                    { "type": "text", "text": "emoji text 😀 (unicode) is supported." }
+                    { "type": "text", "text": "emoji text 😀 👨‍👩‍👧‍👦 (unicode) is supported." }
+                ]
+            }
+            ,
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "sanitize check: <script>alert(1)</script>" }
                 ]
             }
         ]
@@ -385,7 +441,9 @@ Content-Type: application/json
         equal(html.includes('<p>'), true, 'Should render paragraph');
         equal(html.includes('<blockquote'), true, 'Should render blockquote');
         equal(html.includes('<hr'), true, 'Should render horizontal_rule');
+        equal(html.includes('<h1'), true, 'Should render heading level 1');
         equal(html.includes('<h2'), true, 'Should render heading level 2');
+        equal(html.includes('<h3'), true, 'Should render heading level 3');
         equal(html.includes('<pre'), true, 'Should render code_block (pre)');
         equal(html.includes('<code'), true, 'Should render code_block (code)');
         equal(html.includes('<br'), true, 'Should render hard_break');
@@ -397,12 +455,23 @@ Content-Type: application/json
         equal(html.includes('<a'), true, 'Should render link');
         equal(html.includes('https://example.com'), true, 'Link href should be present');
         equal(html.includes('VAR_TEST'), true, 'Should include variable name');
+        equal(html.includes('VAR_TEST_2'), true, 'Should include second variable name');
 
         equal(html.includes('<u>') || html.includes('text-decoration'), true, 'Should render underline');
         equal(html.includes('inline_code'), true, 'Should include inline_code text');
+        equal(html.includes('bold+italic+relative_link'), true, 'Should include mixed marks text');
+        equal(html.includes('https://example.com/relative/path'), true, 'Should include link href (relative path variant)');
+        equal(html.includes('mailto:test@example.com'), true, 'Should include mailto link href');
+        equal(html.includes('#hash'), true, 'Should include pure hash link href');
+        equal(html.includes('https://example.com/#hash'), true, 'Should include hash link href');
 
         equal(html.includes('nested bullet item'), true, 'Should render nested list inside blockquote');
+        equal(html.includes('nested ul depth-2 item'), true, 'Should render nested list depth-2');
         equal(html.includes('😀'), true, 'Should include emoji unicode text');
+
+        // Sanitization: ensure script tags are not rendered as HTML elements.
+        equal(html.includes('<script'), false, 'Should not render script tag');
+        equal(html.includes('alert(1)'), true, 'Should preserve text content for sanitize check');
     });
 }}
 
