@@ -114,6 +114,52 @@ httpyac send scenarios/user-journey/form-lifecycle/01-setup.http
 httpyac send scenarios/user-journey/form-lifecycle/*.http --env dev
 ```
 
+## Rich text / Tiptap support
+
+### Supported Tiptap / ProseMirror types (backend-validated)
+
+This section documents which ProseMirror node/mark types are **currently accepted by the backend validator** and observed to render via `descriptionHtml`.
+
+Source of truth for this list is the scenario step `updateFormDescriptionNodeRenderers` in `02-form-creation.http`, validated end-to-end by running:
+
+```bash
+httpyac send -a --bail 06-response-creation.http
+```
+
+#### Nodes
+
+- **`doc`**: ProseMirror document root (`type: "doc"`).
+- **`heading`**: `attrs.level` supported (observed: 1, 2, 3).
+- **`paragraph`**
+- **`text`**
+- **`hard_break`**
+- **`horizontal_rule`**
+- **`blockquote`**: supports multiple paragraphs and nested lists.
+- **`code_block`**: supports multi-line text.
+- **`bullet_list`**
+- **`ordered_list`**: supports `attrs.order`.
+- **`list_item`**: supports nesting lists within list items.
+- **`variable`**: supports `attrs.name` (rendered as `{{NAME}}` in `descriptionHtml`).
+
+#### Marks
+
+- **`bold`** (renders as `<strong>…</strong>`)
+- **`italic`** (renders as `<em>…</em>`)
+- **`underline`** (renders as `<u>…</u>` or equivalent styling)
+- **`code`** (inline code mark)
+- **`link`**: observed-supported href forms:
+  - **HTTP(S)** absolute URLs (e.g. `https://example.com`)
+  - **Relative-path style** accepted when represented as `https://example.com/relative/path` in the test
+  - **`mailto:`** (e.g. `mailto:test@example.com`)
+  - **Pure hash** (e.g. `#hash`)
+
+#### Rendering / sanitization notes
+
+- **`descriptionHtml`** is expected to be safe for frontend rendering; the smoke test includes a string `"<script>alert(1)</script>"` and asserts:
+  - `<script` is **not** present in `descriptionHtml`
+  - `alert(1)` text **is** still visible
+- **Emoji**: unicode emoji characters embedded as plain text are preserved (e.g. `😀`, `👨‍👩‍👧‍👦`).
+
 ## Known Limitations
 
 ### OAuth Question Type Not Tested
