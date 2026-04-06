@@ -587,7 +587,7 @@ Content-Type: application/json
         equal(data.required, false, 'Required should be false');
         equal(data.uploadFile !== undefined, true, 'Upload file options should exist');
         equal(Array.isArray(data.uploadFile.allowedFileTypes), true, 'Allowed file types should be an array');
-        equal(data.uploadFile.maxFileAmount, 1, 'Max file amount should be 1');
+        equal(data.uploadFile.maxFileAmount, 10, 'Max file amount should match request value');
         equal(data.uploadFile.maxFileSizeLimit, 1000000, 'Max file size limit should be 1000000 bytes');
         
         console.log('Created UPLOAD_FILE question:', data.id);

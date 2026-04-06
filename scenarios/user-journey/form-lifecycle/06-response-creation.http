@@ -981,12 +981,11 @@ Content-Type: application/json
             "questionId": "{{dateQuestionId}}",
             "questionType": "DATE",
             "value": "2024-06-15"
-            "value": "2024-06-15T00:00:00Z"
         },
         {
             "questionId": "{{uploadFileQuestionId}}",
             "questionType": "UPLOAD_FILE",
-            "value": [{"fileId": "{{remainingFileId}}"}]
+            "value": ["{{remainingFileId}}"]
         },
         {
             "questionId": "{{linearScaleQuestionId}}",
