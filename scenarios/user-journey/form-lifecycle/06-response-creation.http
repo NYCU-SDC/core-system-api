@@ -807,7 +807,7 @@ POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/fi
 Content-Type: multipart/form-data; boundary=WebKitFormBoundary
 
 --WebKitFormBoundary
-Content-Disposition: form-data; name="file"; filename="resume.pdf"
+Content-Disposition: form-data; name="files"; filename="resume.pdf"
 Content-Type: application/pdf
 
 %PDF-1.4 Mock PDF content for testing
