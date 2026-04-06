@@ -854,6 +854,8 @@ Content-Type: application/pdf
     exports.fileIdToDelete = data.files[0].fileId;
     exports.remainingFileId = data.files[1].fileId;
     exports.remainingFileName = data.files[1].originalFilename;
+    exports.remainingFileContentType = data.files[1].contentType;
+    exports.remainingFileSize = data.files[1].size;
 }}
 
 ###
@@ -985,7 +987,16 @@ Content-Type: application/json
         {
             "questionId": "{{uploadFileQuestionId}}",
             "questionType": "UPLOAD_FILE",
-            "value": ["{{remainingFileId}}"]
+            "value": {
+                "files": [
+                    {
+                    "fileId": "{{remainingFileId}}",
+                    "originalFilename": "{{remainingFileName}}",
+                    "contentType": "{{remainingFileContentType}}",
+                    "size": {{remainingFileSize}}
+                    }
+                ]
+            }
         },
         {
             "questionId": "{{linearScaleQuestionId}}",
