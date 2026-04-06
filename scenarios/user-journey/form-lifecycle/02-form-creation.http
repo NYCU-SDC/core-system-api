@@ -128,6 +128,8 @@ Content-Type: application/json
         equal(data.title, 'Form Lifecycle Test Form', 'Form title should match');
         equal(data.description?.type, 'doc', 'Form description should be rich text doc');
         deepStrictEqual(data.description?.content?.[0], expectedDescriptionParagraph, 'Form description paragraph should match');
+        equal(typeof data.descriptionHtml, 'string', 'Form descriptionHtml should be a string');
+        equal(data.descriptionHtml.includes('<p>'), true, 'Form descriptionHtml should contain <p>');
         equal(data.previewMessage, 'Complete test form', 'Preview message should match');
         equal(data.messageAfterSubmission, 'Thank you for completing this test form! Your response has been recorded.', 'Message after submission should match');
         equal(data.visibility, 'PUBLIC', 'Form visibility should be PUBLIC');
@@ -245,6 +247,8 @@ Content-Type: application/json
         equal(data.title, 'Form Lifecycle Test Form (Updated)', 'Form title should be updated');
         equal(data.description?.type, 'doc', 'Updated description should be rich text doc');
         deepStrictEqual(data.description?.content?.[0], expectedDescriptionParagraph, 'Updated description paragraph should match');
+        equal(typeof data.descriptionHtml, 'string', 'Updated descriptionHtml should be a string');
+        equal(data.descriptionHtml.includes('<p>'), true, 'Updated descriptionHtml should contain <p>');
         equal(data.dressing !== undefined, true, 'Dressing should exist');
         equal(data.dressing.color, '#0066cc', 'Dressing color should match');
         equal(data.dressing.headerFont, 'BoutiqueBitmap7x7CircleDot', 'Dressing header font should match');
