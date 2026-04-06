@@ -295,6 +295,21 @@ Content-Type: application/json
                 "content": [{ "type": "text", "text": "H3 subtitle" }]
             },
             {
+                "type": "heading",
+                "attrs": { "level": 4 },
+                "content": [{ "type": "text", "text": "H4 section" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 5 },
+                "content": [{ "type": "text", "text": "H5 section" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 6 },
+                "content": [{ "type": "text", "text": "H6 section" }]
+            },
+            {
                 "type": "paragraph",
                 "content": [
                     { "type": "text", "text": "paragraph + " },
@@ -444,6 +459,9 @@ Content-Type: application/json
         equal(html.includes('<h1'), true, 'Should render heading level 1');
         equal(html.includes('<h2'), true, 'Should render heading level 2');
         equal(html.includes('<h3'), true, 'Should render heading level 3');
+        equal(html.includes('<h4'), true, 'Should render heading level 4');
+        equal(html.includes('<h5'), true, 'Should render heading level 5');
+        equal(html.includes('<h6'), true, 'Should render heading level 6');
         equal(html.includes('<pre'), true, 'Should render code_block (pre)');
         equal(html.includes('<code'), true, 'Should render code_block (code)');
         equal(html.includes('<br'), true, 'Should render hard_break');

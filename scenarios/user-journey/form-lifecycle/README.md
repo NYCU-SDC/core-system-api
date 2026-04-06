@@ -129,7 +129,7 @@ httpyac send -a --bail 06-response-creation.http
 #### Nodes
 
 - **`doc`**: ProseMirror document root (`type: "doc"`).
-- **`heading`**: `attrs.level` supported (observed: 1, 2, 3).
+- **`heading`**: `attrs.level` supported (observed: 1, 2, 3, 4, 5, 6).
 - **`paragraph`**
 - **`text`**
 - **`hard_break`**
