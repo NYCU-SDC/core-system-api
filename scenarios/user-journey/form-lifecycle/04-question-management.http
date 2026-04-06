@@ -37,7 +37,17 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "What is your full name?",
-    "description": "Please enter your first and last name",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please enter your first and last name" }
+                ]
+            }
+        ]
+    },
     "order": 1
 }
 
@@ -45,7 +55,7 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Short text question created', () => {
         const data = JSON.parse(response.body);
@@ -54,7 +64,16 @@ Content-Type: application/json
         equal(data.title, 'What is your full name?', 'Title should match');
         equal(data.required, true, 'Required should be true');
         equal(data.sectionId, sectionNodeId, 'Section ID should match');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Please enter your first and last name' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created SHORT_TEXT question:', data.id);
     });
 
@@ -76,7 +95,17 @@ Content-Type: application/json
     "required": true,
     "type": "LONG_TEXT",
     "title": "Tell us about your background",
-    "description": "Please share your educational background and work experience (maximum 500 words)",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please share your educational background and work experience (maximum 500 words)" }
+                ]
+            }
+        ]
+    },
     "order": 2
 }
 
@@ -84,14 +113,29 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Long text question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'LONG_TEXT', 'Type should be LONG_TEXT');
         equal(data.required, true, 'Required should be true');
-        
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Please share your educational background and work experience (maximum 500 words)',
+                    },
+                ],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created LONG_TEXT question:', data.id);
     });
 
@@ -113,7 +157,17 @@ Content-Type: application/json
     "required": true,
     "type": "SINGLE_CHOICE",
     "title": "What is your preferred work location?",
-    "description": "Select one option that best describes your preference",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select one option that best describes your preference" }
+                ]
+            }
+        ]
+    },
     "order": 3,
     "choices": [
         { "name": "Remote" },
@@ -126,15 +180,25 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Single choice question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'SINGLE_CHOICE', 'Type should be SINGLE_CHOICE');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 3, 'Should have 3 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Select one option that best describes your preference' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created SINGLE_CHOICE question:', data.id);
     });
 
@@ -157,7 +221,17 @@ Content-Type: application/json
     "required": true,
     "type": "SINGLE_CHOICE",
     "title": "What is your preferred work location?",
-    "description": "Select one option that best describes your preference",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select one option that best describes your preference" }
+                ]
+            }
+        ]
+    },
     "order": 4,
     "choices": [
         { "name": "Remote"},
@@ -171,15 +245,25 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Single choice question with other option created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'SINGLE_CHOICE', 'Type should be SINGLE_CHOICE');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 4, 'Should have 4 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Select one option that best describes your preference' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created SINGLE_CHOICE question with other option:', data.id);
     });
 
@@ -202,7 +286,17 @@ Content-Type: application/json
     "required": true,
     "type": "MULTIPLE_CHOICE",
     "title": "Which programming languages do you know?",
-    "description": "Select all that apply",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select all that apply" }
+                ]
+            }
+        ]
+    },
     "order": 5,
     "choices": [
         { "name": "JavaScript" },
@@ -217,15 +311,25 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Multiple choice question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'MULTIPLE_CHOICE', 'Type should be MULTIPLE_CHOICE');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 5, 'Should have 5 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Select all that apply' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created MULTIPLE_CHOICE question:', data.id);
     });
 
@@ -248,7 +352,17 @@ Content-Type: application/json
     "required": true,
     "type": "MULTIPLE_CHOICE",
     "title": "Which programming languages do you know?",
-    "description": "Select all that apply",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select all that apply" }
+                ]
+            }
+        ]
+    },
     "order": 6,
     "choices": [
         { "name": "JavaScript" },
@@ -264,15 +378,25 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Multiple choice question with other option created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'MULTIPLE_CHOICE', 'Type should be MULTIPLE_CHOICE');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 6, 'Should have 6 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Select all that apply' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created MULTIPLE_CHOICE question with other option:', data.id);
     });
 
@@ -295,7 +419,17 @@ Content-Type: application/json
     "required": false,
     "type": "DROPDOWN",
     "title": "What is your experience level?",
-    "description": "Choose from the dropdown menu",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Choose from the dropdown menu" }
+                ]
+            }
+        ]
+    },
     "order": 7,
     "choices": [
         { "name": "Beginner (0-1 years)" },
@@ -309,16 +443,26 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Dropdown question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'DROPDOWN', 'Type should be DROPDOWN');
         equal(data.required, false, 'Required should be false');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 4, 'Should have 4 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Choose from the dropdown menu' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created DROPDOWN question:', data.id);
     });
 
@@ -341,7 +485,17 @@ Content-Type: application/json
     "required": false,
     "type": "DROPDOWN",
     "title": "What is your experience level?",
-    "description": "Choose from the dropdown menu",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Choose from the dropdown menu" }
+                ]
+            }
+        ]
+    },
     "order": 8,
     "choices": [
         { "name": "Beginner (0-1 years)" },
@@ -356,16 +510,26 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Dropdown question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'DROPDOWN', 'Type should be DROPDOWN');
         equal(data.required, false, 'Required should be false');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 5, 'Should have 5 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Choose from the dropdown menu' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created DROPDOWN question with other option:', data.id);
     });
 
@@ -388,7 +552,17 @@ Content-Type: application/json
     "required": true,
     "type": "DETAILED_MULTIPLE_CHOICE",
     "title": "Which technologies are you interested in?",
-    "description": "Select all areas that interest you",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select all areas that interest you" }
+                ]
+            }
+        ]
+    },
     "order": 9,
     "choices": [
         { 
@@ -414,15 +588,25 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Detailed multiple choice question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'DETAILED_MULTIPLE_CHOICE', 'Type should be DETAILED_MULTIPLE_CHOICE');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 4, 'Should have 4 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Select all areas that interest you' }],
+            },
+            'Description paragraph should match request',
+        );
+
         // Verify descriptions exist
         const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
         equal(hasDescriptions, true, 'All choices should have descriptions');
@@ -449,7 +633,17 @@ Content-Type: application/json
     "required": true,
     "type": "DETAILED_MULTIPLE_CHOICE",
     "title": "Which technologies are you interested in?",
-    "description": "Select all areas that interest you",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select all areas that interest you" }
+                ]
+            }
+        ]
+    },
     "order": 10,
     "choices": [
         { 
@@ -480,15 +674,25 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Detailed multiple choice question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'DETAILED_MULTIPLE_CHOICE', 'Type should be DETAILED_MULTIPLE_CHOICE');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(Array.isArray(data.choices), true, 'Choices should be an array');
         equal(data.choices.length, 5, 'Should have 5 choices');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Select all areas that interest you' }],
+            },
+            'Description paragraph should match request',
+        );
+
         // Verify descriptions exist
         const hasDescriptions = data.choices.every(c => c.isOther || (c.description !== undefined && c.description !== ''));
         equal(hasDescriptions, true, 'All choices other than "Other" should have descriptions');
@@ -515,7 +719,17 @@ Content-Type: application/json
     "required": true,
     "type": "DATE",
     "title": "When can you start?",
-    "description": "Please select your preferred start date",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please select your preferred start date" }
+                ]
+            }
+        ]
+    },
     "order": 11,
     "date": {
         "hasYear": true,
@@ -530,20 +744,30 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Date question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'DATE', 'Type should be DATE');
         equal(data.required, true, 'Required should be true');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.date !== undefined, true, 'Date options should exist');
         equal(data.date.hasYear, true, 'hasYear should be true');
         equal(data.date.hasMonth, true, 'hasMonth should be true');
         equal(data.date.hasDay, true, 'hasDay should be true');
         equal(data.date.minDate, '2024-01-01T00:00:00Z', 'minDate should match');
         equal(data.date.maxDate, '2026-12-31T23:59:59Z', 'maxDate should match');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Please select your preferred start date' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created DATE question:', data.id);
     });
 
@@ -565,7 +789,17 @@ Content-Type: application/json
     "required": false,
     "type": "UPLOAD_FILE",
     "title": "Upload your resume/CV",
-    "description": "Please upload your resume in PDF or Word format",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please upload your resume in PDF or Word format" }
+                ]
+            }
+        ]
+    },
     "order": 12,
     "uploadFile": {
         "allowedFileTypes": ["PDF", "DOC", "DOCX"],
@@ -578,18 +812,28 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Upload file question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'UPLOAD_FILE', 'Type should be UPLOAD_FILE');
         equal(data.required, false, 'Required should be false');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.uploadFile !== undefined, true, 'Upload file options should exist');
         equal(Array.isArray(data.uploadFile.allowedFileTypes), true, 'Allowed file types should be an array');
         equal(data.uploadFile.maxFileAmount, 1, 'Max file amount should be 1');
         equal(data.uploadFile.maxFileSizeLimit, 1000000, 'Max file size limit should be 1000000 bytes');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Please upload your resume in PDF or Word format' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created UPLOAD_FILE question:', data.id);
     });
 
@@ -611,7 +855,17 @@ Content-Type: application/json
     "required": true,
     "type": "LINEAR_SCALE",
     "title": "Rate your proficiency in TypeScript",
-    "description": "On a scale of 1 to 10, how proficient are you?",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "On a scale of 1 to 10, how proficient are you?" }
+                ]
+            }
+        ]
+    },
     "order": 13,
     "scale": {
         "minVal": 1,
@@ -625,17 +879,27 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Linear scale question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'LINEAR_SCALE', 'Type should be LINEAR_SCALE');
         equal(data.required, true, 'Required should be true');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.scale !== undefined, true, 'Scale options should exist');
         equal(data.scale.minVal, 1, 'Min value should be 1');
         equal(data.scale.maxVal, 10, 'Max value should be 10');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'On a scale of 1 to 10, how proficient are you?' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created LINEAR_SCALE question:', data.id);
     });
 
@@ -657,7 +921,17 @@ Content-Type: application/json
     "required": true,
     "type": "RATING",
     "title": "How satisfied are you with your current role?",
-    "description": "Rate your satisfaction level using stars",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Rate your satisfaction level using stars" }
+                ]
+            }
+        ]
+    },
     "order": 14,
     "scale": {
         "icon": "star",
@@ -670,18 +944,28 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Rating question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'RATING', 'Type should be RATING');
         equal(data.required, true, 'Required should be true');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.scale !== undefined, true, 'Scale options should exist');
         equal(data.scale.icon, 'star', 'Icon should be star');
         equal(data.scale.minVal, 1, 'Min value should be 1');
         equal(data.scale.maxVal, 5, 'Max value should be 5');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Rate your satisfaction level using stars' }],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created RATING question:', data.id);
     });
 
@@ -703,7 +987,17 @@ Content-Type: application/json
     "required": true,
     "type": "RANKING",
     "title": "Rank your work location preferences",
-    "description": "Order the options based on your preference (most preferred first)",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Order the options based on your preference (most preferred first)" }
+                ]
+            }
+        ]
+    },
     "order": 15,
     "choices": [
         { "name": "Remote" },
@@ -716,18 +1010,33 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Ranking question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'RANKING', 'Type should be RANKING');
         equal(data.required, true, 'Required should be true');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.choices.length, 3, 'Should have 3 choices');
         equal(data.choices[0].name, 'Remote', 'First choice should be Remote');
         equal(data.choices[1].name, 'On-site', 'Second choice should be On-site');
         equal(data.choices[2].name, 'Hybrid', 'Third choice should be Hybrid');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Order the options based on your preference (most preferred first)',
+                    },
+                ],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created RANKING question:', data.id);
     });
 
@@ -750,7 +1059,17 @@ Content-Type: application/json
     "required": true,
     "type": "RANKING",
     "title": "Rank your work location preferences",
-    "description": "Order the options based on your preference (most preferred first)",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Order the options based on your preference (most preferred first)" }
+                ]
+            }
+        ]
+    },
     "order": 16,
     "choices": [
         { "name": "Remote" },
@@ -764,19 +1083,34 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Ranking question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'RANKING', 'Type should be RANKING');
         equal(data.required, true, 'Required should be true');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.choices.length, 4, 'Should have 4 choices');
         equal(data.choices[0].name, 'Remote', 'First choice should be Remote');
         equal(data.choices[1].name, 'On-site', 'Second choice should be On-site');
         equal(data.choices[2].name, 'Hybrid', 'Third choice should be Hybrid');
         equal(data.choices[3].isOther, true, 'Fourth choice should be Other');
-        
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Order the options based on your preference (most preferred first)',
+                    },
+                ],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created RANKING question with Other option:', data.id);
     });
 
@@ -799,7 +1133,17 @@ Content-Type: application/json
     "required": false,
     "type": "HYPERLINK",
     "title": "Portfolio or personal website",
-    "description": "Please provide a link to your portfolio, GitHub, or LinkedIn profile",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please provide a link to your portfolio, GitHub, or LinkedIn profile" }
+                ]
+            }
+        ]
+    },
     "order": 17
 }
 
@@ -807,14 +1151,29 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Hyperlink question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'HYPERLINK', 'Type should be HYPERLINK');
         equal(data.required, false, 'Required should be false');
-        
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Please provide a link to your portfolio, GitHub, or LinkedIn profile',
+                    },
+                ],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created HYPERLINK question:', data.id);
     });
 
@@ -836,7 +1195,17 @@ Content-Type: application/json
     "required": false,
     "type": "HYPERLINK",
     "title": "Need to delete this question",
-    "description": "Please provide a link to your portfolio, GitHub, or LinkedIn profile",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please provide a link to your portfolio, GitHub, or LinkedIn profile" }
+                ]
+            }
+        ]
+    },
     "order": 13
 }
 
@@ -844,14 +1213,29 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Hyperlink question created', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'HYPERLINK', 'Type should be HYPERLINK');
         equal(data.required, false, 'Required should be false');
-        
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Please provide a link to your portfolio, GitHub, or LinkedIn profile',
+                    },
+                ],
+            },
+            'Description paragraph should match request',
+        );
+
         console.log('Created HYPERLINK question:', data.id);
     });
 
@@ -872,7 +1256,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
     test.status(200);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('All questions created successfully', () => {
         const data = JSON.parse(response.body);
@@ -884,6 +1268,18 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         equal(ourSection !== undefined, true, 'Our section should exist');
         equal(Array.isArray(ourSection.questions), true, 'Questions should be an array');
         equal(ourSection.questions.length, 18, 'Should have 18 questions, but got ' + ourSection.questions.length);
+
+        const listedShortText = ourSection.questions.find((q) => q.id === shortTextQuestionId);
+        equal(listedShortText !== undefined, true, 'SHORT_TEXT question should appear in section listing');
+        equal(listedShortText.description?.type, 'doc', 'Listed question description should be rich text doc');
+        deepStrictEqual(
+            listedShortText.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Please enter your first and last name' }],
+            },
+            'Listed SHORT_TEXT description paragraph should match',
+        );
     });
 }}
 
@@ -901,7 +1297,17 @@ Content-Type: application/json
     "required": false,
     "type": "SHORT_TEXT",
     "title": "What is your full name? (Updated)",
-    "description": "Please enter your first and last name - this field is now optional",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please enter your first and last name - this field is now optional" }
+                ]
+            }
+        ]
+    },
     "order": 1
 }
 
@@ -909,7 +1315,7 @@ Content-Type: application/json
     test.status(200);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Question updated successfully', () => {
         const data = JSON.parse(response.body);
@@ -917,7 +1323,22 @@ Content-Type: application/json
         equal(data.type, 'SHORT_TEXT', 'Type should remain SHORT_TEXT');
         equal(data.title, 'What is your full name? (Updated)', 'Title should be updated');
         equal(data.required, false, 'Required should be updated to false');
-        
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Please enter your first and last name - this field is now optional',
+                    },
+                ],
+            },
+            'Updated description paragraph should match request',
+        );
+
         console.log('Updated question:', data.id);
     });
 }}
@@ -937,13 +1358,43 @@ Content-Type: application/json
     "required": false,
     "type": "SHORT_TEXT",
     "title": "What is your full name? (Updated)",
-    "description": "Please enter your first and last name - this field is now optional",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Please enter your first and last name - this field is now optional" }
+                ]
+            }
+        ]
+    },
     "order": 2
 }
 
 {{
     test.status(200);
     test.hasResponseBody();
+
+    const { equal, deepStrictEqual } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Short text question description unchanged after order swap', () => {
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Please enter your first and last name - this field is now optional',
+                    },
+                ],
+            },
+            'Description paragraph should still match after order change',
+        );
+    });
 }}
 
 
@@ -960,7 +1411,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
     test.status(200);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Question order after swap is correct', () => {
         const data = JSON.parse(response.body);
@@ -969,6 +1420,21 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const questions = ourSection.questions.slice().sort((a, b) => a.order - b.order);
         equal(questions[0].id, longTextQuestionId, 'Order 1 should be LONG_TEXT');
         equal(questions[1].id, shortTextQuestionId, 'Order 2 should be SHORT_TEXT');
+        const longTextQ = questions.find((q) => q.id === longTextQuestionId);
+        equal(longTextQ.description?.type, 'doc', 'LONG_TEXT listed description should be rich text doc');
+        deepStrictEqual(
+            longTextQ.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Please share your educational background and work experience (maximum 500 words)',
+                    },
+                ],
+            },
+            'LONG_TEXT description paragraph should match',
+        );
     });
 }}
 
@@ -988,7 +1454,17 @@ Content-Type: application/json
     "required": false,
     "type": "SHORT_TEXT",
     "title": "Question inserted in middle",
-    "description": "Created with order 2",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Created with order 2" }
+                ]
+            }
+        ]
+    },
     "order": 2
 }
 
@@ -996,13 +1472,23 @@ Content-Type: application/json
     test.status(201);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Question created in middle order', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
         equal(data.title, 'Question inserted in middle', 'Title should match');
+        equal(data.sectionId, sectionNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        deepStrictEqual(
+            data.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Created with order 2' }],
+            },
+            'Description paragraph should match request',
+        );
         console.log('Created question in middle:', data.id);
     });
 
@@ -1023,7 +1509,7 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
     test.status(200);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Question created in middle has correct order', () => {
         const data = JSON.parse(response.body);
@@ -1033,6 +1519,15 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
         const createdQuestion = questions.find(q => q.id === questionCreatedInMiddleId);
         equal(createdQuestion !== undefined, true, 'Created question should be in section');
         equal(createdQuestion.title, 'Question inserted in middle', 'Title should match');
+        equal(createdQuestion.description?.type, 'doc', 'Listed description should be rich text doc');
+        deepStrictEqual(
+            createdQuestion.description?.content?.[0],
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Created with order 2' }],
+            },
+            'Listed description paragraph should match',
+        );
     });
 }}
 

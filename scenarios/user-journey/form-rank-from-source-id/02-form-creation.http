@@ -21,7 +21,20 @@ Content-Type: application/json
 
 {
     "title": "Ranking from Source ID Test Form",
-    "description": "Tests that a RANKING question resolves its choices dynamically from a DETAILED_MULTIPLE_CHOICE answer.",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Tests that a RANKING question resolves its choices dynamically from a DETAILED_MULTIPLE_CHOICE answer."
+                    }
+                ]
+            }
+        ]
+    },
     "previewMessage": "Please answer both questions.",
     "messageAfterSubmission": "Thank you for your response!",
     "visibility": "PUBLIC"

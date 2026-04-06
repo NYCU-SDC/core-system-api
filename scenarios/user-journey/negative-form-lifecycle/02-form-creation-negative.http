@@ -17,7 +17,15 @@ POST {{BASE_URL}}/orgs/{{orgSlug}}/forms
 Content-Type: application/json
 
 {
-    "description": "No title provided",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{ "type": "text", "text": "No title provided" }]
+            }
+        ]
+    },
     "visibility": "PUBLIC"
 }
 

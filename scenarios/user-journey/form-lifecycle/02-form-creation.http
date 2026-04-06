@@ -87,7 +87,20 @@ Content-Type: application/json
 
 {
     "title": "Form Lifecycle Test Form",
-    "description": "This is a comprehensive test form covering all question types and form lifecycle operations. It demonstrates form creation, question management, workflow setup, and response handling.",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "This is a comprehensive test form covering all question types and form lifecycle operations. It demonstrates form creation, question management, workflow setup, and response handling."
+                    }
+                ]
+            }
+        ]
+    },
     "previewMessage": "Complete test form",
     "messageAfterSubmission": "Thank you for completing this test form! Your response has been recorded.",
     "visibility": "PUBLIC"
@@ -97,13 +110,24 @@ Content-Type: application/json
 {{
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
+
+    const expectedDescriptionParagraph = {
+        type: 'paragraph',
+        content: [
+            {
+                type: 'text',
+                text: 'This is a comprehensive test form covering all question types and form lifecycle operations. It demonstrates form creation, question management, workflow setup, and response handling.'
+            }
+        ]
+    };
 
     test('Form created with correct properties', () => {
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Form ID should exist');
         equal(data.title, 'Form Lifecycle Test Form', 'Form title should match');
-        equal(data.description, 'This is a comprehensive test form covering all question types and form lifecycle operations. It demonstrates form creation, question management, workflow setup, and response handling.', 'Form description should match');
+        equal(data.description?.type, 'doc', 'Form description should be rich text doc');
+        deepStrictEqual(data.description?.content?.[0], expectedDescriptionParagraph, 'Form description paragraph should match');
         equal(data.previewMessage, 'Complete test form', 'Preview message should match');
         equal(data.messageAfterSubmission, 'Thank you for completing this test form! Your response has been recorded.', 'Message after submission should match');
         equal(data.visibility, 'PUBLIC', 'Form visibility should be PUBLIC');
@@ -173,7 +197,20 @@ Content-Type: application/json
 
 {
     "title": "Form Lifecycle Test Form (Updated)",
-    "description": "This is an updated comprehensive test form covering all question types and form lifecycle operations. Updated to test form editing capabilities.",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "This is an updated comprehensive test form covering all question types and form lifecycle operations. Updated to test form editing capabilities."
+                    }
+                ]
+            }
+        ]
+    },
     "previewMessage": "Updated test form - complete all sections",
     "messageAfterSubmission": "Thank you for your submission! We will review your response shortly.",
     "visibility": "PUBLIC",
@@ -191,11 +228,23 @@ Content-Type: application/json
     test.status(200);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
+
+    const expectedDescriptionParagraph = {
+        type: 'paragraph',
+        content: [
+            {
+                type: 'text',
+                text: 'This is an updated comprehensive test form covering all question types and form lifecycle operations. Updated to test form editing capabilities.'
+            }
+        ]
+    };
 
     test('Form updated with correct properties', () => {
         const data = JSON.parse(response.body);
         equal(data.title, 'Form Lifecycle Test Form (Updated)', 'Form title should be updated');
+        equal(data.description?.type, 'doc', 'Updated description should be rich text doc');
+        deepStrictEqual(data.description?.content?.[0], expectedDescriptionParagraph, 'Updated description paragraph should match');
         equal(data.dressing !== undefined, true, 'Dressing should exist');
         equal(data.dressing.color, '#0066cc', 'Dressing color should match');
         equal(data.dressing.headerFont, 'BoutiqueBitmap7x7CircleDot', 'Dressing header font should match');
