@@ -807,12 +807,12 @@ POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/fi
 Content-Type: multipart/form-data; boundary=WebKitFormBoundary
 
 --WebKitFormBoundary
-Content-Disposition: form-data; name="file"; filename="resume1.pdf"
+Content-Disposition: form-data; name="files"; filename="resume1.pdf"
 Content-Type: application/pdf
 
 %PDF-1.4 Mock PDF content for testing 1
 --WebKitFormBoundary
-Content-Disposition: form-data; name="file"; filename="resume2.pdf"
+Content-Disposition: form-data; name="files"; filename="resume2.pdf"
 Content-Type: application/pdf
 
 %PDF-1.4 Mock PDF content for testing 2
@@ -981,6 +981,7 @@ Content-Type: application/json
             "questionId": "{{dateQuestionId}}",
             "questionType": "DATE",
             "value": "2024-06-15"
+            "value": "2024-06-15T00:00:00Z"
         },
         {
             "questionId": "{{uploadFileQuestionId}}",
