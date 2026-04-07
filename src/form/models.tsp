@@ -186,7 +186,10 @@ namespace CoreSystem.Forms {
 
 	@doc("The current status of a form.")
 	enum FormStatus {
+		@doc("Draft: form is being edited and is not visible to users. Can only be accessed by form editors.")
 		draft: "DRAFT",
+
+		@doc("Published: form is published and visible to users. Can be filled out by users and will appear in default listings.")
 		published: "PUBLISHED",
 
 		@doc("Archived: form is hidden from default listings but is still stored and can be accessed directly.")
