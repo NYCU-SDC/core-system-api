@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-04-04'
+  version: '2026-04-07'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -314,8 +314,20 @@ paths:
     get:
       operationId: Forms_listForms
       summary: List Forms
-      description: List all existing forms. Archived forms are excluded by default.
-      parameters: []
+      description: List all existing forms.
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Forms.FormStatus'
+            default:
+              - DRAFT
+              - PUBLISHED
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -459,7 +471,7 @@ paths:
     post:
       operationId: Forms_archiveForm
       summary: Archive Form
-      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.
+      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists.
       parameters:
         - name: formId
           in: path
@@ -736,6 +748,26 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Forms.SectionRequest'
+  /api/forms/{formId}/unarchive:
+    post:
+      operationId: Forms_unarchiveForm
+      summary: Unarchive Form
+      description: Unarchive a form. Set status to 'DRAFT'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
   /api/forms/{formId}/workflow:
     get:
       operationId: FormWorkflow_getWorkflow
