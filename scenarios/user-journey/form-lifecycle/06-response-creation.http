@@ -879,48 +879,6 @@ DELETE {{BASE_URL}}/files/{{fileIdToDelete}}
 ###
 
 # ============================================
-# Verify Remaining File After Deletion
-# ============================================
-# @name verifyRemainingFileAfterDeletion
-# @ref deleteQuestionFile
-GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
-
-{{
-    test.status(200);
-    test.hasResponseBody();
-
-    const { equal } = require('assert');
-    const data = JSON.parse(response.body);
-
-    test('Remaining file is preserved after deletion', () => {
-        let uploadAnswer;
-
-        for (const section of data.sections || []) {
-            for (const answer of section.answers || []) {
-                if (answer.answer && answer.answer.questionId === uploadFileQuestionId) {
-                    uploadAnswer = answer;
-                    break;
-                }
-            }
-            if (uploadAnswer) break;
-        }
-
-        equal(uploadAnswer !== undefined, true, 'Upload file answer should exist');
-
-        const files =
-            uploadAnswer.answer?.value?.files ||
-            uploadAnswer.answer?.value ||
-            uploadAnswer.files ||
-            [];
-
-        equal(Array.isArray(files), true, 'Upload file answer should contain files array');
-        equal(files.length, 1, 'Only one file should remain after deletion');
-        equal(files[0].fileId, remainingFileId, 'Remaining file ID should match expected file');
-        equal(files[0].fileId !== fileIdToDelete, true, 'Deleted file ID should not remain');
-    });
-}}
-
-# ============================================
 # Get Full Response Preview Before Submission
 # ============================================
 # @name getResponsePreview
@@ -945,6 +903,35 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         console.log('Form ID:', data.formId);
         console.log('Progress:', data.progress);
         console.log('Number of sections:', data.sections.length);
+    });
+
+    test('Remaining file is preserved after deletion', () => {
+        const data = JSON.parse(response.body);
+        let uploadAnswer;
+
+        for (const section of data.sections || []) {
+            for (const answer of section.answers || []) {
+                if (answer.answer && answer.answer.questionId === uploadFileQuestionId) {
+                    uploadAnswer = answer;
+                    break;
+                }
+            }
+            if (uploadAnswer) break;
+        }
+
+        equal(uploadAnswer !== undefined, true, 'Upload file answer should exist');
+
+        const files =
+            uploadAnswer.answer?.value?.files ||
+            uploadAnswer.answer?.value ||
+            uploadAnswer.files ||
+            [];
+
+        equal(Array.isArray(files), true, 'Upload file answer should contain files array');
+        equal(files.length, 1, 'Only one file should remain after deletion');
+        equal(files[0].fileId, remainingFileId, 'Remaining file ID should match expected file');
+        equal(files[0].fileId !== fileIdToDelete, true, 'Deleted file ID should not remain');
+        equal(files[0].originalFilename, remainingFileName, 'Remaining file name should match expected file');
     });
 }}
 
