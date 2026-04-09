@@ -72,7 +72,7 @@ namespace CoreSystem.FormWorkflow {
 		type: CreateNodeRequestType;
 
 		@doc("Payload for node layout/UI settings.")
-		@example(#{ x: 1, y: 2 })
+		@example(#{ x: 1.0, y: 2.0 })
 		payload: NodePayload;
 	}
 
@@ -107,7 +107,7 @@ namespace CoreSystem.FormWorkflow {
 		label: string;
 
 		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
-		@example(#{ x: 1, y: 2 })
+		@example(#{ x: 1.0, y: 2.0 })
 		payload: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
@@ -138,7 +138,7 @@ namespace CoreSystem.FormWorkflow {
 		...NodeStructure;
 
 		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
-		@example(#{ x: 1, y: 2 })
+		@example(#{ x: 1.0, y: 2.0 })
 		payload: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
