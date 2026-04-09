@@ -73,7 +73,7 @@ Content-Type: application/json
 
 {
     "type": "SECTION",
-    "payload": { "x": 1, "y": 2 }
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -99,7 +99,7 @@ Content-Type: application/json
 
 {
     "type": "SECTION",
-    "payload": { "x": 1, "y": 2 }
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -189,16 +189,19 @@ Content-Type: application/json
     {
         "id": "{{startNodeId}}",
         "label": "開始表單",
+        "payload": { "x": 0.0, "y": 0.0 },
         "next": "{{sectionNodeId}}"
     },
     {
         "id": "{{sectionNodeId}}",
         "label": "{{sectionNodeLabel}}",
+        "payload": { "x": 1.0, "y": 2.0 },
         "next": "{{conditionNodeId}}"
     },
     {
         "id": "{{conditionNodeId}}",
         "label": "If choose Team B",
+        "payload": { "x": 2.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -210,6 +213,7 @@ Content-Type: application/json
     {
         "id": "{{condition2NodeId}}",
         "label": "If choose Team C",
+        "payload": { "x": 3.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -221,16 +225,19 @@ Content-Type: application/json
     {
         "id": "{{sectionBNodeId}}",
         "label": "Section B",
+        "payload": { "x": 2.0, "y": 3.0 },
         "next": "{{condition2NodeId}}"
     },
     {
         "id": "{{sectionCNodeId}}",
         "label": "Section C",
+        "payload": { "x": 3.0, "y": 3.0 },
         "next": "{{endNodeId}}"
     },
     {
         "id": "{{endNodeId}}",
-        "label": "確認/送出"
+        "label": "確認/送出",
+        "payload": { "x": 0.0, "y": 1.0 }
     }
 ]
 
@@ -353,7 +360,7 @@ Content-Type: application/json
 
 {
     "type": "SECTION",
-    "payload": { "x": 1, "y": 2 }
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -435,16 +442,19 @@ Content-Type: application/json
     {
         "id": "{{startNodeId}}",
         "label": "開始表單",
+        "payload": { "x": 0.0, "y": 0.0 },
         "next": "{{sectionNodeId}}"
     },
     {
         "id": "{{sectionNodeId}}",
         "label": "{{sectionNodeLabel}}",
+        "payload": { "x": 1.0, "y": 2.0 },
         "next": "{{conditionNodeId}}"
     },
     {
         "id": "{{conditionNodeId}}",
         "label": "If choose Team B",
+        "payload": { "x": 2.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -457,6 +467,7 @@ Content-Type: application/json
     {
         "id": "{{condition2NodeId}}",
         "label": "If choose Team C",
+        "payload": { "x": 3.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -469,25 +480,30 @@ Content-Type: application/json
     {
         "id": "{{sectionBNodeId}}",
         "label": "Section B",
+        "payload": { "x": 2.0, "y": 3.0 },
         "next": "{{condition2NodeId}}"
     },
     {
         "id": "{{sectionCNodeId}}",
         "label": "Section C",
+        "payload": { "x": 3.0, "y": 3.0 },
         "next": "{{endNodeId}}"
     },
     {
         "id": "{{endNodeId}}",
-        "label": "確認/送出"
+        "label": "確認/送出",
+        "payload": { "x": 0.0, "y": 1.0 }
     },
     {
         "id": "{{tempSectionNodeId}}",
         "label": "Temp Section (to delete)",
+        "payload": { "x": 4.0, "y": 2.0 },
         "next": "{{tempConditionNodeId}}"
     },
     {
         "id": "{{tempConditionNodeId}}",
         "label": "Temp Condition (to delete)",
+        "payload": { "x": 5.0, "y": 2.0 },
         "conditionRule": {
             "source": "NON_CHOICE",
             "question": "{{tempQuestionId}}",
