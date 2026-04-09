@@ -59,7 +59,7 @@ Content-Type: application/json
 
 {
     "type": "SECTION",
-    "payload": { "x": 1, "y": 2 }
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 {{
@@ -159,9 +159,9 @@ GET {{BASE_URL}}/forms/{{formId}}/sections
 
 ###
 
-# ============================================
-# Update Workflow - Link START -> Section -> END
-# ============================================
+# ==========================================================================
+# Update Workflow - Link START -> Section -> END with payload for each node
+# ==========================================================================
 # @name updateWorkflow
 # @ref listSections
 PUT {{BASE_URL}}/forms/{{formId}}/workflow
@@ -171,16 +171,19 @@ Content-Type: application/json
     {
         "id": "{{startNodeId}}",
         "label": "開始表單",
+        "payload": { "x": 0.0, "y": 0.0 },
         "next": "{{sectionNodeId}}"
     },
     {
         "id": "{{sectionNodeId}}",
         "label": "{{sectionNodeLabel}}",
+        "payload": { "x": 1.0, "y": 2.0 },
         "next": "{{endNodeId}}"
     },
     {
         "id": "{{endNodeId}}",
-        "label": "確認/送出"
+        "label": "確認/送出",
+        "payload": { "x": 0.0, "y": 1.0 }
     }
 ]
 
@@ -188,7 +191,7 @@ Content-Type: application/json
     test.status(200);
     test.hasResponseBody();
 
-    const { equal } = require('assert');
+    const { equal, deepStrictEqual } = require('assert');
 
     test('Workflow updated successfully', () => {
         const data = JSON.parse(response.body);
@@ -206,6 +209,9 @@ Content-Type: application/json
         equal(endNode !== undefined, true, 'END node should exist');
         equal(startNode.next, sectionNodeId, 'START should point to Section');
         equal(sectionNode.next, endNodeId, 'Section should point to END');
+        deepStrictEqual(startNode.payload, { "x": 0.0, "y": 0.0 }, 'START node payload should match');
+        deepStrictEqual(sectionNode.payload, { "x": 1.0, "y": 2.0 }, 'Section node payload should match');
+        deepStrictEqual(endNode.payload, { "x": 0.0, "y": 1.0 }, 'END node payload should match');
     });
 }}
 
