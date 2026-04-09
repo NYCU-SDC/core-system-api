@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-04-07'
+  version: '2026-04-09'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -2096,14 +2096,14 @@ components:
         - 'y'
       properties:
         x:
-          type: integer
-          format: int32
+          type: number
+          format: double
           description: The x position of the node.
           examples:
             - 1
         'y':
-          type: integer
-          format: int32
+          type: number
+          format: double
           description: The y position of the node.
           examples:
             - 2
