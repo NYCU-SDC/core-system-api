@@ -65,7 +65,7 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Request body for creating a new node for a workflow")
-	@example(#{ type: CreateNodeRequestType.section, payload: #{ x: 1, y: 2 } })
+	@example(#{ type: CreateNodeRequestType.section, payload: #{ x: 1.0, y: 2.0 } })
 	model CreateNodeRequest {
 		@doc("Type of the node")
 		@example(CreateNodeRequestType.section)
@@ -77,24 +77,26 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Payload for a node. Used for layout and UI settings.")
-	@example(#{ x: 1, y: 2 })
+	@example(#{ x: 1.0, y: 2.0 })
 	model NodePayload {
 		@doc("The x position of the node.")
-		@example(1)
-		x: int32;
+		@example(1.0)
+		x: float64;
 
 		@doc("The y position of the node.")
-		@example(2)
-		y: int32;
+		@example(2.0)
+		y: float64;
 	}
 
 	@doc("Workflow node request model with linked list connections")
-	@example(#{ id: "b23f2668-c2dc-4213-88fe-eceedff46398", label: "Personal Information Section", 
-	payload: #{ x: 1, y: 2 },
-	conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
-	next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
-	nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
-	nextFalse: "e56i5991-f5gf-7e46-11ih-hfhggii79621",
+	@example(#{
+		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		label: "Personal Information Section",
+		payload: #{ x: 1.0, y: 2.0 },
+		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
+		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
+		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
+		nextFalse: "e56i5991-f5gf-7e46-11ih-hfhggii79621",
 	})
 	model NodeRequest {
 		@doc("Unique identifier for the node.")
@@ -126,7 +128,7 @@ namespace CoreSystem.FormWorkflow {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		type: NodeType.section,
 		label: "Personal Information",
-		payload: #{ x: 1, y: 2 },
+		payload: #{ x: 1.0, y: 2.0 },
 		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
 		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
 		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
