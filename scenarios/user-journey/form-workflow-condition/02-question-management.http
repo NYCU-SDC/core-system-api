@@ -21,7 +21,15 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Branch B: What is your name?",
-    "description": "You chose Section B",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{ "type": "text", "text": "You chose Section B" }]
+            }
+        ]
+    },
     "order": 1
 }
 
@@ -37,6 +45,8 @@ Content-Type: application/json
         equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
         equal(data.required, true, 'Section B question should be required');
         equal(data.sectionId, sectionBNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
     });
 
     const data = JSON.parse(response.body);
@@ -57,7 +67,15 @@ Content-Type: application/json
     "required": true,
     "type": "LONG_TEXT",
     "title": "Branch C: Tell us more",
-    "description": "You chose Section C",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{ "type": "text", "text": "You chose Section C" }]
+            }
+        ]
+    },
     "order": 1
 }
 
@@ -73,6 +91,8 @@ Content-Type: application/json
         equal(data.type, 'LONG_TEXT', 'Type should be LONG_TEXT');
         equal(data.required, true, 'Section C question should be required');
         equal(data.sectionId, sectionCNodeId, 'Section ID should match');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
     });
 
     const data = JSON.parse(response.body);
