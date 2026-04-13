@@ -14,7 +14,12 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for creating/updating a form.")
-	@example(#{ title: "Enter SDC Form", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] }, messageAfterSubmission: "Thank you for your submission!", visibility: FormVisibility.public })
+	@example(#{
+		title: "Enter SDC Form",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] },
+		messageAfterSubmission: "Thank you for your submission!",
+		visibility: FormVisibility.public,
+	})
 	model FormRequest {
 		@doc("The title of the form.")
 		title: string;
@@ -51,7 +56,15 @@ namespace CoreSystem.Forms {
 	@example(#{
 		id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "SDC 2025 Recruitment Form",
-		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Join us for an exciting journey in " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "software development" }, #{ type: "text", text: "!" }] }] },
+		description: #{
+			type: "doc",
+			content: #[
+				#{
+					type: "paragraph",
+					content: #[#{ type: "text", text: "Join us for an exciting journey in " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "software development" }, #{ type: "text", text: "!" }],
+				}
+			],
+		},
 		descriptionHtml: "<p>Join us for an exciting journey in <strong>software development</strong>!</p>",
 		previewMessage: "Join us for an exciting journey",
 		status: FormStatus.published,
@@ -141,7 +154,10 @@ namespace CoreSystem.Forms {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "Personal Information",
-		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "basic information" }] }] },
+		description: #{
+			type: "doc",
+			content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "basic information" }] }],
+		},
 		descriptionHtml: "<p>Please provide your <strong>basic information</strong></p>",
 		questions: #[],
 	})
@@ -166,7 +182,13 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for updating a section.")
-	@example(#{ title: "Personal Information", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "basic information" }] }] } })
+	@example(#{
+		title: "Personal Information",
+		description: #{
+			type: "doc",
+			content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "basic information" }] }],
+		},
+	})
 	model SectionRequest {
 		@doc("Section title (e.g., 'Group Info').")
 		title: string;
@@ -221,6 +243,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.shortText,
 						title: "Full Name",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your full name (in English)" }] }] },
+						descriptionHtml: "<p>Please enter your full name (in English)</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -231,6 +254,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.shortText,
 						title: "Student ID",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Enter your student ID number" }] }] },
+						descriptionHtml: "<p>Enter your student ID number</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -241,6 +265,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.shortText,
 						title: "Email Address",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please provide your email address" }] }] },
+						descriptionHtml: "<p>Please provide your email address</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -251,6 +276,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.shortText,
 						title: "Phone Number",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Your contact phone number" }] }] },
+						descriptionHtml: "<p>Your contact phone number</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -261,6 +287,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.date,
 						title: "Date of Birth",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select your date of birth" }] }] },
+						descriptionHtml: "<p>Select your date of birth</p>",
 						date: #{ hasYear: true, hasMonth: true, hasDay: true, minDate: utcDateTime.fromISO("1990-01-01T00:00:00Z"), maxDate: utcDateTime.fromISO("2010-12-31T23:59:59Z") },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -272,6 +299,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.longText,
 						title: "Self Introduction",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Tell us about yourself (200-500 words)" }] }] },
+						descriptionHtml: "<p>Tell us about yourself (200-500 words)</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					}
@@ -290,6 +318,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.dropdown,
 						title: "Current Education Level",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select your current education level" }] }] },
+						descriptionHtml: "<p>Select your current education level</p>",
 						choices: #[
 							#{ id: "ch1-1", name: "Freshman" },
 							#{ id: "ch1-2", name: "Sophomore" },
@@ -307,6 +336,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.singleChoice,
 						title: "Department/Major",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select your department or major" }] }] },
+						descriptionHtml: "<p>Select your department or major</p>",
 						choices: #[
 							#{ id: "ch2-1", name: "Computer Science" },
 							#{ id: "ch2-2", name: "Information Management" },
@@ -324,6 +354,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.date,
 						title: "Expected Graduation Date",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "When do you expect to graduate?" }] }] },
+						descriptionHtml: "<p>When do you expect to graduate?</p>",
 						date: #{ hasYear: true, hasMonth: true, hasDay: false, minDate: utcDateTime.fromISO("2025-01-01T00:00:00Z"), maxDate: utcDateTime.fromISO("2030-12-31T23:59:59Z") },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -335,6 +366,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.multipleChoice,
 						title: "Previous Experience",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all that apply" }] }] },
+						descriptionHtml: "<p>Select all that apply</p>",
 						choices: #[
 							#{ id: "ch3-1", name: "Participated in hackathons" },
 							#{ id: "ch3-2", name: "Open source contributor" },
@@ -361,6 +393,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.detailedMultipleChoice,
 						title: "Programming Languages",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all programming languages you are familiar with" }] }] },
+						descriptionHtml: "<p>Select all programming languages you are familiar with</p>",
 						choices: #[
 							#{ id: "ch4-1", name: "TypeScript/JavaScript", description: "Modern web development" },
 							#{ id: "ch4-2", name: "Python", description: "General purpose and data science" },
@@ -379,6 +412,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.linearScale,
 						title: "Backend Development Experience",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your backend development experience level" }] }] },
+						descriptionHtml: "<p>Rate your backend development experience level</p>",
 						scale: #{ minVal: 0, maxVal: 10, minValueLabel: "Beginner", maxValueLabel: "Expert" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -390,6 +424,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.linearScale,
 						title: "Frontend Development Experience",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your frontend development experience level" }] }] },
+						descriptionHtml: "<p>Rate your frontend development experience level</p>",
 						scale: #{ minVal: 0, maxVal: 10, minValueLabel: "Beginner", maxValueLabel: "Expert" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -401,6 +436,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.rating,
 						title: "DevOps & Infrastructure",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your familiarity with DevOps practices and infrastructure" }] }] },
+						descriptionHtml: "<p>Rate your familiarity with DevOps practices and infrastructure</p>",
 						scale: #{ icon: "star", minVal: 1, maxVal: 5, minValueLabel: "Novice", maxValueLabel: "Proficient" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -412,6 +448,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.multipleChoice,
 						title: "Technologies You've Worked With",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Select all technologies you have experience with" }] }] },
+						descriptionHtml: "<p>Select all technologies you have experience with</p>",
 						choices: #[
 							#{ id: "ch5-1", name: "Docker" },
 							#{ id: "ch5-2", name: "Kubernetes" },
@@ -442,6 +479,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.ranking,
 						title: "Team Preferences",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rank the following teams in order of your preference (1 = most preferred)" }] }] },
+						descriptionHtml: "<p>Rank the following teams in order of your preference (1 = most preferred)</p>",
 						choices: #[
 							#{ id: "team-1", name: "Core System Team", description: "Backend API & infrastructure development" },
 							#{ id: "team-2", name: "Clustron Team", description: "Cluster management and distributed systems" },
@@ -458,6 +496,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.singleChoice,
 						title: "Role Preference",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Which role are you most interested in?" }] }] },
+						descriptionHtml: "<p>Which role are you most interested in?</p>",
 						choices: #[
 							#{ id: "role-1", name: "Backend Developer" },
 							#{ id: "role-2", name: "Frontend Developer" },
@@ -476,6 +515,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.longText,
 						title: "Why SDC?",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Why do you want to join SDC? What are your expectations?" }] }] },
+						descriptionHtml: "<p>Why do you want to join SDC? What are your expectations?</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -486,6 +526,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.rating,
 						title: "Team Collaboration",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "How comfortable are you working in a team environment?" }] }] },
+						descriptionHtml: "<p>How comfortable are you working in a team environment?</p>",
 						scale: #{ icon: "heart", minVal: 1, maxVal: 5, minValueLabel: "Prefer solo", maxValueLabel: "Love teamwork" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -505,6 +546,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.multipleChoice,
 						title: "Weekly Availability",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Which days are you available each week? (Select all that apply)" }] }] },
+						descriptionHtml: "<p>Which days are you available each week? (Select all that apply)</p>",
 						choices: #[
 							#{ id: "day-1", name: "Monday" },
 							#{ id: "day-2", name: "Tuesday" },
@@ -524,6 +566,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.linearScale,
 						title: "Time Commitment",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "How many hours per week can you commit to SDC activities?" }] }] },
+						descriptionHtml: "<p>How many hours per week can you commit to SDC activities?</p>",
 						scale: #{ minVal: 0, maxVal: 10, minValueLabel: "0-5 hours", maxValueLabel: "20+ hours" },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -535,6 +578,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.uploadFile,
 						title: "Resume/CV",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please upload your resume or CV" }] }] },
+						descriptionHtml: "<p>Please upload your resume or CV</p>",
 						uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.doc, allowedFileTypes.docx], maxFileAmount: 1, maxFileSizeLimit: 5242880 },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -546,6 +590,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.uploadFile,
 						title: "Portfolio/Projects",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Upload any relevant portfolio materials or project documentation (optional)" }] }] },
+						descriptionHtml: "<p>Upload any relevant portfolio materials or project documentation (optional)</p>",
 						uploadFile: #{ allowedFileTypes: #[allowedFileTypes.pdf, allowedFileTypes.zip], maxFileAmount: 3, maxFileSizeLimit: 10485760 },
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
@@ -557,6 +602,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.hyperlink,
 						title: "GitHub Profile",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link to your GitHub profile (if available)" }] }] },
+						descriptionHtml: "<p>Link to your GitHub profile (if available)</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -567,6 +613,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.hyperlink,
 						title: "LinkedIn Profile",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link to your LinkedIn profile (optional)" }] }] },
+						descriptionHtml: "<p>Link to your LinkedIn profile (optional)</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -577,6 +624,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.hyperlink,
 						title: "Personal Website/Blog",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Link to your personal website or blog (if any)" }] }] },
+						descriptionHtml: "<p>Link to your personal website or blog (if any)</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					},
@@ -587,6 +635,7 @@ namespace CoreSystem.Forms {
 						type: QuestionTypes.longText,
 						title: "Anything Else?",
 						description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Is there anything else you'd like us to know?" }] }] },
+						descriptionHtml: "<p>Is there anything else you'd like us to know?</p>",
 						createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 						updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 					}
@@ -596,6 +645,90 @@ namespace CoreSystem.Forms {
 	})
 	model ListSectionsResponse {
 		sections: Section[];
+	}
+
+	@doc("A minimal section shape for list-sections API responses.")
+	@example(#{
+		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+		title: "Personal Information",
+		progress: "",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[] }] },
+		descriptionHtml: "<p></p>",
+		createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
+		updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
+	})
+	model SectionForListSections {
+		@doc("Unique identifier.")
+		id: uuid;
+
+		@doc("The form this section belongs to.")
+		formId: uuid;
+
+		@doc("Section title (e.g., 'Group Info').")
+		title: string;
+
+		@doc("Section progress status (backend field; may be empty string).")
+		progress: string;
+
+		@doc("The section description as ProseMirror JSON, for admin editing in Tiptap.")
+		description: CoreSystem.ProseMirrorDocument;
+
+		@doc("The section description rendered as HTML for frontend form display and preview.")
+		descriptionHtml: CoreSystem.HtmlContent;
+
+		@doc("The creation timestamp of the section.")
+		createdAt: utcDateTime;
+
+		@doc("The last updated timestamp of the section.")
+		updatedAt: utcDateTime;
+	}
+
+	@doc("Response model for listing sections in a form (backend shape).")
+	@example(#{
+		section: #{
+			id: "b23f2668-c2dc-4213-88fe-eceedff46398",
+			formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+			title: "Personal Information",
+			progress: "",
+			description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[] }] },
+			descriptionHtml: "<p></p>",
+			createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
+			updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
+		},
+		questions: #[
+			#{
+				id: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd",
+				sectionId: "b23f2668-c2dc-4213-88fe-eceedff46398",
+				required: true,
+				type: QuestionTypes.shortText,
+				title: "Full Name",
+				description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your full name (in English)" }] }] },
+				descriptionHtml: "<p>Please enter your full name (in English)</p>",
+				createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
+				updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
+			}
+		],
+	})
+	@example(#{
+		section: #{
+			id: "c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+			formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+			title: "Empty Section",
+			progress: "",
+			description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[] }] },
+			descriptionHtml: "<p></p>",
+			createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
+			updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
+		},
+		questions: null,
+	})
+	model SectionBundle {
+		@doc("The section metadata.")
+		section: SectionForListSections;
+
+		@doc("Questions in this section. Null when the section has no questions yet.")
+		questions: QuestionResponse[] | null;
 	}
 
 	// form recipientUser
