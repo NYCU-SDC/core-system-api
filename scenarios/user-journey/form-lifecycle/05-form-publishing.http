@@ -5,7 +5,7 @@
 # - Verify form status before publishing (should be DRAFT)
 # - Publish the form (status changes from DRAFT to PUBLISHED)
 # - Verify form is published and accessible
-# - Test that published form appears in listings
+# - Test that published form appears in default view of listings
 
 # Import setup from Phase 4
 # @import ./04-question-management.http
@@ -153,7 +153,7 @@ GET {{BASE_URL}}/forms/{{formId}}
 ###
 
 # ============================================
-# Verify Published Form Appears in Listing
+# Verify Published Form Appears in Default View of Listing
 # ============================================
 # @name verifyFormInListing
 # @ref getFormAfterPublish
