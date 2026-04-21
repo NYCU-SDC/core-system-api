@@ -127,7 +127,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "CONDITION"
+    "type": "CONDITION",
+    "payload": { "x": 2.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -155,7 +156,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "CONDITION"
+    "type": "CONDITION",
+    "payload": { "x": 3.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -414,7 +416,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "CONDITION"
+    "type": "CONDITION",
+    "payload": { "x": 5.0, "y": 2.0 }
 }
 
 ?? status == 201
