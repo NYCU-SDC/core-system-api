@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-04-19'
+  version: '2026-04-21'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -714,7 +714,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.ListSectionsResponse'
+                  $ref: '#/components/schemas/Forms.SectionBundle'
       tags:
         - Forms
   /api/forms/{formId}/sections/{sectionId}:
@@ -2751,6 +2751,7 @@ components:
                         content:
                           - type: text
                             text: Please enter your full name (in English)
+                  descriptionHtml: <p>Please enter your full name (in English)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: f2a1b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
@@ -2765,6 +2766,7 @@ components:
                         content:
                           - type: text
                             text: Enter your student ID number
+                  descriptionHtml: <p>Enter your student ID number</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: a3b4c5d6-7e8f-9a0b-1c2d-3e4f5a6b7c8d
@@ -2779,6 +2781,7 @@ components:
                         content:
                           - type: text
                             text: Please provide your email address
+                  descriptionHtml: <p>Please provide your email address</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a
@@ -2793,6 +2796,7 @@ components:
                         content:
                           - type: text
                             text: Your contact phone number
+                  descriptionHtml: <p>Your contact phone number</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: e5f6a7b8-9c0d-1e2f-3a4b-5c6d7e8f9a0b
@@ -2807,6 +2811,7 @@ components:
                         content:
                           - type: text
                             text: Select your date of birth
+                  descriptionHtml: <p>Select your date of birth</p>
                   date:
                     hasYear: true
                     hasMonth: true
@@ -2827,6 +2832,7 @@ components:
                         content:
                           - type: text
                             text: Tell us about yourself (200-500 words)
+                  descriptionHtml: <p>Tell us about yourself (200-500 words)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
             - id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
@@ -2852,6 +2858,7 @@ components:
                         content:
                           - type: text
                             text: Select your current education level
+                  descriptionHtml: <p>Select your current education level</p>
                   choices:
                     - id: ch1-1
                       name: Freshman
@@ -2877,6 +2884,7 @@ components:
                         content:
                           - type: text
                             text: Select your department or major
+                  descriptionHtml: <p>Select your department or major</p>
                   choices:
                     - id: ch2-1
                       name: Computer Science
@@ -2902,6 +2910,7 @@ components:
                         content:
                           - type: text
                             text: When do you expect to graduate?
+                  descriptionHtml: <p>When do you expect to graduate?</p>
                   date:
                     hasYear: true
                     hasMonth: true
@@ -2922,6 +2931,7 @@ components:
                         content:
                           - type: text
                             text: Select all that apply
+                  descriptionHtml: <p>Select all that apply</p>
                   choices:
                     - id: ch3-1
                       name: Participated in hackathons
@@ -2960,6 +2970,7 @@ components:
                         content:
                           - type: text
                             text: Select all programming languages you are familiar with
+                  descriptionHtml: <p>Select all programming languages you are familiar with</p>
                   choices:
                     - id: ch4-1
                       name: TypeScript/JavaScript
@@ -2993,6 +3004,7 @@ components:
                         content:
                           - type: text
                             text: Rate your backend development experience level
+                  descriptionHtml: <p>Rate your backend development experience level</p>
                   scale:
                     minVal: 0
                     maxVal: 10
@@ -3012,6 +3024,7 @@ components:
                         content:
                           - type: text
                             text: Rate your frontend development experience level
+                  descriptionHtml: <p>Rate your frontend development experience level</p>
                   scale:
                     minVal: 0
                     maxVal: 10
@@ -3031,6 +3044,7 @@ components:
                         content:
                           - type: text
                             text: Rate your familiarity with DevOps practices and infrastructure
+                  descriptionHtml: <p>Rate your familiarity with DevOps practices and infrastructure</p>
                   scale:
                     icon: star
                     minVal: 1
@@ -3051,6 +3065,7 @@ components:
                         content:
                           - type: text
                             text: Select all technologies you have experience with
+                  descriptionHtml: <p>Select all technologies you have experience with</p>
                   choices:
                     - id: ch5-1
                       name: Docker
@@ -3097,6 +3112,7 @@ components:
                         content:
                           - type: text
                             text: Rank the following teams in order of your preference (1 = most preferred)
+                  descriptionHtml: <p>Rank the following teams in order of your preference (1 = most preferred)</p>
                   choices:
                     - id: team-1
                       name: Core System Team
@@ -3124,6 +3140,7 @@ components:
                         content:
                           - type: text
                             text: Which role are you most interested in?
+                  descriptionHtml: <p>Which role are you most interested in?</p>
                   choices:
                     - id: role-1
                       name: Backend Developer
@@ -3151,6 +3168,7 @@ components:
                         content:
                           - type: text
                             text: Why do you want to join SDC? What are your expectations?
+                  descriptionHtml: <p>Why do you want to join SDC? What are your expectations?</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: a9b0c1d2-3e4f-5a6b-7c8d-9e0f1a2b3c4d
@@ -3165,6 +3183,7 @@ components:
                         content:
                           - type: text
                             text: How comfortable are you working in a team environment?
+                  descriptionHtml: <p>How comfortable are you working in a team environment?</p>
                   scale:
                     icon: heart
                     minVal: 1
@@ -3196,6 +3215,7 @@ components:
                         content:
                           - type: text
                             text: Which days are you available each week? (Select all that apply)
+                  descriptionHtml: <p>Which days are you available each week? (Select all that apply)</p>
                   choices:
                     - id: day-1
                       name: Monday
@@ -3225,6 +3245,7 @@ components:
                         content:
                           - type: text
                             text: How many hours per week can you commit to SDC activities?
+                  descriptionHtml: <p>How many hours per week can you commit to SDC activities?</p>
                   scale:
                     minVal: 0
                     maxVal: 10
@@ -3244,6 +3265,7 @@ components:
                         content:
                           - type: text
                             text: Please upload your resume or CV
+                  descriptionHtml: <p>Please upload your resume or CV</p>
                   uploadFile:
                     allowedFileTypes:
                       - PDF
@@ -3265,6 +3287,7 @@ components:
                         content:
                           - type: text
                             text: Upload any relevant portfolio materials or project documentation (optional)
+                  descriptionHtml: <p>Upload any relevant portfolio materials or project documentation (optional)</p>
                   uploadFile:
                     allowedFileTypes:
                       - PDF
@@ -3285,6 +3308,7 @@ components:
                         content:
                           - type: text
                             text: Link to your GitHub profile (if available)
+                  descriptionHtml: <p>Link to your GitHub profile (if available)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: a5b6c7d8-9e0f-1a2b-3c4d-5e6f7a8b9c0d
@@ -3299,6 +3323,7 @@ components:
                         content:
                           - type: text
                             text: Link to your LinkedIn profile (optional)
+                  descriptionHtml: <p>Link to your LinkedIn profile (optional)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: b6c7d8e9-0f1a-2b3c-4d5e-6f7a8b9c0d1e
@@ -3313,6 +3338,7 @@ components:
                         content:
                           - type: text
                             text: Link to your personal website or blog (if any)
+                  descriptionHtml: <p>Link to your personal website or blog (if any)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: c7d8e9f0-1a2b-3c4d-5e6f-7a8b9c0d1e2f
@@ -3327,6 +3353,7 @@ components:
                         content:
                           - type: text
                             text: Is there anything else you'd like us to know?
+                  descriptionHtml: <p>Is there anything else you'd like us to know?</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
     Forms.QuestionRequest:
@@ -3604,6 +3631,7 @@ components:
         - type
         - title
         - description
+        - descriptionHtml
         - createdAt
         - updatedAt
       properties:
@@ -3828,6 +3856,124 @@ components:
                     text: basic information
           descriptionHtml: <p>Please provide your <strong>basic information</strong></p>
           questions: []
+    Forms.SectionBundle:
+      type: object
+      required:
+        - section
+        - questions
+      properties:
+        section:
+          allOf:
+            - $ref: '#/components/schemas/Forms.SectionForListSections'
+          description: The section metadata.
+        questions:
+          anyOf:
+            - type: array
+              items:
+                $ref: '#/components/schemas/Forms.QuestionResponse'
+            - type: 'null'
+          description: Questions in this section. Null when the section has no questions yet.
+      description: Response model for listing sections in a form (backend shape).
+      examples:
+        - section:
+            id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+            formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: Empty Section
+            progress: ''
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content: []
+            descriptionHtml: <p></p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          questions: null
+        - section:
+            id: b23f2668-c2dc-4213-88fe-eceedff46398
+            formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: Personal Information
+            progress: ''
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content: []
+            descriptionHtml: <p></p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          questions:
+            - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+              required: true
+              type: SHORT_TEXT
+              title: Full Name
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Please enter your full name (in English)
+              descriptionHtml: <p>Please enter your full name (in English)</p>
+              createdAt: '2025-01-20T10:00:00Z'
+              updatedAt: '2025-02-01T15:30:00Z'
+    Forms.SectionForListSections:
+      type: object
+      required:
+        - id
+        - formId
+        - title
+        - progress
+        - description
+        - descriptionHtml
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form this section belongs to.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        progress:
+          type: string
+          description: Section progress status (backend field; may be empty string).
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The section description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The section description rendered as HTML for frontend form display and preview.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the section.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the section.
+      description: A minimal section shape for list-sections API responses.
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: Personal Information
+          progress: ''
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content: []
+          descriptionHtml: <p></p>
+          createdAt: '2025-01-20T10:00:00Z'
+          updatedAt: '2025-02-01T15:30:00Z'
     Forms.SectionProgress:
       type: string
       enum:
@@ -4129,6 +4275,7 @@ components:
                   content:
                     - type: text
                       text: Please enter your full name
+            descriptionHtml: <p>Please enter your full name</p>
             createdAt: '2025-01-20T10:00:00Z'
             updatedAt: '2025-02-01T15:30:00Z'
           payload:
