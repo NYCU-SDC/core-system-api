@@ -71,7 +71,7 @@ GET {{BASE_URL}}/forms?status=ARCHIVED
 # ============================================
 # @name verifyArchivedFormNotInDefaultListing
 # @ref verifyArchivedFormInArchivedListing
-GET {{BASE_URL}}/forms
+GET {{BASE_URL}}/orgs/{{orgSlug}}/forms
 
 {{
     test.status(200);
@@ -122,7 +122,7 @@ POST {{BASE_URL}}/forms/{{formId}}/unarchive
 # ============================================
 # @name verifyUnarchivedFormInListing
 # @ref unarchiveForm
-GET {{BASE_URL}}/forms
+GET {{BASE_URL}}/orgs/{{orgSlug}}/forms
 
 {{
     test.status(200);
