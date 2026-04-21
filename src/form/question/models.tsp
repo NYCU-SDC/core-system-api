@@ -223,7 +223,7 @@ namespace CoreSystem.Forms {
 		description: CoreSystem.ProseMirrorDocument;
 
 		@doc("The question description rendered as HTML for frontend form display and preview.")
-		descriptionHtml?: CoreSystem.HtmlContent;
+		descriptionHtml: CoreSystem.HtmlContent;
 
 		@doc("Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.")
 		choices?: Choice[];
@@ -251,8 +251,28 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("The request body for creating/updating a question.")
-	@example(#{ required: true, type: QuestionTypes.shortText, title: "What's your name?", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "name" }] }] }, order: 1 })
-	@example(#{ required: true, type: QuestionTypes.longText, title: "Tell us about yourself", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please share your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "background" }, #{ type: "text", text: " and experience" }] }] }, order: 2 })
+	@example(#{
+		required: true,
+		type: QuestionTypes.shortText,
+		title: "What's your name?",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "name" }] }] },
+		order: 1,
+	})
+	@example(#{
+		required: true,
+		type: QuestionTypes.longText,
+		title: "Tell us about yourself",
+		description: #{
+			type: "doc",
+			content: #[
+				#{
+					type: "paragraph",
+					content: #[#{ type: "text", text: "Please share your " }, #{ type: "text", marks: #[#{ type: "bold" }], text: "background" }, #{ type: "text", text: " and experience" }],
+				}
+			],
+		},
+		order: 2,
+	})
 	@example(#{
 		required: true,
 		type: QuestionTypes.singleChoice,
@@ -285,7 +305,13 @@ namespace CoreSystem.Forms {
 		order: 6,
 		choices: #[#{ name: "TypeScript", description: "Modern programming language" }, #{ name: "React", description: "Frontend library" }, #{ name: "Node.js", description: "Backend runtime" }],
 	})
-	@example(#{ required: true, type: QuestionTypes.date, title: "When will you graduate?", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please select your graduation date" }] }] }, order: 7 })
+	@example(#{
+		required: true,
+		type: QuestionTypes.date,
+		title: "When will you graduate?",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please select your graduation date" }] }] },
+		order: 7,
+	})
 	@example(#{
 		required: false,
 		type: QuestionTypes.uploadFile,
@@ -302,7 +328,14 @@ namespace CoreSystem.Forms {
 		order: 9,
 		scale: #{ minVal: 1, maxVal: 5, minValueLabel: "No experience", maxValueLabel: "Very experienced" },
 	})
-	@example(#{ required: true, type: QuestionTypes.rating, title: "How satisfied are you?", description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your satisfaction level" }] }] }, order: 10, scale: #{ icon: "star", minVal: 1, maxVal: 5 } })
+	@example(#{
+		required: true,
+		type: QuestionTypes.rating,
+		title: "How satisfied are you?",
+		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Rate your satisfaction level" }] }] },
+		order: 10,
+		scale: #{ icon: "star", minVal: 1, maxVal: 5 },
+	})
 	@example(#{
 		required: true,
 		type: QuestionTypes.ranking,

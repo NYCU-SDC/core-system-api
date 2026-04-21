@@ -79,7 +79,7 @@ namespace CoreSystem.Forms {
 	@doc("List all the questions of the sections in the form. Descriptions are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend form display and preview.")
 	@route("/forms/{formId}/sections")
 	@get
-	op listSections(@path formId: uuid): ListSectionsResponse[];
+	op listSections(@path formId: uuid): SectionBundle[];
 
 	@summary("Update Section")
 	@doc("Update an existing section by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")
