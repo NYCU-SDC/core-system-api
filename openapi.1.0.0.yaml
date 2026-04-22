@@ -25,7 +25,7 @@ tags:
   - name: Responses
   - name: Files
 paths:
-  /api/auth/link:
+  /api/auth/link-account:
     post:
       operationId: Auth_link
       summary: Link different OAuth accounts to the same user
@@ -58,7 +58,7 @@ paths:
           description: Access is unauthorized.
       tags:
         - Auth
-  /api/auth/link/abort:
+  /api/auth/link-account/abort:
     post:
       operationId: Auth_abortLink
       summary: Abort the account linking process
