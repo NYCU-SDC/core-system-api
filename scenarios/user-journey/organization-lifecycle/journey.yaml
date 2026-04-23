@@ -1,0 +1,6 @@
+name: "Organization Lifecycle"
+cases:
+  - name: "Happy Path: Delete Organization"
+    description: "Verify that an organization can be deleted through the user journey flow."
+    path: "02-organization-deletion.http"
+    test: "deleteOrg"

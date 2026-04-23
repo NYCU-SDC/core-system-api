@@ -1,0 +1,6 @@
+name: "Form Rank From Source Id"
+cases:
+  - name: "Happy Path: Get Ranked Response"
+    description: "Verify that a response can be retrieved by source ID and rank."
+    path: "04-verify-response.http"
+    test: "getResponseB"

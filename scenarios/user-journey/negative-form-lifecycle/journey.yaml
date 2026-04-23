@@ -1,0 +1,6 @@
+name: "Negative Form Lifecycle"
+cases:
+  - name: "Negative Path: List Responses for Non-Existent Form"
+    description: "Ensure the API returns the expected error when listing responses for a non-existent form."
+    path: "06-response-creation-negative.http"
+    test: "listResponsesNonExistentForm"
