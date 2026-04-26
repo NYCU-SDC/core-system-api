@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-04-22'
+  version: '2026-04-26'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -315,19 +315,7 @@ paths:
       operationId: Forms_listForms
       summary: List Forms
       description: List all existing forms.
-      parameters:
-        - name: status
-          in: query
-          required: false
-          description: Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Forms.FormStatus'
-            default:
-              - DRAFT
-              - PUBLISHED
-          explode: false
+      parameters: []
       responses:
         '200':
           description: The request has succeeded.
@@ -1165,6 +1153,18 @@ paths:
           required: true
           schema:
             type: string
+        - name: status
+          in: query
+          required: false
+          description: Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Forms.FormStatus'
+            default:
+              - DRAFT
+              - PUBLISHED
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
