@@ -6,10 +6,7 @@ namespace CoreSystem.Forms {
 	@doc("List all existing forms.")
 	@route("/forms")
 	@get
-	op listForms(
-		@doc("Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.")
-		@query status?: FormStatus[] = #[FormStatus.draft, FormStatus.published]
-	): Form[];
+	op listForms(): Form[];
 
 	@summary("Get Form")
 	@doc("Get a specific form by its unique identifier. Description fields are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend display.")
