@@ -74,4 +74,30 @@ namespace CoreSystem.Responses {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
 	};
+
+	@summary("Preview Form Response Export")
+	@doc("Get a preview of the form responses based on selected question IDs.")
+	@route("/forms/{formId}/responses/export/preview")
+	@post
+	op previewFormResponseExport(@path formId: uuid, @body req: ExportPreviewRequest): {
+		@statusCode statusCode: 200;
+		@body response: ExportPreviewResponse;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
+	@summary("Export Form Responses")
+	@doc("Download form responses in XLSX format.")
+	@route("/forms/{formId}/responses/export/download")
+	@post
+	op exportFormResponses(@path formId: uuid, @body req: ExportDownloadRequest): {
+		@statusCode statusCode: 200;
+		@header contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		@header contentDisposition: string;
+		@body response: bytes;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
 }
