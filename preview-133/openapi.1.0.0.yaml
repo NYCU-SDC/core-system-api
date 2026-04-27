@@ -1,0 +1,5471 @@
+openapi: 3.1.0
+info:
+  title: Core System API
+  version: '2026-04-27'
+  description: |-
+    ## Pages
+    - [API Documentation (Redocly)](redocly/)
+    - [API Documentation (Swagger UI)](swagger/)
+    - [SDK Documentation (TypeDoc)](sdk/)
+  termsOfService: https://sdc.nycu.club/terms
+  contact:
+    name: NYCU Software Development Club
+    email: contact@sdc.nycu.club
+    url: https://github.com/NYCU-SDC/core-system-api
+  license:
+    name: Apache-2.0
+tags:
+  - name: Healthz
+  - name: Auth
+  - name: User
+  - name: Unit
+  - name: Slug
+  - name: Forms
+  - name: Form Workflow
+  - name: Responses
+  - name: Files
+paths:
+  /api/auth/link-account:
+    post:
+      operationId: Auth_link
+      summary: Link different OAuth accounts to the same user
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: The name of the existing user.
+          schema:
+            type: string
+          explode: false
+        - name: oauthProvider
+          in: query
+          required: true
+          description: The OAuth2 provider of the existing user.
+          schema:
+            $ref: '#/components/schemas/Auth.OAuthLoginProviders'
+          explode: false
+        - name: email
+          in: query
+          required: true
+          description: The email of the existing user.
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+        '401':
+          description: Access is unauthorized.
+      tags:
+        - Auth
+  /api/auth/link-account/abort:
+    post:
+      operationId: Auth_abortLink
+      summary: Abort the account linking process
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '401':
+          description: Access is unauthorized.
+      tags:
+        - Auth
+  /api/auth/login/internal:
+    post:
+      operationId: Auth_internalLogin
+      summary: Internal Login (Debug)
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth.InternalLoginResponse'
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth.InternalLoginRequest'
+        description: Login request with user ID.
+  /api/auth/login/oauth/{oauthProvider}:
+    get:
+      operationId: Auth_loginGoogle
+      summary: Login with OAuth Provider
+      parameters:
+        - name: oauthProvider
+          in: path
+          required: true
+          description: The OAuth2 provider to use for login.
+          schema:
+            $ref: '#/components/schemas/Auth.OAuthLoginProviders'
+        - name: c
+          in: query
+          required: true
+          description: The callback URL of the OAuth2 login. [See details](https://clustron.atlassian.net/wiki/spaces/CS/pages/41320449/Authentication+Process)
+          schema:
+            type: string
+          explode: false
+        - name: r
+          in: query
+          required: false
+          description: The redirect URL for login callback.
+          schema:
+            type: string
+          explode: false
+        - name: base
+          in: query
+          required: false
+          description: Custom base URL for OAuth callback (only used in dev mode).
+          schema:
+            type: string
+          explode: false
+      responses:
+        '302':
+          description: Redirection
+        '404':
+          description: The server cannot find the requested resource.
+      tags:
+        - Auth
+  /api/auth/logout:
+    post:
+      operationId: Auth_logout
+      summary: Logout User
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '401':
+          description: Access is unauthorized.
+      tags:
+        - Auth
+  /api/auth/refresh:
+    post:
+      operationId: Auth_refreshToken
+      summary: Refresh Access Token
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '404':
+          description: The server cannot find the requested resource.
+      tags:
+        - Auth
+  /api/files:
+    get:
+      operationId: Files_listFiles
+      summary: List All Files
+      description: List all files with pagination. Requires authentication.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of files to return. Defaults to 20.
+          schema:
+            type: integer
+            format: int32
+          explode: false
+        - name: offset
+          in: query
+          required: false
+          description: Number of files to skip. Defaults to 0.
+          schema:
+            type: integer
+            format: int32
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Files.ListFilesResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - Files
+  /api/files/me:
+    get:
+      operationId: Files_listMyFiles
+      summary: List My Files
+      description: List files uploaded by the currently authenticated user.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Files.FileResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - Files
+  /api/files/{id}:
+    get:
+      operationId: Files_downloadFile
+      summary: Download File
+      description: Download a file by its ID. Returns the raw file content with appropriate Content-Type and Content-Disposition headers.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          headers:
+            Content-Disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            '*/*':
+              schema:
+                contentMediaType: '*/*'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Files
+    delete:
+      operationId: Files_deleteFile
+      summary: Delete a File
+      description: Delete a file by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Files
+  /api/files/{id}/info:
+    get:
+      operationId: Files_getFileInfo
+      summary: Get File Info
+      description: Get metadata of a file by its ID, without downloading the binary content.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Files.FileResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Files
+  /api/forms:
+    get:
+      operationId: Forms_listForms
+      summary: List Forms
+      description: List all existing forms.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+  /api/forms/fonts:
+    get:
+      operationId: Forms_getFormFonts
+      summary: Get Form Fonts
+      description: Get available fonts list for forms dressing.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Font'
+      tags:
+        - Forms
+  /api/forms/google-sheet-email:
+    get:
+      operationId: Forms_getGoogleSheetEmail
+      summary: Get Google Sheet Email
+      description: Get the Gmail address that should be added to Google Sheet permissions. This address needs to be granted access to the Google Sheet so the system can modify the form.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.GoogleSheetEmailResponse'
+      tags:
+        - Forms
+  /api/forms/google-sheet/verify:
+    post:
+      operationId: Forms_verifyGoogleSheet
+      summary: Verify Google Sheet
+      description: Verify the Google Sheet URL and whether the system can access it.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.GoogleSheetVerifyResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.GoogleSheetVerifyRequest'
+  /api/forms/me:
+    get:
+      operationId: Unit_listFormsOfCurrentUser
+      summary: List Forms of Current User
+      description: List all forms of current user
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.UserFormListResponse'
+      tags:
+        - Unit
+  /api/forms/{formId}:
+    get:
+      operationId: Forms_getFormById
+      summary: Get Form
+      description: Get a specific form by its unique identifier. Description fields are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend display.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+    patch:
+      operationId: Forms_updateForm
+      summary: Update Form
+      description: Update an existing form by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.FormRequestUpdate'
+    delete:
+      operationId: Forms_deleteForm
+      summary: Delete Form
+      description: Delete an existing form by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+      tags:
+        - Forms
+  /api/forms/{formId}/archive:
+    post:
+      operationId: Forms_archiveForm
+      summary: Archive Form
+      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+  /api/forms/{formId}/cover:
+    get:
+      operationId: Forms_getFormCoverImage
+      summary: Get Form Cover Image
+      description: Get the cover image binary data. Returns the image in WebP format.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            image/webp:
+              schema:
+                contentMediaType: image/webp
+      tags:
+        - Forms
+    post:
+      operationId: Forms_uploadFormCoverImage
+      summary: Upload Form Cover Image
+      description: 'Upload a cover image for a form. The frontend should send images in WebP format with max-width/height: 1800px and quality 80%.'
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormCoverUploadResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Forms.FormCoverUploadRequest'
+            encoding:
+              coverImage:
+                contentType: application/json
+  /api/forms/{formId}/publish:
+    post:
+      operationId: Forms_publishForm
+      summary: Publish Form
+      description: Publish a form. Set status to 'published'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormPublishResponse'
+      tags:
+        - Forms
+  /api/forms/{formId}/responses:
+    post:
+      operationId: Responses_createFormResponse
+      summary: Create Form Response
+      description: Create a new response of a form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.CreateResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+    get:
+      operationId: Responses_listFormResponses
+      summary: List Form Responses
+      description: List all responses for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ListResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+  /api/forms/{formId}/responses/export/download:
+    post:
+      operationId: Responses_exportFormResponses
+      summary: Export Form Responses
+      description: Download form responses in XLSX format.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          headers:
+            content-disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                contentMediaType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportDownloadRequest'
+  /api/forms/{formId}/responses/export/preview:
+    post:
+      operationId: Responses_previewFormResponseExport
+      summary: Preview Form Response Export
+      description: Get a preview of the form responses based on selected question IDs.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ExportPreviewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportPreviewRequest'
+  /api/forms/{formId}/responses/me:
+    get:
+      operationId: Responses_getMyFormResponses
+      summary: Get My Form Responses
+      description: Get all responses submitted by the currently logged-in user for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ListResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+  /api/forms/{formId}/responses/{responseId}:
+    get:
+      operationId: Responses_getFormResponse
+      summary: Get Form Response
+      description: Get the preview answer by response ID.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.GetFormResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+    delete:
+      operationId: Responses_deleteFormResponse
+      summary: Delete Form Response
+      description: Delete a response and all its associated data.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+  /api/forms/{formId}/sections:
+    get:
+      operationId: Forms_listSections
+      summary: List Sections
+      description: List all the questions of the sections in the form. Descriptions are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend form display and preview.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.SectionBundle'
+      tags:
+        - Forms
+  /api/forms/{formId}/sections/{sectionId}:
+    patch:
+      operationId: Forms_updateSection
+      summary: Update Section
+      description: Update an existing section by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Section'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.SectionRequest'
+  /api/forms/{formId}/unarchive:
+    post:
+      operationId: Forms_unarchiveForm
+      summary: Unarchive Form
+      description: Unarchive a form. Set status to 'DRAFT'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Forms
+  /api/forms/{formId}/workflow:
+    get:
+      operationId: FormWorkflow_getWorkflow
+      summary: Get Workflow
+      description: Get workflow for a form
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormWorkflow.GetWorkflowResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+    put:
+      operationId: FormWorkflow_updateWorkflow
+      summary: Update Workflow
+      description: Update workflow for a form
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormWorkflow.NodeRequest'
+  /api/forms/{formId}/workflow/nodes:
+    post:
+      operationId: FormWorkflow_createNode
+      summary: Create Workflow Node
+      description: Create a new node for a workflow
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormWorkflow.NodeStructure'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormWorkflow.CreateNodeRequest'
+  /api/forms/{formId}/workflow/nodes/{nodeId}:
+    delete:
+      operationId: FormWorkflow_deleteNode
+      summary: Delete Workflow Node
+      description: Delete a node for a workflow
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Form Workflow
+  /api/healthz:
+    get:
+      operationId: Healthz_checkHealthz
+      summary: Check Health Status
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '404':
+          description: The server cannot find the requested resource.
+      tags:
+        - Healthz
+  /api/oauth/callback/{provider}:
+    get:
+      operationId: Responses_oauthAnswerCallback
+      summary: OAuth Callback for Question Binding
+      description: "\tOAuth provider redirects here after the user authorizes (or denies) the connection.\n\tThe server exchanges the code for profile data, stores it as the answer for the question encoded in `state`, then redirects the user to `r`.\n\n\tThe redirect URL (`r`) will always receive the following query parameters:\n\n\t| Parameter | Values | Description |\n\t|-----------|--------|-------------|\n\t| `status`  | `success` \\| `error` | Outcome of the OAuth flow. |\n\t| `error`   | OAuth error code (e.g. `access_denied`) | Only present when `status=error`. |\n\n\t**Example redirects:**\n\t- Success: `{r}?status=success`\n\t- Failure: `{r}?status=error&error=access_denied`"
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Auth.OAuthProviders'
+        - name: code
+          in: query
+          required: false
+          description: Authorization code returned by the OAuth provider on success.
+          schema:
+            type: string
+          explode: false
+        - name: state
+          in: query
+          required: false
+          description: Opaque state value created during initiation; encodes responseId, questionId, and redirect URL.
+          schema:
+            type: string
+          explode: false
+        - name: error
+          in: query
+          required: false
+          description: Error code returned by the OAuth provider when the user denied authorization (e.g. `access_denied`).
+          schema:
+            type: string
+          explode: false
+      responses:
+        '302':
+          description: Redirection
+          headers:
+            location:
+              required: true
+              schema:
+                type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+      tags:
+        - Responses
+  /api/orgs:
+    get:
+      operationId: Unit_getAllOrganizations
+      summary: Get All Organizations
+      description: Get all organizations
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+    post:
+      operationId: Unit_createOrg
+      summary: Create Organization
+      description: Create a new organization
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.CreateOrgRequest'
+  /api/orgs/me:
+    get:
+      operationId: Unit_listOrganizationsOfCurrentUser
+      summary: List Organizations of Current User
+      description: List all organizations of current user
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+  /api/orgs/relations:
+    post:
+      operationId: Unit_addParentChild
+      summary: Add Parent-Child Relationship
+      description: Create a new parent-child relationship between units by linking them
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.ParentChild'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.ParentChildRequest'
+  /api/orgs/relations/child-id/{childId}:
+    delete:
+      operationId: Unit_removeParentChild
+      summary: Remove Parent-Child Relationship
+      description: Remove a parent-child relationship between units by unlinking them
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}:
+    get:
+      operationId: Unit_getOrgById
+      summary: Get Organization
+      description: Get a specific organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+    put:
+      operationId: Unit_updateOrg
+      summary: Update Organization
+      description: Update an existing organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Organization'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.UpdateOrgRequest'
+    delete:
+      operationId: Unit_deleteOrg
+      summary: Delete Organization
+      description: Delete a specific organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}/forms:
+    post:
+      operationId: Unit_createOrgForm
+      summary: Create Organization Form
+      description: Create a new form under an organization.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.FormRequest'
+    get:
+      operationId: Unit_listFormsByOrg
+      summary: List Forms by Organization
+      description: List forms under a specific organization.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          description: Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Forms.FormStatus'
+            default:
+              - DRAFT
+              - PUBLISHED
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Forms.Form'
+      tags:
+        - Unit
+  /api/orgs/{slug}/history:
+    get:
+      operationId: Slug_getSlugHistory
+      summary: Get Slug History
+      description: List the complete usage history of a given slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current:
+                    $ref: '#/components/schemas/Slug.Status'
+                  history:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Slug.History'
+                required:
+                  - current
+                  - history
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Slug
+  /api/orgs/{slug}/members:
+    post:
+      operationId: Unit_addOrgMember
+      summary: Add Organization Member
+      description: Add a member to an organization
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.OrgMemberResponse'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.OrgMemberRequest'
+    get:
+      operationId: Unit_listOrgMembers
+      summary: List Organization Members
+      description: List all members of an organization
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User.User'
+      tags:
+        - Unit
+  /api/orgs/{slug}/members/{memberId}:
+    delete:
+      operationId: Unit_removeOrgMember
+      summary: Remove Organization Member
+      description: Remove an organization-member relationship
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}/status:
+    get:
+      operationId: Slug_getSlugStatus
+      summary: Get Slug Status
+      description: Get the availability of the slug.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slug.Status'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Slug
+  /api/orgs/{slug}/unit-ids:
+    get:
+      operationId: Unit_listOrgSubUnitIds
+      summary: List Organization Sub-unit IDs
+      description: List all unit IDs, optionally filtered by parent organization ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/uuid'
+      tags:
+        - Unit
+  /api/orgs/{slug}/units:
+    get:
+      operationId: Unit_listOrgSubUnits
+      summary: List Organization Sub-units
+      description: List all units, optionally filtered by parent organization ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+    post:
+      operationId: Unit_createUnit
+      summary: Create Unit
+      description: Create a new unit
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.CreateUnitRequest'
+  /api/orgs/{slug}/units/{unitId}:
+    get:
+      operationId: Unit_getUnitById
+      summary: Get Unit
+      description: Get a specific unit with the slug of its organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+    put:
+      operationId: Unit_updateUnit
+      summary: Update Unit
+      description: Update an existing unit or organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit.UpdateUnitRequest'
+    delete:
+      operationId: Unit_deleteUnit
+      summary: Delete Unit
+      description: Delete a specific unit of an organization by its unique identifier
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Unit
+  /api/orgs/{slug}/units/{unitId}/subunit-ids:
+    get:
+      operationId: Unit_listUnitSubUnitIds
+      summary: List Unit Sub-unit IDs
+      description: List all unit IDs, optionally filtered by parent unit ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/uuid'
+      tags:
+        - Unit
+  /api/orgs/{slug}/units/{unitId}/subunits:
+    get:
+      operationId: Unit_listUnitSubUnits
+      summary: List Unit Sub-units
+      description: List all units, optionally filtered by parent unit ID
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unitId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: parentId
+          in: query
+          required: false
+          description: The parent unit ID used to filter subunits by their parent-child relationship
+          schema:
+            $ref: '#/components/schemas/uuid'
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit.Unit'
+      tags:
+        - Unit
+  /api/responses/{responseId}/answers:
+    patch:
+      operationId: Responses_updateFormResponse
+      summary: Update Form Response
+      description: Update answers for the response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Responses.AnswerPayload'
+                required:
+                  - answers
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswersRequestUpdate'
+  /api/responses/{responseId}/questions/{questionId}:
+    get:
+      operationId: Responses_getQuestionResponse
+      summary: Get Question Response
+      description: Get a specific answer by question ID in the response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.GetQuestionResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+  /api/responses/{responseId}/questions/{questionId}/files:
+    post:
+      operationId: Responses_uploadQuestionFiles
+      summary: Upload Question Files
+      description: Upload files as answers for a specific question in the response. This operation automatically creates or updates the answer for this question with the uploaded file URLs. The limit for each question is 10 files, and each file must be less than 10MB.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.QuestionFilesUploadResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Responses.QuestionFilesUploadRequest'
+            encoding:
+              files:
+                contentType: application/json
+  /api/responses/{responseId}/questions/{questionId}/oauth:
+    get:
+      operationId: Responses_connectOauthAccount
+      summary: Connect OAuth Account
+      description: Initiate OAuth flow for connecting an account to answer a question. This endpoint redirects (302) to the OAuth provider's authorization page. After authorization, the OAuth profile data (username, avatar_url) is stored as the answer and can be fetched via GET /responses/{responseId}/questions/{questionId}.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          description: The response ID to associate this OAuth answer with.
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          description: The question ID being answered.
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: r
+          in: query
+          required: false
+          description: Optional redirect URL after OAuth completion.
+          schema:
+            type: string
+          explode: false
+      responses:
+        '302':
+          description: Redirection
+        '404':
+          description: The server cannot find the requested resource.
+      tags:
+        - Responses
+  /api/responses/{responseId}/submit:
+    post:
+      operationId: Responses_submitFormResponse
+      summary: Submit Form Response
+      description: Submit all the answer in the form response.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswersRequest'
+  /api/sections/{sectionId}/questions:
+    post:
+      operationId: Forms_createQuestion
+      summary: Create Question
+      description: |-
+        Create a new question for a specific section. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.
+
+        The `order` field specifies where to insert the question within the section. The value is clamped to the valid range `[1, currentCount + 1]`. If the question is inserted in the middle (i.e., not appended at the end), all existing questions at or after the specified position are shifted down by one to make room for the new question.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.QuestionResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.QuestionRequest'
+  /api/sections/{sectionId}/questions/{questionId}:
+    put:
+      operationId: Forms_updateQuestion
+      summary: Update Question
+      description: |-
+        Update an existing question by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.
+
+        If the `order` field differs from the question's current position, the question is moved to the new position (clamped to `[1, totalCount]`). All questions between the old and new positions are shifted accordingly to maintain a contiguous order sequence.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.QuestionResponse'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.QuestionRequest'
+    delete:
+      operationId: Forms_deleteQuestion
+      summary: Delete Question
+      description: |-
+        Delete an existing question by its unique identifier.
+
+        After deletion, all remaining questions in the same section with a higher order value are shifted up by one to maintain a contiguous order sequence without gaps.
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+      tags:
+        - Forms
+  /api/users/me:
+    get:
+      operationId: User_getMe
+      summary: Get Current User
+      description: Get the current user's information.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User.User'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - User
+  /api/users/onboarding:
+    put:
+      operationId: User_updateUsername
+      summary: Onboard User
+      description: Onboard the current user by updating their username and other details.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User.User'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User.OnboardingRequest'
+components:
+  schemas:
+    Auth.InternalLoginRequest:
+      type: object
+      required:
+        - uid
+      properties:
+        uid:
+          type: string
+          description: The user ID to login as.
+      examples:
+        - uid: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+    Auth.InternalLoginResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Login status message.
+      examples:
+        - message: Login successful
+    Auth.OAuthLoginProviders:
+      type: string
+      enum:
+        - GOOGLE
+        - NYCU
+    Auth.OAuthProviders:
+      type: string
+      enum:
+        - GOOGLE
+        - GITHUB
+    Auth.RefreshToken:
+      type: object
+      required:
+        - accessToken
+        - expirationTime
+        - refreshToken
+      properties:
+        accessToken:
+          type: string
+          description: The access token and formatted as JWT
+        expirationTime:
+          type: integer
+          description: The expiration date of the refresh token.
+        refreshToken:
+          type: string
+          description: The new refresh token.
+      examples:
+        - accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          expirationTime: 1735689600
+          refreshToken: d290f1ee-6c54-4b01-90e6-d701748f0851
+    BadRequest:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          enum:
+            - Bad Request
+        status:
+          type: number
+          enum:
+            - 400
+        type:
+          type: string
+          enum:
+            - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+        detail:
+          type: string
+      examples:
+        - title: Bad Request
+          status: 400
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+          detail: The request body contains invalid data
+    Files.FileResponse:
+      type: object
+      required:
+        - id
+        - originalFilename
+        - contentType
+        - size
+        - createdAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the file.
+        originalFilename:
+          type: string
+          description: The original filename as provided by the client.
+        contentType:
+          type: string
+          description: The MIME content type of the file.
+        size:
+          type: integer
+          format: int64
+          description: The size of the file in bytes.
+        uploadedBy:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The ID of the user who uploaded the file. Null if uploaded anonymously.
+        createdAt:
+          type: string
+          description: The creation timestamp of the file in RFC 3339 format.
+      description: File metadata response.
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          originalFilename: resume.pdf
+          contentType: application/pdf
+          size: 204800
+          uploadedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          createdAt: '2025-01-20T10:00:00Z'
+    Files.ListFilesResponse:
+      type: object
+      required:
+        - files
+        - total
+        - limit
+        - offset
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/Files.FileResponse'
+          description: The list of files.
+        total:
+          type: integer
+          format: int64
+          description: Total number of files matching the query.
+        limit:
+          type: integer
+          format: int32
+          description: Maximum number of files returned per page.
+        offset:
+          type: integer
+          format: int32
+          description: Number of files skipped.
+      description: Paginated list of file metadata.
+      examples:
+        - files:
+            - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+              originalFilename: resume.pdf
+              contentType: application/pdf
+              size: 204800
+              uploadedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+              createdAt: '2025-01-20T10:00:00Z'
+          total: 1
+          limit: 20
+          offset: 0
+    FormWorkflow.ConditionRule:
+      type: object
+      required:
+        - source
+        - question
+        - pattern
+      properties:
+        source:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ConditionSource'
+          description: Source of data for the condition
+          examples:
+            - NON_CHOICE
+        question:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID to check against
+          examples:
+            - 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+        pattern:
+          type: string
+          format: regex
+          description: Regex pattern to match against. If source is NON_CHOICE, the regex is matched against the answer value. If source is CHOICE, the answer is an array of selected choice option IDs, and this regex is matched against each element; the condition passes if any element matches (e.g. use an exact-match UUID regex like ^<uuid>$).
+          examples:
+            - ^f421cfc2-2b84-4da9-9629-011af609935a$
+            - ^([6-9]|[1-9][0-9]+)$
+      description: Condition rule for condition nodes
+      examples:
+        - source: NON_CHOICE
+          question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          pattern: ^([6-9]|[1-9][0-9]+)$
+    FormWorkflow.ConditionSource:
+      type: string
+      enum:
+        - CHOICE
+        - NON_CHOICE
+      description: Data source for condition rules
+    FormWorkflow.CreateNodeRequest:
+      type: object
+      required:
+        - type
+        - payload
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.CreateNodeRequestType'
+          description: Type of the node
+          examples:
+            - SECTION
+        payload:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodePayload'
+          description: Payload for node layout/UI settings.
+          examples:
+            - x: 1
+              'y': 2
+      description: Request body for creating a new node for a workflow
+      examples:
+        - type: SECTION
+          payload:
+            x: 1
+            'y': 2
+    FormWorkflow.CreateNodeRequestType:
+      type: string
+      enum:
+        - SECTION
+        - CONDITION
+    FormWorkflow.GetWorkflowResponse:
+      type: object
+      required:
+        - workflow
+        - info
+      properties:
+        workflow:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormWorkflow.NodeResponse'
+          description: Array of workflow nodes
+        info:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormWorkflow.ValidationInfo'
+          description: Array of validation information/errors for the workflow
+      description: Response model for getting a workflow, includes workflow nodes and validation info
+      examples:
+        - workflow: []
+          info: []
+    FormWorkflow.NodePayload:
+      type: object
+      required:
+        - x
+        - 'y'
+      properties:
+        x:
+          type: number
+          format: double
+          description: The x position of the node.
+          examples:
+            - 1
+        'y':
+          type: number
+          format: double
+          description: The y position of the node.
+          examples:
+            - 2
+      description: Payload for a node. Used for layout and UI settings.
+      examples:
+        - x: 1
+          'y': 2
+    FormWorkflow.NodeRequest:
+      type: object
+      required:
+        - id
+        - label
+        - payload
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier for the node.
+        label:
+          type: string
+          description: The label for the node
+          examples:
+            - 開始表單
+        payload:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodePayload'
+          description: Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).
+          examples:
+            - x: 1
+              'y': 2
+        conditionRule:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ConditionRule'
+          description: The condition rule for the node, only for condition nodes
+        next:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id for sequential flow (for start and section nodes)
+        nextTrue:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is true (for condition nodes)
+        nextFalse:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is false (for condition nodes)
+      description: Workflow node request model with linked list connections
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          label: Personal Information Section
+          payload:
+            x: 1
+            'y': 2
+          conditionRule:
+            source: NON_CHOICE
+            question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            pattern: ^([6-9]|[1-9][0-9]+)$
+          next: c34g3779-d3ed-5c24-99gf-fdffegg57409
+          nextTrue: d45h4880-e4fe-6d35-00hg-gegffhh68510
+          nextFalse: e56i5991-f5gf-7e46-11ih-hfhggii79621
+    FormWorkflow.NodeResponse:
+      type: object
+      required:
+        - id
+        - type
+        - label
+        - payload
+        - conditionRule
+        - next
+        - nextTrue
+        - nextFalse
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier for the node.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodeType'
+          description: Type of the node
+          examples:
+            - START
+        label:
+          type: string
+          description: The label for the node
+          examples:
+            - 開始表單
+        payload:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodePayload'
+          description: Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).
+          examples:
+            - x: 1
+              'y': 2
+        conditionRule:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ConditionRule'
+          description: The condition rule for the node, only for condition nodes
+          examples:
+            - source: NON_CHOICE
+              question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              pattern: ^([6-9]|[1-9][0-9]+)$
+        next:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id for sequential flow (for start and section nodes)
+          examples:
+            - c34g3779-d3ed-5c24-99gf-fdffegg57409
+        nextTrue:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is true (for condition nodes)
+          examples:
+            - d45h4880-e4fe-6d35-00hg-gegffhh68510
+        nextFalse:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Next node id when condition is false (for condition nodes)
+          examples:
+            - e56i5991-f5gf-7e46-11ih-hfhggii79621
+      description: Workflow node response model with linked list connections
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          type: SECTION
+          label: Personal Information
+          payload:
+            x: 1
+            'y': 2
+          conditionRule:
+            source: NON_CHOICE
+            question: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            pattern: ^([6-9]|[1-9][0-9]+)$
+          next: c34g3779-d3ed-5c24-99gf-fdffegg57409
+          nextTrue: d45h4880-e4fe-6d35-00hg-gegffhh68510
+          nextFalse: e56i5991-f5gf-7e46-11ih-hfhggii79621
+    FormWorkflow.NodeStructure:
+      type: object
+      required:
+        - id
+        - type
+        - label
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier for the node.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.NodeType'
+          description: Type of the node
+          examples:
+            - START
+        label:
+          type: string
+          description: The label for the node
+          examples:
+            - 開始表單
+      description: Workflow node structure with linked list connections
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          type: START
+          label: 開始表單
+    FormWorkflow.NodeType:
+      type: string
+      enum:
+        - SECTION
+        - END
+        - START
+        - CONDITION
+      description: Node type enum for workflow nodes
+    FormWorkflow.ValidationInfo:
+      type: object
+      required:
+        - type
+        - nodeId
+        - message
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/FormWorkflow.ValidationInfoType'
+          description: The type/category of validation error
+          examples:
+            - graph_validation_failed
+        nodeId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The ID of the node that caused the validation error
+          examples:
+            - b23f2668-c2dc-4213-88fe-eceedff46398
+        message:
+          type: string
+          description: Human-readable description of the validation error
+          examples:
+            - section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field
+      description: Validation information for workflow validation errors
+      examples:
+        - type: graph_validation_failed
+          nodeId: b23f2668-c2dc-4213-88fe-eceedff46398
+          message: section node 'b23f2668-c2dc-4213-88fe-eceedff46398' must have a 'next' field
+    FormWorkflow.ValidationInfoType:
+      type: string
+      enum:
+        - workflow_validation_failed
+        - graph_validation_failed
+        - node_validation_failed
+        - unknown
+      description: Validation info type enum for workflow validation errors
+    Forms.Choice:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the choice.
+        name:
+          type: string
+          description: The name/text of the choice.
+        description:
+          type: string
+          description: Optional description for the choice.
+        isOther:
+          type: boolean
+          description: Whether this choice represents the built-in 'Other' option.
+      description: A choice with ID and name for choice-based questions.
+      examples:
+        - id: f421cfc2-2b84-4da9-9629-011af609935a
+          name: Backend
+          description: Backend development team
+          isOther: false
+    Forms.ChoiceOption:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name/text of the choice option.
+        description:
+          type: string
+          description: Optional description for the choice.
+        isOther:
+          type: boolean
+          description: Whether this choice represents the built-in 'Other' option.
+      description: A choice option for creating/updating choice-based questions.
+      examples:
+        - name: Option A
+          description: This is option A
+          isOther: false
+    Forms.DateOption:
+      type: object
+      required:
+        - hasYear
+        - hasMonth
+        - hasDay
+      properties:
+        hasYear:
+          type: boolean
+          description: Whether the year component is required for the date.
+        hasMonth:
+          type: boolean
+          description: Whether the month component is required for the date.
+        hasDay:
+          type: boolean
+          description: Whether the day component is required for the date.
+        minDate:
+          type: string
+          format: date-time
+          description: Minimum date range in utcDateTime (e.g., 2025-01-01T00:00:00Z for 2025/1/1 00:00:00 UTC). If specified, use the first day of the month/year for the minimum value.
+        maxDate:
+          type: string
+          format: date-time
+          description: Maximum date range in utcDateTime (e.g., 2025-05-31T23:59:59Z for 2025/5/31 23:59:59 UTC). If specified, use the last day of the month/year for the maximum value.
+      description: Options for date questions.
+      examples:
+        - hasYear: true
+          hasMonth: true
+          hasDay: true
+          minDate: '2025-01-01T00:00:00Z'
+          maxDate: '2025-12-31T23:59:59Z'
+    Forms.Font:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the font.
+        name:
+          type: string
+          description: The display name of the font.
+      description: A font definition used in form dressing.
+      examples:
+        - id: LINESeedTW
+          name: LINE Seed TW
+    Forms.Form:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - previewMessage
+        - status
+        - unitId
+        - lastEditor
+        - messageAfterSubmission
+        - visibility
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form's unique identifier.
+        title:
+          type: string
+          description: The title of the form.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The form description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The form description rendered as HTML for frontend form display and preview.
+        previewMessage:
+          type: string
+          description: Preview text. If not provided, fallback to first 25 characters of description.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormStatus'
+          description: The status of this form.
+        unitId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit this form belongs to.
+        lastEditor:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who last editted the form.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion. If not specified, returns null.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The full URL to access the cover image.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this form's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the form.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the form
+      description: The structure of a form.
+      examples:
+        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: SDC 2025 Recruitment Form
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Join us for an exciting journey in '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: software development
+                  - type: text
+                    text: '!'
+          descriptionHtml: <p>Join us for an exciting journey in <strong>software development</strong>!</p>
+          previewMessage: Join us for an exciting journey
+          status: PUBLISHED
+          unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          deadline: '2025-03-31T23:59:59Z'
+          publishTime: '2025-02-01T00:00:00Z'
+          messageAfterSubmission: Thank you for your application! We'll get back to you soon.
+          dressing:
+            color: '#0066cc'
+            headerFont: LINESeedTW
+            questionFont: LINESeedTW
+            textFont: LINESeedTW
+          coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
+          googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
+          visibility: PUBLIC
+          createdAt: '2025-01-15T10:00:00Z'
+          updatedAt: '2025-02-10T14:30:00Z'
+    Forms.FormCoverUploadRequest:
+      type: object
+      properties:
+        coverImage:
+          type: string
+          format: binary
+      required:
+        - coverImage
+    Forms.FormCoverUploadResponse:
+      type: object
+      required:
+        - imageUrl
+      properties:
+        imageUrl:
+          type: string
+          description: The temporary full URL of the uploaded image.
+      description: Response after uploading a cover image.
+      examples:
+        - imageUrl: https://example.com/images/form-cover-123.webp
+    Forms.FormDressing:
+      type: object
+      properties:
+        color:
+          type: string
+          description: 'Color in hex format (e.g., #0066cc)'
+        headerFont:
+          type: string
+          description: Header font id from https://font.emtech.cc/list
+        questionFont:
+          type: string
+          description: Question font id from https://font.emtech.cc/list
+        textFont:
+          type: string
+          description: Text font id from https://font.emtech.cc/list
+      description: The appearance/dressing configuration for a form.
+      examples:
+        - color: '#0066cc'
+          headerFont: LINESeedTW
+          questionFont: LINESeedTW
+          textFont: LINESeedTW
+    Forms.FormPublishResponse:
+      type: object
+      required:
+        - visibility
+      properties:
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+      description: Response after publishing a form.
+      examples:
+        - visibility: PUBLIC
+    Forms.FormRequest:
+      type: object
+      required:
+        - title
+        - visibility
+      properties:
+        title:
+          type: string
+          description: The title of the form.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The form description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.
+        previewMessage:
+          type: string
+          description: (Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The image path returned by the upload API.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this form's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+      description: The request body for creating/updating a form.
+      examples:
+        - title: Enter SDC Form
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: If you want to join us, just fill in this form!
+          messageAfterSubmission: Thank you for your submission!
+          visibility: PUBLIC
+    Forms.FormRequestUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the form.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocumentUpdate'
+          description: The form description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.
+        previewMessage:
+          type: string
+          description: (Optional) Preview text for the form. If not provided, fallback to first 25 characters of description.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The image path returned by the upload API.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this form's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+      description: The request body for creating/updating a form.
+      examples:
+        - title: Enter SDC Form
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: If you want to join us, just fill in this form!
+          messageAfterSubmission: Thank you for your submission!
+          visibility: PUBLIC
+    Forms.FormStatus:
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - ARCHIVED
+      description: The current status of a form.
+    Forms.FormVisibility:
+      type: string
+      enum:
+        - PUBLIC
+        - PRIVATE
+      description: The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+    Forms.GoogleSheetEmailResponse:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          description: The Gmail address that should be added to Google Sheet permissions so the system can modify the form.
+      description: Response containing the Gmail address for Google Sheet permissions.
+      examples:
+        - email: core-system-bot@example.com
+    Forms.GoogleSheetVerifyRequest:
+      type: object
+      required:
+        - googleSheetUrl
+      properties:
+        googleSheetUrl:
+          type: string
+          description: The Google Sheet URL provided by user.
+      description: Request body for verifying a Google Sheet URL.
+      examples:
+        - googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123XYZ/edit
+    Forms.GoogleSheetVerifyResponse:
+      type: object
+      required:
+        - isValid
+      properties:
+        isValid:
+          type: boolean
+          description: Indicates whether the Google Sheet URL is valid and accessible.
+      description: Verification result for the given Google Sheet URL.
+      examples:
+        - isValid: true
+    Forms.ListSectionsResponse:
+      type: object
+      required:
+        - sections
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.Section'
+      description: Response model for listing all sections and questions in a form.
+      examples:
+        - sections:
+            - id: b23f2668-c2dc-4213-88fe-eceedff46398
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Personal Information
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Please provide your basic information
+              questions:
+                - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Full Name
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Please enter your full name (in English)
+                  descriptionHtml: <p>Please enter your full name (in English)</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f2a1b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Student ID
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Enter your student ID number
+                  descriptionHtml: <p>Enter your student ID number</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a3b4c5d6-7e8f-9a0b-1c2d-3e4f5a6b7c8d
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Email Address
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Please provide your email address
+                  descriptionHtml: <p>Please provide your email address</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: SHORT_TEXT
+                  title: Phone Number
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Your contact phone number
+                  descriptionHtml: <p>Your contact phone number</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: e5f6a7b8-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: DATE
+                  title: Date of Birth
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Select your date of birth
+                  descriptionHtml: <p>Select your date of birth</p>
+                  date:
+                    hasYear: true
+                    hasMonth: true
+                    hasDay: true
+                    minDate: '1990-01-01T00:00:00Z'
+                    maxDate: '2010-12-31T23:59:59Z'
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f6a7b8c9-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+                  required: true
+                  type: LONG_TEXT
+                  title: Self Introduction
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Tell us about yourself (200-500 words)
+                  descriptionHtml: <p>Tell us about yourself (200-500 words)</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Academic & Experience
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Tell us about your academic background and experience
+              questions:
+                - id: a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: true
+                  type: DROPDOWN
+                  title: Current Education Level
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Select your current education level
+                  descriptionHtml: <p>Select your current education level</p>
+                  choices:
+                    - id: ch1-1
+                      name: Freshman
+                    - id: ch1-2
+                      name: Sophomore
+                    - id: ch1-3
+                      name: Junior
+                    - id: ch1-4
+                      name: Senior
+                    - id: ch1-5
+                      name: Graduate Student
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: b8c9d0e1-2f3a-4b5c-6d7e-8f9a0b1c2d3e
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: true
+                  type: SINGLE_CHOICE
+                  title: Department/Major
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Select your department or major
+                  descriptionHtml: <p>Select your department or major</p>
+                  choices:
+                    - id: ch2-1
+                      name: Computer Science
+                    - id: ch2-2
+                      name: Information Management
+                    - id: ch2-3
+                      name: Electrical Engineering
+                    - id: ch2-4
+                      name: Electronics Engineering
+                    - id: ch2-5
+                      name: Other
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c9d0e1f2-3a4b-5c6d-7e8f-9a0b1c2d3e4f
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: true
+                  type: DATE
+                  title: Expected Graduation Date
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: When do you expect to graduate?
+                  descriptionHtml: <p>When do you expect to graduate?</p>
+                  date:
+                    hasYear: true
+                    hasMonth: true
+                    hasDay: false
+                    minDate: '2025-01-01T00:00:00Z'
+                    maxDate: '2030-12-31T23:59:59Z'
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: d0e1f2a3-4b5c-6d7e-8f9a-0b1c2d3e4f5a
+                  sectionId: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+                  required: false
+                  type: MULTIPLE_CHOICE
+                  title: Previous Experience
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Select all that apply
+                  descriptionHtml: <p>Select all that apply</p>
+                  choices:
+                    - id: ch3-1
+                      name: Participated in hackathons
+                    - id: ch3-2
+                      name: Open source contributor
+                    - id: ch3-3
+                      name: Personal projects
+                    - id: ch3-4
+                      name: Internship experience
+                    - id: ch3-5
+                      name: Research assistant
+                    - id: ch3-6
+                      name: None of the above
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Technical Skills
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Tell us about your technical expertise
+              questions:
+                - id: e1f2a3b4-5c6d-7e8f-9a0b-1c2d3e4f5a6b
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: DETAILED_MULTIPLE_CHOICE
+                  title: Programming Languages
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Select all programming languages you are familiar with
+                  descriptionHtml: <p>Select all programming languages you are familiar with</p>
+                  choices:
+                    - id: ch4-1
+                      name: TypeScript/JavaScript
+                      description: Modern web development
+                    - id: ch4-2
+                      name: Python
+                      description: General purpose and data science
+                    - id: ch4-3
+                      name: Go
+                      description: Backend and systems programming
+                    - id: ch4-4
+                      name: Rust
+                      description: Systems programming
+                    - id: ch4-5
+                      name: C/C++
+                      description: Low-level programming
+                    - id: ch4-6
+                      name: Java
+                      description: Enterprise applications
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f2a3b4c5-6d7e-8f9a-0b1c-2d3e4f5a6b7c
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: LINEAR_SCALE
+                  title: Backend Development Experience
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Rate your backend development experience level
+                  descriptionHtml: <p>Rate your backend development experience level</p>
+                  scale:
+                    minVal: 0
+                    maxVal: 10
+                    minValueLabel: Beginner
+                    maxValueLabel: Expert
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a3b4c5d6-7e8f-9a0b-1c2d-3e4f5a6b7c8d
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: LINEAR_SCALE
+                  title: Frontend Development Experience
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Rate your frontend development experience level
+                  descriptionHtml: <p>Rate your frontend development experience level</p>
+                  scale:
+                    minVal: 0
+                    maxVal: 10
+                    minValueLabel: Beginner
+                    maxValueLabel: Expert
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: b4c5d6e7-8f9a-0b1c-2d3e-4f5a6b7c8d9e
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: true
+                  type: RATING
+                  title: DevOps & Infrastructure
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Rate your familiarity with DevOps practices and infrastructure
+                  descriptionHtml: <p>Rate your familiarity with DevOps practices and infrastructure</p>
+                  scale:
+                    icon: star
+                    minVal: 1
+                    maxVal: 5
+                    minValueLabel: Novice
+                    maxValueLabel: Proficient
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c5d6e7f8-9a0b-1c2d-3e4f-5a6b7c8d9e0f
+                  sectionId: d45e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                  required: false
+                  type: MULTIPLE_CHOICE
+                  title: Technologies You've Worked With
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Select all technologies you have experience with
+                  descriptionHtml: <p>Select all technologies you have experience with</p>
+                  choices:
+                    - id: ch5-1
+                      name: Docker
+                    - id: ch5-2
+                      name: Kubernetes
+                    - id: ch5-3
+                      name: React/Vue/Angular
+                    - id: ch5-4
+                      name: Node.js
+                    - id: ch5-5
+                      name: PostgreSQL/MySQL
+                    - id: ch5-6
+                      name: MongoDB
+                    - id: ch5-7
+                      name: Redis
+                    - id: ch5-8
+                      name: AWS/GCP/Azure
+                    - id: ch5-9
+                      name: CI/CD (GitHub Actions, GitLab CI)
+                    - id: ch5-10
+                      name: Git
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Team Preferences
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Help us understand your team preferences
+              questions:
+                - id: d6e7f8a9-0b1c-2d3e-4f5a-6b7c8d9e0f1a
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: RANKING
+                  title: Team Preferences
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Rank the following teams in order of your preference (1 = most preferred)
+                  descriptionHtml: <p>Rank the following teams in order of your preference (1 = most preferred)</p>
+                  choices:
+                    - id: team-1
+                      name: Core System Team
+                      description: Backend API & infrastructure development
+                    - id: team-2
+                      name: Clustron Team
+                      description: Cluster management and distributed systems
+                    - id: team-3
+                      name: HPC Team
+                      description: High-performance computing
+                    - id: team-4
+                      name: Frontend Team
+                      description: User interface and experience
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: e7f8a9b0-1c2d-3e4f-5a6b-7c8d9e0f1a2b
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: SINGLE_CHOICE
+                  title: Role Preference
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Which role are you most interested in?
+                  descriptionHtml: <p>Which role are you most interested in?</p>
+                  choices:
+                    - id: role-1
+                      name: Backend Developer
+                    - id: role-2
+                      name: Frontend Developer
+                    - id: role-3
+                      name: Full Stack Developer
+                    - id: role-4
+                      name: DevOps Engineer
+                    - id: role-5
+                      name: Data Engineer
+                    - id: role-6
+                      name: System Administrator
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f8a9b0c1-2d3e-4f5a-6b7c-8d9e0f1a2b3c
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: LONG_TEXT
+                  title: Why SDC?
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Why do you want to join SDC? What are your expectations?
+                  descriptionHtml: <p>Why do you want to join SDC? What are your expectations?</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a9b0c1d2-3e4f-5a6b-7c8d-9e0f1a2b3c4d
+                  sectionId: e56f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+                  required: true
+                  type: RATING
+                  title: Team Collaboration
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: How comfortable are you working in a team environment?
+                  descriptionHtml: <p>How comfortable are you working in a team environment?</p>
+                  scale:
+                    icon: heart
+                    minVal: 1
+                    maxVal: 5
+                    minValueLabel: Prefer solo
+                    maxValueLabel: Love teamwork
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+            - id: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+              formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+              title: Availability & Additional Information
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Final section - availability and additional materials
+              questions:
+                - id: b0c1d2e3-4f5a-6b7c-8d9e-0f1a2b3c4d5e
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: true
+                  type: MULTIPLE_CHOICE
+                  title: Weekly Availability
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Which days are you available each week? (Select all that apply)
+                  descriptionHtml: <p>Which days are you available each week? (Select all that apply)</p>
+                  choices:
+                    - id: day-1
+                      name: Monday
+                    - id: day-2
+                      name: Tuesday
+                    - id: day-3
+                      name: Wednesday
+                    - id: day-4
+                      name: Thursday
+                    - id: day-5
+                      name: Friday
+                    - id: day-6
+                      name: Saturday
+                    - id: day-7
+                      name: Sunday
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c1d2e3f4-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: true
+                  type: LINEAR_SCALE
+                  title: Time Commitment
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: How many hours per week can you commit to SDC activities?
+                  descriptionHtml: <p>How many hours per week can you commit to SDC activities?</p>
+                  scale:
+                    minVal: 0
+                    maxVal: 10
+                    minValueLabel: 0-5 hours
+                    maxValueLabel: 20+ hours
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: d2e3f4a5-6b7c-8d9e-0f1a-2b3c4d5e6f7a
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: true
+                  type: UPLOAD_FILE
+                  title: Resume/CV
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Please upload your resume or CV
+                  descriptionHtml: <p>Please upload your resume or CV</p>
+                  uploadFile:
+                    allowedFileTypes:
+                      - PDF
+                      - DOC
+                      - DOCX
+                    maxFileAmount: 1
+                    maxFileSizeLimit: 5242880
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: e3f4a5b6-7c8d-9e0f-1a2b-3c4d5e6f7a8b
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: UPLOAD_FILE
+                  title: Portfolio/Projects
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Upload any relevant portfolio materials or project documentation (optional)
+                  descriptionHtml: <p>Upload any relevant portfolio materials or project documentation (optional)</p>
+                  uploadFile:
+                    allowedFileTypes:
+                      - PDF
+                      - ZIP
+                    maxFileAmount: 3
+                    maxFileSizeLimit: 10485760
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: f4a5b6c7-8d9e-0f1a-2b3c-4d5e6f7a8b9c
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: HYPERLINK
+                  title: GitHub Profile
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Link to your GitHub profile (if available)
+                  descriptionHtml: <p>Link to your GitHub profile (if available)</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: a5b6c7d8-9e0f-1a2b-3c4d-5e6f7a8b9c0d
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: HYPERLINK
+                  title: LinkedIn Profile
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Link to your LinkedIn profile (optional)
+                  descriptionHtml: <p>Link to your LinkedIn profile (optional)</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: b6c7d8e9-0f1a-2b3c-4d5e-6f7a8b9c0d1e
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: HYPERLINK
+                  title: Personal Website/Blog
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Link to your personal website or blog (if any)
+                  descriptionHtml: <p>Link to your personal website or blog (if any)</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+                - id: c7d8e9f0-1a2b-3c4d-5e6f-7a8b9c0d1e2f
+                  sectionId: f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+                  required: false
+                  type: LONG_TEXT
+                  title: Anything Else?
+                  description:
+                    type: doc
+                    content:
+                      - type: paragraph
+                        content:
+                          - type: text
+                            text: Is there anything else you'd like us to know?
+                  descriptionHtml: <p>Is there anything else you'd like us to know?</p>
+                  createdAt: '2025-01-20T10:00:00Z'
+                  updatedAt: '2025-02-01T15:30:00Z'
+    Forms.QuestionRequest:
+      type: object
+      required:
+        - required
+        - type
+        - title
+        - description
+        - order
+      properties:
+        required:
+          type: boolean
+          description: Whether the question is required to answer or not.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Forms.QuestionTypes'
+          description: The type of the question.
+        title:
+          type: string
+          description: What is the question.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The question description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.
+        order:
+          type: integer
+          format: int32
+          description: The desired position of this question within the section (1-indexed). On create, clamped to `[1, currentCount + 1]`; on update, clamped to `[1, totalCount]`. The server automatically shifts other questions to maintain a contiguous order sequence.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.ChoiceOption'
+          description: Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.
+        scale:
+          allOf:
+            - $ref: '#/components/schemas/Forms.ScaleOption'
+          description: Available options for linear scale and rating questions.
+        uploadFile:
+          allOf:
+            - $ref: '#/components/schemas/Forms.UploadFileOption'
+          description: Available options for file upload questions.
+        date:
+          allOf:
+            - $ref: '#/components/schemas/Forms.DateOption'
+          description: Available options for date questions.
+        oauthConnect:
+          allOf:
+            - $ref: '#/components/schemas/Auth.OAuthProviders'
+          description: Available options for OAuth connect questions.
+        sourceId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: If set, choices are dynamically generated from answers to this question.
+      description: The request body for creating/updating a question.
+      examples:
+        - required: true
+          type: DATE
+          title: Which year did you join?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Select year and month only
+          order: 14
+          date:
+            hasYear: true
+            hasMonth: true
+            hasDay: false
+        - required: true
+          type: DATE
+          title: When will you graduate?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Please select your graduation date
+          order: 13
+          date:
+            hasYear: true
+            hasMonth: true
+            hasDay: true
+        - required: true
+          type: OAUTH_CONNECT
+          title: Connect your GitHub account
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Link your GitHub account to verify your identity
+          order: 12
+          oauthConnect: GITHUB
+        - required: true
+          type: RANKING
+          title: Program Match
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Sort the following programs based on your preference.
+          order: 11
+          sourceId: d290f1ee-6c54-4b01-90e6-d701748f0851
+        - required: true
+          type: RATING
+          title: How satisfied are you?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Rate your satisfaction level
+          order: 10
+          scale:
+            icon: star
+            minVal: 1
+            maxVal: 5
+        - required: true
+          type: LINEAR_SCALE
+          title: Rate your experience level (1-5)
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: How experienced are you?
+          order: 9
+          scale:
+            minVal: 1
+            maxVal: 5
+            minValueLabel: No experience
+            maxValueLabel: Very experienced
+        - required: false
+          type: UPLOAD_FILE
+          title: Upload your resume
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Please upload your resume in PDF format
+          order: 8
+          uploadFile:
+            allowedFileTypes:
+              - PDF
+              - DOC
+              - DOCX
+            maxFileAmount: 1
+            maxFileSizeLimit: 1024000
+        - required: true
+          type: DATE
+          title: When will you graduate?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Please select your graduation date
+          order: 7
+        - required: true
+          type: DETAILED_MULTIPLE_CHOICE
+          title: Which technologies are you familiar with?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Select all that apply
+          order: 6
+          choices:
+            - name: TypeScript
+              description: Modern programming language
+            - name: React
+              description: Frontend library
+            - name: Node.js
+              description: Backend runtime
+        - required: false
+          type: DROPDOWN
+          title: Select your experience level
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Choose from the dropdown
+          order: 5
+          choices:
+            - name: Beginner
+            - name: Intermediate
+            - name: Advanced
+            - name: Expert
+        - required: true
+          type: MULTIPLE_CHOICE
+          title: Which team you want to join???
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Pick one of your favorite!!!
+          order: 4
+          choices:
+            - name: Core System Team
+            - name: Clustron Team
+            - name: HPC Team
+        - required: true
+          type: SINGLE_CHOICE
+          title: What's your preferred work location?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: Choose one option
+          order: 3
+          choices:
+            - name: Remote
+            - name: On-site
+            - name: Hybrid
+            - name: Other
+              isOther: true
+        - required: true
+          type: LONG_TEXT
+          title: Tell us about yourself
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Please share your '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: background
+                  - type: text
+                    text: ' and experience'
+          order: 2
+        - required: true
+          type: SHORT_TEXT
+          title: What's your name?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Please enter your '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: name
+          order: 1
+    Forms.QuestionResponse:
+      type: object
+      required:
+        - id
+        - sectionId
+        - required
+        - type
+        - title
+        - description
+        - descriptionHtml
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question's unique identifier.
+        sectionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The section's id that the question belongs to.
+        required:
+          type: boolean
+          description: Whether the question is required to answer or not.
+        type:
+          allOf:
+            - $ref: '#/components/schemas/Forms.QuestionTypes'
+          description: The type of the question.
+        title:
+          type: string
+          description: What is the question.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The question description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The question description rendered as HTML for frontend form display and preview.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.Choice'
+          description: Available choice options for single_choice, multiple_choice, dropdown, and ranking questions.
+        scale:
+          allOf:
+            - $ref: '#/components/schemas/Forms.ScaleOption'
+          description: Available options for linear scale and rating questions.
+        uploadFile:
+          allOf:
+            - $ref: '#/components/schemas/Forms.UploadFileOption'
+          description: Available options for file upload questions.
+        date:
+          allOf:
+            - $ref: '#/components/schemas/Forms.DateOption'
+          description: Available options for date questions.
+        oauthConnect:
+          allOf:
+            - $ref: '#/components/schemas/Auth.OAuthProviders'
+          description: Available options for OAuth connect questions.
+        sourceId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: If set, choices are dynamically generated from answers to this question.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the question.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The updated timestamp of the question.
+      description: Response model for the detailed structure of a question.
+      examples:
+        - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+          required: true
+          type: SHORT_TEXT
+          title: What's your name?
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Please enter your '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: full name
+          descriptionHtml: <p>Please enter your <strong>full name</strong></p>
+          createdAt: '2025-01-20T10:00:00Z'
+          updatedAt: '2025-02-01T15:30:00Z'
+    Forms.QuestionTypes:
+      type: string
+      enum:
+        - SHORT_TEXT
+        - LONG_TEXT
+        - SINGLE_CHOICE
+        - MULTIPLE_CHOICE
+        - DROPDOWN
+        - DETAILED_MULTIPLE_CHOICE
+        - DATE
+        - UPLOAD_FILE
+        - LINEAR_SCALE
+        - RATING
+        - RANKING
+        - OAUTH_CONNECT
+        - HYPERLINK
+      description: The current types of question
+    Forms.RecipientSelectionRequest:
+      type: object
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Target organization ID to collect users from.
+        unitIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: Target unit IDs to collect users from.
+      description: Select recipients by organizations and/or units.(remove duplicates).
+      examples:
+        - unitIds:
+            - 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+    Forms.RecipientSelectionResponse:
+      type: object
+      required:
+        - recipients
+      properties:
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.RecipientUser'
+      description: The result of recipients selection (no duplicated).
+      examples:
+        - recipients:
+            - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+              name: John Doe
+    Forms.RecipientUser:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid'
+        name:
+          type: string
+      description: The basic info of a user that can receive the form.
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          name: John Doe
+    Forms.ScaleOption:
+      type: object
+      required:
+        - minVal
+        - maxVal
+      properties:
+        icon:
+          type: string
+          description: Background icon for the linear scale option.
+        minVal:
+          type: integer
+          format: int32
+          description: Minimum value of the linear scale, can be 0 or 1.
+        maxVal:
+          type: integer
+          format: int32
+          description: Maximum value of the linear scale, can be between 2 and 10.
+        minValueLabel:
+          type: string
+          description: Label for the minimum value.
+        maxValueLabel:
+          type: string
+          description: Label for the maximum value.
+      description: Options for linear scale and rating questions.
+      examples:
+        - icon: star
+          minVal: 1
+          maxVal: 5
+          minValueLabel: Poor
+          maxValueLabel: Excellent
+    Forms.Section:
+      type: object
+      required:
+        - id
+        - formId
+        - title
+        - questions
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form this section belongs to.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The section description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The section description rendered as HTML for frontend form display and preview.
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.QuestionResponse'
+          description: The questions of the section.
+      description: A section within a form, grouping questions together.
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: Personal Information
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Please provide your '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: basic information
+          descriptionHtml: <p>Please provide your <strong>basic information</strong></p>
+          questions: []
+    Forms.SectionBundle:
+      type: object
+      required:
+        - section
+        - questions
+      properties:
+        section:
+          allOf:
+            - $ref: '#/components/schemas/Forms.SectionForListSections'
+          description: The section metadata.
+        questions:
+          anyOf:
+            - type: array
+              items:
+                $ref: '#/components/schemas/Forms.QuestionResponse'
+            - type: 'null'
+          description: Questions in this section. Null when the section has no questions yet.
+      description: Response model for listing sections in a form (backend shape).
+      examples:
+        - section:
+            id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+            formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: Empty Section
+            progress: ''
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content: []
+            descriptionHtml: <p></p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          questions: null
+        - section:
+            id: b23f2668-c2dc-4213-88fe-eceedff46398
+            formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: Personal Information
+            progress: ''
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content: []
+            descriptionHtml: <p></p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          questions:
+            - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+              required: true
+              type: SHORT_TEXT
+              title: Full Name
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Please enter your full name (in English)
+              descriptionHtml: <p>Please enter your full name (in English)</p>
+              createdAt: '2025-01-20T10:00:00Z'
+              updatedAt: '2025-02-01T15:30:00Z'
+    Forms.SectionForListSections:
+      type: object
+      required:
+        - id
+        - formId
+        - title
+        - progress
+        - description
+        - descriptionHtml
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form this section belongs to.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        progress:
+          type: string
+          description: Section progress status (backend field; may be empty string).
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The section description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The section description rendered as HTML for frontend form display and preview.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the section.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the section.
+      description: A minimal section shape for list-sections API responses.
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: Personal Information
+          progress: ''
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content: []
+          descriptionHtml: <p></p>
+          createdAt: '2025-01-20T10:00:00Z'
+          updatedAt: '2025-02-01T15:30:00Z'
+    Forms.SectionProgress:
+      type: string
+      enum:
+        - DRAFT
+        - SUBMITTED
+      description: The current progress of a section
+    Forms.SectionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocumentUpdate'
+          description: The section description as ProseMirror JSON, edited in Tiptap and sent by the admin interface.
+      description: The request body for updating a section.
+      examples:
+        - title: Personal Information
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Please provide your '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: basic information
+    Forms.UploadFileOption:
+      type: object
+      required:
+        - allowedFileTypes
+        - maxFileAmount
+        - maxFileSizeLimit
+      properties:
+        allowedFileTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.allowedFileTypes'
+          description: Allowed file types/extensions.
+        maxFileAmount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+          description: 'Maximum number of files that can be uploaded. Range: 1-10.'
+        maxFileSizeLimit:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 10485760
+          description: The maximum allowed file size in bytes, must be between 1 byte and 10 MB.
+      description: Options for file upload questions.
+      examples:
+        - allowedFileTypes:
+            - PDF
+            - DOC
+            - DOCX
+          maxFileAmount: 3
+          maxFileSizeLimit: 5242880
+    Forms.allowedFileTypes:
+      type: string
+      enum:
+        - TXT
+        - MD
+        - DOC
+        - DOCX
+        - ODT
+        - RTF
+        - PPT
+        - PPTX
+        - ODP
+        - XLS
+        - XLSX
+        - ODS
+        - CSV
+        - SVG
+        - AI
+        - EPS
+        - PDF
+        - JPG
+        - JPEG
+        - PNG
+        - WEBP
+        - GIF
+        - TIFF
+        - BMP
+        - HEIC
+        - RAW
+        - MP4
+        - WEBM
+        - MOV
+        - MKV
+        - AVI
+        - MP3
+        - WAV
+        - M4A
+        - AAC
+        - OGG
+        - FLAC
+        - ZIP
+      description: Allowed file types/extensions for file upload questions.
+    HtmlContent:
+      type: string
+      format: html
+      description: HTML rendered from ProseMirror content for frontend display.
+    NotFound:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          enum:
+            - Not Found
+        status:
+          type: number
+          enum:
+            - 404
+        type:
+          type: string
+          enum:
+            - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+        detail:
+          type: string
+      examples:
+        - title: Not Found
+          status: 404
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+          detail: The requested resource was not found
+    ProblemDetail:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          description: The problem's title.
+        status:
+          type: integer
+          description: The problem's status code.
+        type:
+          type: string
+          description: Type indicates the URI that identifies the problem type, we use an MDN URI here.
+        detail:
+          type: string
+          description: The problem's detail.
+      description: Problem represents a problem detail as defined in RFC 7807
+      examples:
+        - title: Bad Request
+          status: 400
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+          detail: Invalid request parameters
+    ProseMirrorDocument:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - doc
+          description: The root node type. Always `doc` for a ProseMirror document.
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProseMirrorNode'
+          description: Child nodes in the ProseMirror document.
+      description: A ProseMirror document JSON payload used by Tiptap editors.
+    ProseMirrorDocumentUpdate:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - doc
+          description: The root node type. Always `doc` for a ProseMirror document.
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProseMirrorNode'
+          description: Child nodes in the ProseMirror document.
+      description: A ProseMirror document JSON payload used by Tiptap editors.
+    ProseMirrorMark:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          description: The mark type, such as `bold`, `italic`, or `link`.
+        attrs:
+          type: object
+          unevaluatedProperties: {}
+          description: Mark attributes.
+      description: A ProseMirror mark.
+    ProseMirrorNode:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          description: The node type, such as `paragraph`, `heading`, or `text`.
+        text:
+          type: string
+          description: Text content for text nodes.
+        attrs:
+          type: object
+          unevaluatedProperties: {}
+          description: Node attributes.
+        content:
+          description: Child nodes of this node.
+          type: array
+          items:
+            $ref: '#/components/schemas/ProseMirrorNode'
+        marks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProseMirrorMark'
+          description: Marks applied to this node, such as bold or italic.
+      description: A ProseMirror node.
+    Responses.AnswerPayload:
+      type: object
+      required:
+        - createdAt
+        - updatedAt
+        - responseId
+        - answer
+        - displayValue
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the answer.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the answer.
+        responseId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response this answer belongs to.
+        answer:
+          anyOf:
+            - $ref: '#/components/schemas/Responses.StringAnswer'
+            - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+            - $ref: '#/components/schemas/Responses.ScaleAnswer'
+            - $ref: '#/components/schemas/Responses.DateAnswer'
+            - $ref: '#/components/schemas/Responses.OauthAnswer'
+          description: The answer data. Type depends on the question type.
+        displayValue:
+          type: string
+          description: The formatted answer value for display.
+      description: Contains the details of an answer for a specific question in a response
+      examples:
+        - createdAt: '2025-02-15T10:00:00Z'
+          updatedAt: '2025-02-17T16:45:00Z'
+          responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          answer:
+            questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+            questionType: SHORT_TEXT
+            value: John Doe
+          displayValue: John Doe
+    Responses.AnswersDetail:
+      type: object
+      required:
+        - question
+        - payload
+      properties:
+        question:
+          allOf:
+            - $ref: '#/components/schemas/Forms.QuestionResponse'
+          description: The question details.
+        payload:
+          allOf:
+            - $ref: '#/components/schemas/Responses.AnswerPayload'
+          description: All answers for this question, if user has not filled this question, this field will be null.
+      description: Contains the question details and the corresponding answer for a specific question in a response
+      examples:
+        - question:
+            id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+            sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+            required: true
+            type: SHORT_TEXT
+            title: What's your name?
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content:
+                    - type: text
+                      text: Please enter your full name
+            descriptionHtml: <p>Please enter your full name</p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          payload:
+            createdAt: '2025-02-15T10:00:00Z'
+            updatedAt: '2025-02-17T16:45:00Z'
+            responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+            answer:
+              questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            displayValue: John Doe
+    Responses.AnswersRequest:
+      type: object
+      required:
+        - answers
+      properties:
+        answers:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Responses.StringAnswer'
+              - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+              - $ref: '#/components/schemas/Responses.ScaleAnswer'
+              - $ref: '#/components/schemas/Responses.DateAnswer'
+          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
+      description: Request model for update or submit the form response.
+      examples:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              questionType: LINEAR_SCALE
+              value: 4
+    Responses.AnswersRequestUpdate:
+      type: object
+      properties:
+        answers:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Responses.StringAnswer'
+              - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+              - $ref: '#/components/schemas/Responses.ScaleAnswer'
+              - $ref: '#/components/schemas/Responses.DateAnswer'
+          description: The answers to be saved. Can contain a partial subset for drafts or the full set for submission.
+      description: Request model for update or submit the form response.
+      examples:
+        - answers:
+            - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+              questionType: LINEAR_SCALE
+              value: 4
+    Responses.CreateResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+      description: Response model for creating a form response
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+    Responses.DateAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          type: string
+          enum:
+            - DATE
+          description: The type of the question being answered.
+        value:
+          type: string
+          format: date-time
+          description: The answer value for date question in ISO format (e.g., '2024-12-31').
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: DATE
+          value: 2024-05-06T12:20-12Z
+    Responses.ExportDownloadRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for downloading form response export
+    Responses.ExportHeader:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID.
+        title:
+          type: string
+          description: The question title.
+      description: Represents a header in the export table.
+    Responses.ExportPreviewRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for previewing form response export
+    Responses.ExportPreviewResponse:
+      type: object
+      required:
+        - headers
+        - rows
+      properties:
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportHeader'
+          description: The table headers, representing the selected questions.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportRow'
+          description: The table rows, representing the form responses.
+      description: Response model for previewing form response export
+    Responses.ExportRow:
+      type: object
+      required:
+        - id
+        - answers
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response unique identifier.
+        answers:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: The answers for each selected question, keyed by question ID.
+      description: Represents a row in the export table.
+    Responses.GetFormResponse:
+      type: object
+      required:
+        - id
+        - formId
+        - progress
+        - sections
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form that this response belongs to.
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.ResponseProgress'
+          description: The current answering progress of the response.
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ResponseSections'
+          description: The section list of the response, order by the form workflow.
+      description: Response model for getting a specific form response
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          progress: DRAFT
+          sections: []
+    Responses.GetQuestionResponse:
+      type: object
+      required:
+        - id
+        - answer
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Response ID that this question answer belongs to.
+        answer:
+          $ref: '#/components/schemas/Responses.AnswerPayload'
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          answer:
+            createdAt: '2025-02-15T10:00:00Z'
+            updatedAt: '2025-02-17T16:45:00Z'
+            responseId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+            answer:
+              questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              questionType: SHORT_TEXT
+              value: John Doe
+            displayValue: John Doe
+    Responses.ListResponse:
+      type: object
+      required:
+        - formId
+        - responses
+      properties:
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form ID.
+        responses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.Response'
+          description: All responses for this form.
+      description: Response model for listing all responses of a form
+      examples:
+        - formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          responses: []
+    Responses.OauthAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          type: string
+          enum:
+            - OAUTH_CONNECT
+          description: The type of the question being answered.
+        value:
+          type: object
+          properties:
+            provider:
+              type: string
+              description: The OAuth provider, e.g., 'google', 'github'.
+            providerId:
+              type: string
+              description: The unique identifier from the OAuth provider for the connected account.
+            avatarUrl:
+              type: string
+              description: The avatar URL from the OAuth provider.
+            email:
+              type: string
+              description: The email from the OAuth provider.
+            username:
+              type: string
+              description: The username from the OAuth provider.
+          required:
+            - provider
+            - providerId
+            - avatarUrl
+            - email
+            - username
+      description: Response model for an OAuth answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: OAUTH_CONNECT
+          value:
+            username: johndoe
+            email: johndoe@example.com
+            avatarUrl: https://example.com/avatar.jpg
+            provider: google
+            providerId: '1234567890'
+    Responses.QuestionFilesUploadRequest:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+            contentEncoding: base64
+          description: The file(s) being uploaded.
+      required:
+        - files
+    Responses.QuestionFilesUploadResponse:
+      type: object
+      required:
+        - files
+      properties:
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              fileId:
+                allOf:
+                  - $ref: '#/components/schemas/uuid'
+                description: The unique identifier of the uploaded file.
+              originalFilename:
+                type: string
+                description: The original filename as provided by the client.
+              contentType:
+                type: string
+                description: The MIME content type of the uploaded file.
+              size:
+                type: integer
+                format: int64
+                description: The size of the uploaded file in bytes.
+            required:
+              - fileId
+              - originalFilename
+              - contentType
+              - size
+          description: Metadata of each successfully uploaded file.
+      description: Response model for the uploaded files
+      examples:
+        - files:
+            - fileId: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+              originalFilename: resume.pdf
+              contentType: application/pdf
+              size: 204800
+    Responses.Response:
+      type: object
+      required:
+        - id
+        - submittedBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        submittedBy:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who submitted this response.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the response.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the response.
+      description: Response model for a single response in list view
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          submittedBy: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          createdAt: '2025-02-15T10:00:00Z'
+          updatedAt: '2025-02-17T16:45:00Z'
+    Responses.ResponseProgress:
+      type: string
+      enum:
+        - DRAFT
+        - SUBMITTED
+      description: The current progress of the response.
+    Responses.ResponseSections:
+      type: object
+      required:
+        - id
+        - title
+        - progress
+        - answerDetails
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.SectionProgress'
+          description: The answering progress of this section.
+        answerDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.AnswersDetail'
+          description: The questions of the section.
+      description: Response model for a single section in response sections view
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          title: Personal Information
+          progress: DRAFT
+          answerDetails: []
+    Responses.ScaleAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - LINEAR_SCALE
+            - type: string
+              enum:
+                - RATING
+          description: The type of the scale question being answered.
+        value:
+          type: integer
+          format: int32
+          description: The answer value for scale question.
+      description: Request model for submitting an individual scale answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: LINEAR_SCALE
+          value: 4
+    Responses.SectionProgress:
+      type: string
+      enum:
+        - SKIPPED
+        - NOT_STARTED
+        - DRAFT
+        - COMPLETED
+      description: The current progress of a section, notStarted -> draft -> completed, or skipped if user doesn't need to answer this section.
+    Responses.StringAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - SHORT_TEXT
+            - type: string
+              enum:
+                - LONG_TEXT
+            - type: string
+              enum:
+                - HYPERLINK
+          description: The type of the question being answered.
+        value:
+          type: string
+          description: The answer value (format depends on questionType from questionId).
+      examples:
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          questionType: SHORT_TEXT
+          value: John Doe
+    Responses.StringArrayAnswer:
+      type: object
+      required:
+        - questionId
+        - questionType
+        - value
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question being answered.
+        questionType:
+          anyOf:
+            - type: string
+              enum:
+                - SINGLE_CHOICE
+            - type: string
+              enum:
+                - MULTIPLE_CHOICE
+            - type: string
+              enum:
+                - DROPDOWN
+            - type: string
+              enum:
+                - DETAILED_MULTIPLE_CHOICE
+            - type: string
+              enum:
+                - RANKING
+          description: The type of the question being answered.
+        value:
+          type: array
+          items:
+            type: string
+          description: The answer value (format depends on questionType from questionId).
+        otherText:
+          type: string
+          description: The custom text entered for the 'Other' choice, if applicable.
+      description: Request model for submitting an individual answer
+      examples:
+        - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
+          questionType: MULTIPLE_CHOICE
+          value:
+            - f421cfc2-2b84-4da9-9629-011af609935a
+            - 2ca86a6d-7735-4f17-8676-29b4724b524f
+          otherText: I also work with Rust
+    Responses.UpdateResponse:
+      type: object
+      required:
+        - id
+        - updatedAt
+        - answers
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the response.
+        answers:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Responses.StringAnswer'
+              - $ref: '#/components/schemas/Responses.StringArrayAnswer'
+              - $ref: '#/components/schemas/Responses.ScaleAnswer'
+              - $ref: '#/components/schemas/Responses.DateAnswer'
+          description: The updated answer data.
+      description: Response model for updating a form response
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          updatedAt: '2025-02-17T16:45:00Z'
+          answers: []
+    Slug.History:
+      type: object
+      required:
+        - orgId
+        - orgName
+        - startedAt
+        - endedAt
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the organization that used the slug.
+        orgName:
+          type: string
+          description: The name of the organization that used the slug.
+        startedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the organization started using the slug.
+        endedAt:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          description: The timestamp when the organization stopped using the slug, if applicable.
+      description: The usage history of the slug.
+      examples:
+        - orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          orgName: NYCU SDC
+          startedAt: '2024-01-15T08:00:00Z'
+          endedAt: null
+    Slug.Status:
+      type: object
+      required:
+        - available
+        - orgId
+      properties:
+        available:
+          type: boolean
+          description: Indicates whether the slug is available.
+        orgId:
+          anyOf:
+            - $ref: '#/components/schemas/uuid'
+            - type: 'null'
+          description: The organization currently using the slug, if any.
+      description: The current state of the slug.
+      examples:
+        - available: false
+          orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+    Unauthorized:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          enum:
+            - Unauthorized
+        status:
+          type: number
+          enum:
+            - 401
+        type:
+          type: string
+          enum:
+            - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+        detail:
+          type: string
+      examples:
+        - title: Unauthorized
+          status: 401
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+          detail: Authentication credentials were missing or invalid
+    Unit.Base:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - metadata
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit's unique identifier.
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the unit or organization
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the unit or organization
+      description: Base model, containing common fields for both units and organizations.
+    Unit.BaseRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+      description: Base Request model, containing common fields for updating units and organizations.
+      examples:
+        - name: 2025 Backend
+          description: Backend course - Updated
+          metadata:
+            year: '2025'
+            type: education program
+    Unit.CreateOrgRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+        - slug
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        slug:
+          type: string
+      examples:
+        - name: NYCU SDC2
+          description: 陽明交大軟體開發社
+          slug: nycu-sdc1
+          metadata:
+            type: club
+    Unit.CreateUnitRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+      examples:
+        - name: 2025 Backend
+          description: Backend course
+          metadata:
+            year: '2025'
+            type: education program
+    Unit.OrgMember:
+      type: object
+      required:
+        - orgId
+        - memberId
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the organization
+        memberId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the member
+      description: Model representing a member of an organization, linking organization and member by their unique identifiers
+      examples:
+        - orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          memberId: d26e9c90-4747-496b-9953-7e7c4f97643f
+    Unit.OrgMemberRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+      examples:
+        - email: 123@gmail.com
+    Unit.OrgMemberResponse:
+      type: object
+      required:
+        - orgId
+        - member
+      properties:
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the organization
+        member:
+          allOf:
+            - $ref: '#/components/schemas/User.User'
+          description: Full user details including emails
+      description: Response model for organization member with full user details
+      examples:
+        - orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          member:
+            id: d26e9c90-4747-496b-9953-7e7c4f97643f
+            username: alice_wang
+            name: Alice Wang
+            avatarUrl: https://avatars.githubusercontent.com/u/87654321
+            emails:
+              - alice@example.com
+            roles:
+              - USER
+            require_onboarding: true
+    Unit.Organization:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - metadata
+        - createdAt
+        - updatedAt
+        - slug
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit's unique identifier.
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the unit or organization
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the unit or organization
+        slug:
+          type: string
+          description: Unique slug for the organization, used for URL routing and identification
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          name: NYCU SDC
+          description: National Yang Ming Chiao Tung University Software Development Club
+          metadata:
+            type: club
+            founded: '2020'
+          createdAt: '2024-01-15T08:00:00Z'
+          updatedAt: '2024-12-20T10:30:00Z'
+          slug: nycu-sdc
+    Unit.ParentChild:
+      type: object
+      required:
+        - childId
+        - orgId
+      properties:
+        parentId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the parent unit, which can be left null if the child is root unit of the organization.
+        childId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the child unit
+        orgId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the units' organization
+      description: Model representing a parent-child relationship between units, allowing for hierarchical structures
+      examples:
+        - parentId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          childId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+    Unit.ParentChildRequest:
+      type: object
+      required:
+        - childId
+        - orgId
+      properties:
+        parentId:
+          $ref: '#/components/schemas/uuid'
+        childId:
+          $ref: '#/components/schemas/uuid'
+        orgId:
+          $ref: '#/components/schemas/uuid'
+      examples:
+        - parentId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          childId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          orgId: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+    Unit.Unit:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - metadata
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit's unique identifier.
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the unit or organization
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the unit or organization
+      examples:
+        - id: d26e9c90-4747-496b-9953-7e7c4f97643f
+          name: Backend Team
+          description: Backend development team
+          metadata:
+            tech: Go, Node.js
+          createdAt: '2024-03-01T09:00:00Z'
+          updatedAt: '2024-11-15T14:20:00Z'
+    Unit.UpdateOrgRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+        - slug
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+        slug:
+          type: string
+      examples:
+        - name: NYCU SDC 2025
+          description: Updated organization description
+          slug: nycu-sdc
+          metadata:
+            type: club
+            members: '150'
+    Unit.UpdateUnitRequest:
+      type: object
+      required:
+        - name
+        - description
+        - metadata
+      properties:
+        name:
+          type: string
+          description: The name of the unit or organization
+        description:
+          type: string
+          description: A brief description of the unit or organization
+        metadata:
+          type: object
+          unevaluatedProperties:
+            type: string
+          description: Metadata for the unit or organization, can include additional information like contact details, address, etc.
+      examples:
+        - name: Updated Backend Team
+          description: Backend and Infrastructure team
+          metadata:
+            tech: Go, Node.js, Kubernetes
+    Unit.UserForm:
+      type: object
+      required:
+        - id
+        - title
+        - deadline
+        - status
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the form
+        title:
+          type: string
+          description: The title of the form
+        deadline:
+          type: string
+          format: date-time
+          description: The deadline of the form
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Unit.UserFormStatus'
+          description: The completion status of the form for the current user
+        responseIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The unique identifiers of the user's responses to the form, if they exist
+      description: Response model for listing user forms with status
+      examples:
+        - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
+          title: Member Information Update 2025
+          deadline: '2025-02-15T23:59:59Z'
+          status: COMPLETED
+          responseIds:
+            - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
+            - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
+        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: SDC 2025 Recruitment Form
+          deadline: '2025-03-31T23:59:59Z'
+          status: IN_PROGRESS
+          responseIds:
+            - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+        - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
+          title: Annual Survey 2026
+          deadline: '2026-03-31T23:59:59Z'
+          status: NOT_STARTED
+    Unit.UserFormListResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Unit.UserForm'
+      description: Response model for listing all forms of current user
+      examples:
+        - - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
+            title: Annual Survey 2026
+            deadline: '2026-03-31T23:59:59Z'
+            status: NOT_STARTED
+          - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: SDC 2025 Recruitment Form
+            deadline: '2025-03-31T23:59:59Z'
+            status: IN_PROGRESS
+            responseIds:
+              - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
+            title: Member Information Update 2025
+            deadline: '2025-02-15T23:59:59Z'
+            status: COMPLETED
+            responseIds:
+              - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
+              - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
+    Unit.UserFormStatus:
+      type: string
+      enum:
+        - NOT_STARTED
+        - IN_PROGRESS
+        - COMPLETED
+      description: The completion status of the form for the user
+    User.OnboardingRequest:
+      type: object
+      required:
+        - username
+        - name
+      properties:
+        username:
+          type: string
+          description: The user's username, can change, but must be unique across the system.
+        name:
+          type: string
+          minLength: 4
+          maxLength: 15
+          pattern: ^\w+$
+          description: The user's nickname.
+      examples:
+        - username: jane_smith
+          name: Jane Smith
+    User.Role:
+      type: string
+      enum:
+        - USER
+    User.User:
+      type: object
+      required:
+        - id
+        - username
+        - name
+        - avatarUrl
+        - emails
+        - roles
+        - require_onboarding
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user's unique identifier.
+        username:
+          type: string
+          minLength: 4
+          maxLength: 15
+          pattern: ^\w+$
+          description: The user's username, can change, but must be unique across the system.
+        name:
+          type: string
+          maxLength: 15
+          description: The user's nickname.
+        avatarUrl:
+          type: string
+          description: Avatar URL of the user.
+        emails:
+          type: array
+          items:
+            type: string
+          description: Email addresses associated with the user.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/User.Role'
+          description: Global role of the user.
+        require_onboarding:
+          type: boolean
+          description: The user needs to onboard and has not completed onboarding yet.
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          username: john_doe
+          name: John Doe
+          avatarUrl: https://avatars.githubusercontent.com/u/12345678
+          emails:
+            - john.doe@example.com
+            - john@gmail.com
+          roles:
+            - USER
+          require_onboarding: true
+    Versions:
+      type: string
+      enum:
+        - 1.0.0
+    uuid:
+      type: string
+      format: uuid
+servers:
+  - url: http://127.0.0.1:4010
+    description: Local Prism mock
+    variables: {}
+  - url: https://mock.core-system.sdc.nycu.club
+    description: Mock server
+    variables: {}
+  - url: https://dev.core-system.sdc.nycu.club
+    description: Dev server
+    variables: {}
