@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-04-27'
+  version: '2026-04-29'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -609,7 +609,7 @@ paths:
         '200':
           description: The request has succeeded.
           headers:
-            content-disposition:
+            Content-Disposition:
               required: true
               schema:
                 type: string
@@ -4502,7 +4502,7 @@ components:
         answers:
           type: object
           unevaluatedProperties:
-            type: string
+            $ref: '#/components/schemas/Responses.AnswerPayload'
           description: The answers for each selected question, keyed by question ID.
       description: Represents a row in the export table.
     Responses.GetFormResponse:
