@@ -152,7 +152,7 @@ namespace CoreSystem.Responses {
 		id: uuid;
 
 		@doc("The answers for each selected question, keyed by question ID.")
-		answers: Record<string>;
+		answers: Record<AnswerPayload>;
 	}
 
 	@doc("Request model for downloading form response export")

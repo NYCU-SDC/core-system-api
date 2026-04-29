@@ -93,8 +93,8 @@ namespace CoreSystem.Responses {
 	@post
 	op exportFormResponses(@path formId: uuid, @body req: ExportDownloadRequest): {
 		@statusCode statusCode: 200;
-		@header contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-		@header contentDisposition: string;
+		@header ("Content-Type")contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		@header ("Content-Disposition")contentDisposition: string;
 		@body response: bytes;
 	} | {
 		@statusCode statusCode: 404;
