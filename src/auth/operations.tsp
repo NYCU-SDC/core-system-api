@@ -46,7 +46,7 @@ namespace CoreSystem.Auth {
 	};
 
 	@summary("Link different OAuth accounts to the same user")
-	@route("/auth/link")
+	@route("/auth/link-account")
 	@post
 	op link( 
 		@doc("The name of the existing user.")
@@ -67,7 +67,7 @@ namespace CoreSystem.Auth {
 	};
 
 	@summary("Abort the account linking process")
-	@route("/auth/link/abort")
+	@route("/auth/link-account/abort")
 	@post
 	op abortLink(): {
 		@statusCode statusCode: 200;

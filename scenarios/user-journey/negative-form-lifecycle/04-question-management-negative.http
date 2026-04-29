@@ -992,7 +992,7 @@ Content-Type: application/json
 # @ref updateQuestionNonExistentQuestion
 DELETE {{BASE_URL}}/sections/00000000-0000-0000-0000-000000000000/questions/{{shortTextQuestionId}}
 
-?? status == 204
+?? status == 404
 
 ###
 

@@ -805,7 +805,7 @@ Content-Type: application/json
     "order": 12,
     "uploadFile": {
         "allowedFileTypes": ["PDF", "DOC", "DOCX"],
-        "maxFileAmount": 1,
+        "maxFileAmount": 10,
         "maxFileSizeLimit": 1000000
     }
 }
@@ -824,7 +824,7 @@ Content-Type: application/json
         equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.uploadFile !== undefined, true, 'Upload file options should exist');
         equal(Array.isArray(data.uploadFile.allowedFileTypes), true, 'Allowed file types should be an array');
-        equal(data.uploadFile.maxFileAmount, 1, 'Max file amount should be 1');
+        equal(data.uploadFile.maxFileAmount, 10, 'Max file amount should match request value');
         equal(data.uploadFile.maxFileSizeLimit, 1000000, 'Max file size limit should be 1000000 bytes');
         equal(data.description?.type, 'doc', 'Description should be rich text doc');
         deepStrictEqual(

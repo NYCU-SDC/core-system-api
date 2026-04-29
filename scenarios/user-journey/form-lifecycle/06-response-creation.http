@@ -807,10 +807,15 @@ POST {{BASE_URL}}/responses/{{responseId}}/questions/{{uploadFileQuestionId}}/fi
 Content-Type: multipart/form-data; boundary=WebKitFormBoundary
 
 --WebKitFormBoundary
-Content-Disposition: form-data; name="files"; filename="resume.pdf"
+Content-Disposition: form-data; name="files"; filename="resume1.pdf"
 Content-Type: application/pdf
 
-%PDF-1.4 Mock PDF content for testing
+%PDF-1.4 Mock PDF content for testing 1
+--WebKitFormBoundary
+Content-Disposition: form-data; name="files"; filename="resume2.pdf"
+Content-Type: application/pdf
+
+%PDF-1.4 Mock PDF content for testing 2
 --WebKitFormBoundary--
 
 {{
@@ -818,23 +823,56 @@ Content-Type: application/pdf
     test.hasResponseBody();
 
     const { equal } = require('assert');
-
-    test('File upload response has files array', () => {
-        const data = JSON.parse(response.body);
+    const data = JSON.parse(response.body);
+    test('Files uploaded successfully', () => {
         equal(Array.isArray(data.files), true, 'Response should have a files array');
-        equal(data.files.length > 0, true, 'Should have at least one uploaded file');
+        equal(data.files.length, 2, 'Should have exactly 2 uploaded files');
     });
 
-    test('Uploaded file metadata is correct', () => {
-        const data = JSON.parse(response.body);
-        const file = data.files[0];
-        equal(file.fileId !== undefined, true, 'File should have a fileId');
-        equal(file.originalFilename, 'resume.pdf', 'Original filename should match');
-        equal(file.contentType !== undefined, true, 'File should have a contentType');
-        equal(typeof file.size === 'number', true, 'File size should be a number');
+    test('First Uploaded file metadata is correct', () => {
+        const file1 = data.files[0];
+        equal(file1.fileId !== undefined, true, 'First file should have a fileId');
+        equal(file1.originalFilename, 'resume1.pdf', 'First original filename should match');
+        equal(file1.contentType !== undefined, true, 'First file should have a contentType');
+        equal(typeof file1.size === 'number', true, 'First file size should be a number');
 
-        console.log('File uploaded successfully:', file.originalFilename);
-        console.log('File ID:', file.fileId);
+        console.log('First file uploaded successfully:', file1.originalFilename);
+        console.log('First file ID:', file1.fileId);
+    });
+
+    test('Second Uploaded file metadata is correct', () => {
+        const file2 = data.files[1];
+        equal(file2.fileId !== undefined, true, 'Second file should have a fileId');
+        equal(file2.originalFilename, 'resume2.pdf', 'Second original filename should match');
+        equal(file2.contentType !== undefined, true, 'Second file should have a contentType');
+        equal(typeof file2.size === 'number', true, 'Second file size should be a number');
+
+        console.log('Second file uploaded successfully:', file2.originalFilename);
+        console.log('Second file ID:', file2.fileId);
+    });
+
+    exports.fileIdToDelete = data.files[0].fileId;
+    exports.remainingFileId = data.files[1].fileId;
+    exports.remainingFileName = data.files[1].originalFilename;
+    exports.remainingFileContentType = data.files[1].contentType;
+    exports.remainingFileSize = data.files[1].size;
+}}
+
+###
+
+# ============================================
+# Delete One Uploaded File
+# ============================================
+# @name deleteQuestionFile
+# @ref uploadQuestionFiles
+DELETE {{BASE_URL}}/files/{{fileIdToDelete}}
+
+{{
+    test.status(204);
+    
+    test('File deleted successfully', () => {
+        console.log('Deleted file ID:', fileIdToDelete);
+        console.log('Expected remaining file ID:', remainingFileId);
     });
 }}
 
@@ -844,7 +882,7 @@ Content-Type: application/pdf
 # Get Full Response Preview Before Submission
 # ============================================
 # @name getResponsePreview
-# @ref saveDraftDetailedMultipleChoiceWithOtherAnswer
+# @ref deleteQuestionFile
 GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
 
 {{
@@ -865,6 +903,35 @@ GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
         console.log('Form ID:', data.formId);
         console.log('Progress:', data.progress);
         console.log('Number of sections:', data.sections.length);
+    });
+
+    test('Remaining file is preserved after deletion', () => {
+        const data = JSON.parse(response.body);
+        let uploadAnswerDetail;
+
+        for (const section of data.sections || []) {
+            for (const detail of section.answerDetails || []) {
+                if (
+                    detail.payload &&
+                    detail.payload.answer &&
+                    detail.payload.answer.questionId === uploadFileQuestionId
+                ) {
+                    uploadAnswerDetail = detail;
+                    break;
+                }
+            }
+            if (uploadAnswerDetail) break;
+        }
+
+        equal(uploadAnswerDetail !== undefined, true, 'Upload file answer should exist');
+
+        const files = uploadAnswerDetail.payload.answer.value;
+
+        equal(Array.isArray(files), true, 'Upload file answer should contain files array');
+        equal(files.length, 1, 'Only one file should remain after deletion');
+        equal(files[0].fileId, remainingFileId, 'Remaining file ID should match expected file');
+        equal(files[0].fileId !== fileIdToDelete, true, 'Deleted file ID should not remain');
+        equal(files[0].originalFilename, remainingFileName, 'Remaining file name should match expected file');
     });
 }}
 
@@ -945,6 +1012,20 @@ Content-Type: application/json
             "questionId": "{{dateQuestionId}}",
             "questionType": "DATE",
             "value": "2024-06-15"
+        },
+        {
+            "questionId": "{{uploadFileQuestionId}}",
+            "questionType": "UPLOAD_FILE",
+            "value": {
+                "files": [
+                    {
+                    "fileId": "{{remainingFileId}}",
+                    "originalFilename": "{{remainingFileName}}",
+                    "contentType": "{{remainingFileContentType}}",
+                    "size": {{remainingFileSize}}
+                    }
+                ]
+            }
         },
         {
             "questionId": "{{linearScaleQuestionId}}",

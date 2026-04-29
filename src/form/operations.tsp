@@ -3,7 +3,7 @@ using Http;
 @tag("Forms")
 namespace CoreSystem.Forms {
 	@summary("List Forms")
-	@doc("List all existing forms. Archived forms are excluded by default.")
+	@doc("List all existing forms.")
 	@route("/forms")
 	@get
 	op listForms(): Form[];
@@ -38,10 +38,19 @@ namespace CoreSystem.Forms {
 	};
 
 	@summary("Archive Form")
-	@doc("Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.")
+	@doc("Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists.")
 	@route("/forms/{formId}/archive")
 	@post
 	op archiveForm(@path formId: uuid): {
+		@statusCode statusCode: 200;
+		@body response: Form;
+	};
+
+	@summary("Unarchive Form")
+	@doc("Unarchive a form. Set status to 'DRAFT'.")
+	@route("/forms/{formId}/unarchive")
+	@post
+	op unarchiveForm(@path formId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: Form;
 	};
@@ -67,7 +76,7 @@ namespace CoreSystem.Forms {
 	@doc("List all the questions of the sections in the form. Descriptions are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend form display and preview.")
 	@route("/forms/{formId}/sections")
 	@get
-	op listSections(@path formId: uuid): ListSectionsResponse[];
+	op listSections(@path formId: uuid): SectionBundle[];
 
 	@summary("Update Section")
 	@doc("Update an existing section by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")

@@ -114,16 +114,7 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for the uploaded files")
-	@example(#{
-		files: #[
-			#{
-				fileId: "a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
-				originalFilename: "resume.pdf",
-				contentType: "application/pdf",
-				size: 204800,
-			},
-		],
-	})
+	@example(#{ files: #[#{ fileId: "a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6", originalFilename: "resume.pdf", contentType: "application/pdf", size: 204800 }] })
 	model QuestionFilesUploadResponse {
 		@doc("Metadata of each successfully uploaded file.")
 		files: {
@@ -167,6 +158,7 @@ namespace CoreSystem.Responses {
 			type: CoreSystem.Forms.QuestionTypes.shortText,
 			title: "What's your name?",
 			description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "Please enter your full name" }] }] },
+			descriptionHtml: "<p>Please enter your full name</p>",
 			createdAt: utcDateTime.fromISO("2025-01-20T10:00:00Z"),
 			updatedAt: utcDateTime.fromISO("2025-02-01T15:30:00Z"),
 		},

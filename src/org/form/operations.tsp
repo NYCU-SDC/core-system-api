@@ -15,5 +15,10 @@ namespace CoreSystem.Unit {
 	@doc("List forms under a specific organization.")
 	@route("/orgs/{slug}/forms")
 	@get
-	op listFormsByOrg(@path slug: string): CoreSystem.Forms.Form[];
+	op listFormsByOrg(
+		@path slug: string,
+
+		@doc("Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.")
+		@query status?: CoreSystem.Forms.FormStatus[] = #[CoreSystem.Forms.FormStatus.draft, CoreSystem.Forms.FormStatus.published]
+	): CoreSystem.Forms.Form[];
 }
