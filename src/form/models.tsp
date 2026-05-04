@@ -103,11 +103,11 @@ namespace CoreSystem.Forms {
 		@doc("The unit this form belongs to.")
 		unitId: uuid;
 
-		@doc("The user who last editted the form.")
-		lastEditor: User;
+		@doc("The name of the user who last editted the form.")
+		lastEditor: string;
 
-		@doc("The user who created the form")
-		creator: User;
+		@doc("The name of the user who created the form")
+		creator: string;
 
 		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
 		deadline?: utcDateTime;
