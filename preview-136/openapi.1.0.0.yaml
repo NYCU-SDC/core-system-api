@@ -2657,6 +2657,7 @@ components:
         - unitId
         - creator
         - lastEditor
+        - deadline
         - messageAfterSubmission
         - visibility
         - createdAt
@@ -2690,16 +2691,16 @@ components:
           description: The unit this form belongs to.
         creator:
           allOf:
-            - $ref: '#/components/schemas/User.User'
+            - $ref: '#/components/schemas/User.ProfileResponse'
           description: The user who created the form.
         lastEditor:
           allOf:
-            - $ref: '#/components/schemas/User.User'
+            - $ref: '#/components/schemas/User.ProfileResponse'
           description: The user who last edited the form.
         deadline:
           type: string
           format: date-time
-          description: (Optional) Deadline for form completion. If not specified, returns null.
+          description: Deadline for form completion.
         publishTime:
           type: string
           format: date-time
@@ -2752,26 +2753,20 @@ components:
           unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
           creator:
             id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-            username: john_doe
             name: John Doe
+            username: john_doe
             avatarUrl: https://avatars.githubusercontent.com/u/12345678
             emails:
               - john.doe@example.com
               - john@gmail.com
-            roles:
-              - USER
-            require_onboarding: true
           lastEditor:
             id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-            username: john_doe
             name: John Doe
+            username: john_doe
             avatarUrl: https://avatars.githubusercontent.com/u/12345678
             emails:
               - john.doe@example.com
               - john@gmail.com
-            roles:
-              - USER
-            require_onboarding: true
           deadline: '2025-03-31T23:59:59Z'
           publishTime: '2025-02-01T00:00:00Z'
           messageAfterSubmission: Thank you for your application! We'll get back to you soon.
@@ -5442,6 +5437,42 @@ components:
       examples:
         - username: jane_smith
           name: Jane Smith
+    User.ProfileResponse:
+      type: object
+      required:
+        - id
+        - name
+        - username
+        - avatarUrl
+        - emails
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user's unique identifier.
+        name:
+          type: string
+          description: The user's nickname.
+        username:
+          type: string
+          description: The user's username, can change, but must be unique across the system.
+        avatarUrl:
+          type: string
+          description: Avatar URL of the user.
+        emails:
+          type: array
+          items:
+            type: string
+          description: Email addresses associated with the user.
+      description: Profile shape returned when embedding a user in other resources.
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          name: John Doe
+          username: john_doe
+          avatarUrl: https://avatars.githubusercontent.com/u/12345678
+          emails:
+            - john.doe@example.com
+            - john@gmail.com
     User.Role:
       type: string
       enum:
