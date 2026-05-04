@@ -324,7 +324,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.Form'
+                  $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
   /api/forms/fonts:
@@ -412,7 +412,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
     patch:
@@ -431,7 +431,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
       requestBody:
@@ -472,7 +472,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
   /api/forms/{formId}/cover:
@@ -594,6 +594,75 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/responses/export/download:
+    post:
+      operationId: Responses_exportFormResponses
+      summary: Export Form Responses
+      description: Download form responses in XLSX format.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          headers:
+            Content-Disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                contentMediaType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportDownloadRequest'
+  /api/forms/{formId}/responses/export/preview:
+    post:
+      operationId: Responses_previewFormResponseExport
+      summary: Preview Form Response Export
+      description: Get a preview of the form responses based on selected question IDs.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ExportPreviewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportPreviewRequest'
   /api/forms/{formId}/responses/me:
     get:
       operationId: Responses_getMyFormResponses
@@ -753,7 +822,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
   /api/forms/{formId}/workflow:
@@ -1134,7 +1203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Unit
       requestBody:
@@ -1173,7 +1242,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.Form'
+                  $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Unit
   /api/orgs/{slug}/history:
@@ -2402,123 +2471,6 @@ components:
       examples:
         - id: LINESeedTW
           name: LINE Seed TW
-    Forms.Form:
-      type: object
-      required:
-        - id
-        - title
-        - description
-        - previewMessage
-        - status
-        - unitId
-        - lastEditor
-        - creator
-        - messageAfterSubmission
-        - visibility
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The form's unique identifier.
-        title:
-          type: string
-          description: The title of the form.
-        description:
-          allOf:
-            - $ref: '#/components/schemas/ProseMirrorDocument'
-          description: The form description as ProseMirror JSON, for admin editing in Tiptap.
-        descriptionHtml:
-          allOf:
-            - $ref: '#/components/schemas/HtmlContent'
-          description: The form description rendered as HTML for frontend form display and preview.
-        previewMessage:
-          type: string
-          description: Preview text. If not provided, fallback to first 25 characters of description.
-        status:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FormStatus'
-          description: The status of this form.
-        unitId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The unit this form belongs to.
-        lastEditor:
-          type: string
-          description: The name of the user who last editted the form.
-        creator:
-          type: string
-          description: The name of the user who created the form
-        deadline:
-          type: string
-          format: date-time
-          description: (Optional) Deadline for form completion. If not specified, returns null.
-        publishTime:
-          type: string
-          format: date-time
-          description: When the form is available to be filled.
-        messageAfterSubmission:
-          type: string
-          description: The message to show after user's submission.
-        dressing:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FormDressing'
-          description: The dressing of the form.
-        coverImage:
-          type: string
-          description: The full URL to access the cover image.
-        googleSheetUrl:
-          type: string
-          description: The google sheet url this form's responses will be sent to.
-        visibility:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FormVisibility'
-          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
-        createdAt:
-          type: string
-          format: date-time
-          description: The creation timestamp of the form.
-        updatedAt:
-          type: string
-          format: date-time
-          description: The last updated timestamp of the form
-      description: The structure of a form.
-      examples:
-        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
-          title: SDC 2025 Recruitment Form
-          description:
-            type: doc
-            content:
-              - type: paragraph
-                content:
-                  - type: text
-                    text: 'Join us for an exciting journey in '
-                  - type: text
-                    marks:
-                      - type: bold
-                    text: software development
-                  - type: text
-                    text: '!'
-          descriptionHtml: <p>Join us for an exciting journey in <strong>software development</strong>!</p>
-          previewMessage: Join us for an exciting journey
-          status: PUBLISHED
-          unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
-          lastEditor: John Doe
-          creator: John Doe
-          deadline: '2025-03-31T23:59:59Z'
-          publishTime: '2025-02-01T00:00:00Z'
-          messageAfterSubmission: Thank you for your application! We'll get back to you soon.
-          dressing:
-            color: '#0066cc'
-            headerFont: LINESeedTW
-            questionFont: LINESeedTW
-            textFont: LINESeedTW
-          coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
-          googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
-          visibility: PUBLIC
-          createdAt: '2025-01-15T10:00:00Z'
-          updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormCoverUploadRequest:
       type: object
       properties:
@@ -2577,6 +2529,14 @@ components:
         - title
         - visibility
       properties:
+        creator:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who created the form. Required on create; should be omitted on update.
+        lastEditor:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who last edited the form. Required on create and should be updated on update.
         title:
           type: string
           description: The title of the form.
@@ -2614,7 +2574,9 @@ components:
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
       description: The request body for creating/updating a form.
       examples:
-        - title: Enter SDC Form
+        - creator: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          title: Enter SDC Form
           description:
             type: doc
             content:
@@ -2627,6 +2589,14 @@ components:
     Forms.FormRequestUpdate:
       type: object
       properties:
+        creator:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who created the form. Required on create; should be omitted on update.
+        lastEditor:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user who last edited the form. Required on create and should be updated on update.
         title:
           type: string
           description: The title of the form.
@@ -2664,7 +2634,9 @@ components:
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
       description: The request body for creating/updating a form.
       examples:
-        - title: Enter SDC Form
+        - creator: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          title: Enter SDC Form
           description:
             type: doc
             content:
@@ -2674,6 +2646,145 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+    Forms.FormResponse:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - previewMessage
+        - status
+        - unitId
+        - creator
+        - lastEditor
+        - messageAfterSubmission
+        - visibility
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form's unique identifier.
+        title:
+          type: string
+          description: The title of the form.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The form description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The form description rendered as HTML for frontend form display and preview.
+        previewMessage:
+          type: string
+          description: Preview text. If not provided, fallback to first 25 characters of description.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormStatus'
+          description: The status of this form.
+        unitId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit this form belongs to.
+        creator:
+          allOf:
+            - $ref: '#/components/schemas/User.User'
+          description: The user who created the form.
+        lastEditor:
+          allOf:
+            - $ref: '#/components/schemas/User.User'
+          description: The user who last edited the form.
+        deadline:
+          type: string
+          format: date-time
+          description: (Optional) Deadline for form completion. If not specified, returns null.
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The full URL to access the cover image.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this form's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the form.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the form
+      description: Response model for a form with creator and last editor user details.
+      examples:
+        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: SDC 2025 Recruitment Form
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Join us for an exciting journey in '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: software development
+                  - type: text
+                    text: '!'
+          descriptionHtml: <p>Join us for an exciting journey in <strong>software development</strong>!</p>
+          previewMessage: Join us for an exciting journey
+          status: PUBLISHED
+          unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          creator:
+            id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+            username: john_doe
+            name: John Doe
+            avatarUrl: https://avatars.githubusercontent.com/u/12345678
+            emails:
+              - john.doe@example.com
+              - john@gmail.com
+            roles:
+              - USER
+            require_onboarding: true
+          lastEditor:
+            id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+            username: john_doe
+            name: John Doe
+            avatarUrl: https://avatars.githubusercontent.com/u/12345678
+            emails:
+              - john.doe@example.com
+              - john@gmail.com
+            roles:
+              - USER
+            require_onboarding: true
+          deadline: '2025-03-31T23:59:59Z'
+          publishTime: '2025-02-01T00:00:00Z'
+          messageAfterSubmission: Thank you for your application! We'll get back to you soon.
+          dressing:
+            color: '#0066cc'
+            headerFont: LINESeedTW
+            questionFont: LINESeedTW
+            textFont: LINESeedTW
+          coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
+          googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
+          visibility: PUBLIC
+          createdAt: '2025-01-15T10:00:00Z'
+          updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormStatus:
       type: string
       enum:
@@ -4371,6 +4482,75 @@ components:
         - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
           questionType: DATE
           value: 2024-05-06T12:20-12Z
+    Responses.ExportDownloadRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for downloading form response export
+    Responses.ExportHeader:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID.
+        title:
+          type: string
+          description: The question title.
+      description: Represents a header in the export table.
+    Responses.ExportPreviewRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for previewing form response export
+    Responses.ExportPreviewResponse:
+      type: object
+      required:
+        - headers
+        - rows
+      properties:
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportHeader'
+          description: The table headers, representing the selected questions.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportRow'
+          description: The table rows, representing the form responses.
+      description: Response model for previewing form response export
+    Responses.ExportRow:
+      type: object
+      required:
+        - id
+        - answers
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response unique identifier.
+        answers:
+          type: object
+          unevaluatedProperties:
+            $ref: '#/components/schemas/Responses.AnswerPayload'
+          description: The answers for each selected question, keyed by question ID.
+      description: Represents a row in the export table.
     Responses.GetFormResponse:
       type: object
       required:
