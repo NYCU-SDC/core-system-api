@@ -69,7 +69,8 @@ namespace CoreSystem.Forms {
 		previewMessage: "Join us for an exciting journey",
 		status: FormStatus.published,
 		unitId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
-		lastEditor: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		lastEditor: "john_doe",
+		creator: "john_doe",
 		deadline: utcDateTime.fromISO("2025-03-31T23:59:59Z"),
 		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
 		messageAfterSubmission: "Thank you for your application! We'll get back to you soon.",
@@ -102,8 +103,11 @@ namespace CoreSystem.Forms {
 		@doc("The unit this form belongs to.")
 		unitId: uuid;
 
-		@doc("The user who last editted the form.")
-		lastEditor: uuid;
+		@doc("The username of the user who last editted the form.")
+		lastEditor: string;
+
+		@doc("The username of the user who created the form")
+		creator: string;
 
 		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
 		deadline?: utcDateTime;
