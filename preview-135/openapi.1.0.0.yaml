@@ -600,6 +600,75 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/responses/export/download:
+    post:
+      operationId: Responses_exportFormResponses
+      summary: Export Form Responses
+      description: Download form responses in XLSX format.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          headers:
+            Content-Disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                contentMediaType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportDownloadRequest'
+  /api/forms/{formId}/responses/export/preview:
+    post:
+      operationId: Responses_previewFormResponseExport
+      summary: Preview Form Response Export
+      description: Get a preview of the form responses based on selected question IDs.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ExportPreviewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportPreviewRequest'
   /api/forms/{formId}/responses/me:
     get:
       operationId: Responses_getMyFormResponses
@@ -2418,6 +2487,7 @@ components:
         - status
         - unitId
         - lastEditor
+        - deadline
         - messageAfterSubmission
         - visibility
         - createdAt
@@ -2456,7 +2526,7 @@ components:
         deadline:
           type: string
           format: date-time
-          description: (Optional) Deadline for form completion. If not specified, returns null.
+          description: The deadline of the form
         publishTime:
           type: string
           format: date-time
@@ -4373,6 +4443,75 @@ components:
         - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
           questionType: DATE
           value: 2024-05-06T12:20-12Z
+    Responses.ExportDownloadRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for downloading form response export
+    Responses.ExportHeader:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID.
+        title:
+          type: string
+          description: The question title.
+      description: Represents a header in the export table.
+    Responses.ExportPreviewRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for previewing form response export
+    Responses.ExportPreviewResponse:
+      type: object
+      required:
+        - headers
+        - rows
+      properties:
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportHeader'
+          description: The table headers, representing the selected questions.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportRow'
+          description: The table rows, representing the form responses.
+      description: Response model for previewing form response export
+    Responses.ExportRow:
+      type: object
+      required:
+        - id
+        - answers
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response unique identifier.
+        answers:
+          type: object
+          unevaluatedProperties:
+            $ref: '#/components/schemas/Responses.AnswerPayload'
+          description: The answers for each selected question, keyed by question ID.
+      description: Represents a row in the export table.
     Responses.GetFormResponse:
       type: object
       required:
