@@ -5313,6 +5313,7 @@ components:
       required:
         - id
         - title
+        - deadline
         - status
       properties:
         id:
