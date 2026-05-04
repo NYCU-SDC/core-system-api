@@ -79,21 +79,17 @@ namespace CoreSystem.Forms {
 		unitId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
 		creator: #{
 			id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
-			username: "john_doe",
 			name: "John Doe",
+			username: "john_doe",
 			avatarUrl: "https://avatars.githubusercontent.com/u/12345678",
 			emails: #["john.doe@example.com", "john@gmail.com"],
-			roles: #[CoreSystem.User.Role.user],
-			require_onboarding: true,
 		},
 		lastEditor: #{
 			id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
-			username: "john_doe",
 			name: "John Doe",
+			username: "john_doe",
 			avatarUrl: "https://avatars.githubusercontent.com/u/12345678",
 			emails: #["john.doe@example.com", "john@gmail.com"],
-			roles: #[CoreSystem.User.Role.user],
-			require_onboarding: true,
 		},
 		deadline: utcDateTime.fromISO("2025-03-31T23:59:59Z"),
 		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
@@ -128,13 +124,13 @@ namespace CoreSystem.Forms {
 		unitId: uuid;
 
 		@doc("The user who created the form.")
-		creator: CoreSystem.User.User;
+		creator: CoreSystem.User.ProfileResponse;
 
 		@doc("The user who last edited the form.")
-		lastEditor: CoreSystem.User.User;
+		lastEditor: CoreSystem.User.ProfileResponse;
 
-		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
-		deadline?: utcDateTime;
+		@doc("Deadline for form completion.")
+		deadline: utcDateTime;
 
 		@doc("When the form is available to be filled.")
 		publishTime?: utcDateTime;
