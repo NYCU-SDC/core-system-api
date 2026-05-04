@@ -105,8 +105,8 @@ namespace CoreSystem.Forms {
 		@doc("The user who last editted the form.")
 		lastEditor: uuid;
 
-		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
-		deadline?: utcDateTime;
+		@doc("The deadline of the form")
+		deadline: utcDateTime;
 
 		@doc("When the form is available to be filled.")
 		publishTime?: utcDateTime;
