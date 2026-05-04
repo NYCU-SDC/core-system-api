@@ -2446,10 +2446,10 @@ components:
           description: The unit this form belongs to.
         lastEditor:
           type: string
-          description: The username of the user who last editted the form.
+          description: The name of the user who last editted the form.
         creator:
           type: string
-          description: The username of the user who created the form
+          description: The name of the user who created the form
         deadline:
           type: string
           format: date-time
@@ -2504,8 +2504,8 @@ components:
           previewMessage: Join us for an exciting journey
           status: PUBLISHED
           unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
-          lastEditor: john_doe
-          creator: john_doe
+          lastEditor: John Doe
+          creator: John Doe
           deadline: '2025-03-31T23:59:59Z'
           publishTime: '2025-02-01T00:00:00Z'
           messageAfterSubmission: Thank you for your application! We'll get back to you soon.
