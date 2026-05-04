@@ -30,7 +30,7 @@ namespace CoreSystem.Unit {
 		title: string;
 
 		@doc("The deadline of the form")
-		deadline?: utcDateTime;
+		deadline: utcDateTime;
 
 		@doc("The completion status of the form for the current user")
 		status: UserFormStatus;
