@@ -262,10 +262,244 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Update Form Description - nodeRenderers smoke coverage
+# ============================================
+# This step exercises the expected default nodeRenderers keys:
+# paragraph, blockquote, horizontal_rule, heading, code_block, text, hard_break,
+# ordered_list, bullet_list, list_item, variable, strong, em, link,
+# underline, code (inline), emoji (text), nested blockquote+list,
+# extra heading levels, mixed marks, link variants, code_block multiline,
+# blockquote multi-paragraph, nested list depth, multiple variables, html sanitization text
+# @name updateFormDescriptionNodeRenderers
+# @ref updateForm
+PATCH {{BASE_URL}}/forms/{{formId}}
+Content-Type: application/json
+
+{
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "heading",
+                "attrs": { "level": 2 },
+                "content": [{ "type": "text", "text": "NodeRenderers Coverage" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 1 },
+                "content": [{ "type": "text", "text": "H1 title" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 3 },
+                "content": [{ "type": "text", "text": "H3 subtitle" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 4 },
+                "content": [{ "type": "text", "text": "H4 section" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 5 },
+                "content": [{ "type": "text", "text": "H5 section" }]
+            },
+            {
+                "type": "heading",
+                "attrs": { "level": 6 },
+                "content": [{ "type": "text", "text": "H6 section" }]
+            },
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "paragraph + " },
+                    { "type": "text", "marks": [{ "type": "bold" }], "text": "strong" },
+                    { "type": "text", "text": " + " },
+                    { "type": "text", "marks": [{ "type": "italic" }], "text": "em" },
+                    { "type": "text", "text": " + " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://example.com" } }], "text": "link" },
+                    { "type": "text", "text": " + " },
+                    { "type": "text", "marks": [{ "type": "underline" }], "text": "underline" },
+                    { "type": "text", "text": " + " },
+                    { "type": "text", "marks": [{ "type": "code" }], "text": "inline_code" }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "mixed marks: " },
+                    {
+                        "type": "text",
+                        "marks": [
+                            { "type": "bold" },
+                            { "type": "italic" },
+                            { "type": "link", "attrs": { "href": "https://example.com/relative/path" } }
+                        ],
+                        "text": "bold+italic+relative_link"
+                    },
+                    { "type": "text", "text": " and " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "mailto:test@example.com" } }], "text": "mailto" },
+                    { "type": "text", "text": " and " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "#hash" } }], "text": "hash" },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://example.com/#hash" } }], "text": "hash" }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "line1" },
+                    { "type": "hard_break" },
+                    { "type": "text", "text": "line2" }
+                ]
+            },
+            { "type": "horizontal_rule" },
+            {
+                "type": "blockquote",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [{ "type": "text", "text": "blockquote text" }]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [{ "type": "text", "text": "blockquote second paragraph" }]
+                    },
+                    {
+                        "type": "bullet_list",
+                        "content": [
+                            {
+                                "type": "list_item",
+                                "content": [
+                                    { "type": "paragraph", "content": [{ "type": "text", "text": "nested bullet item" }] }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "code_block",
+                "content": [{ "type": "text", "text": "line1\nline2\nconsole.log('code_block'); // <> & \" '" }]
+            },
+            {
+                "type": "bullet_list",
+                "content": [
+                    {
+                        "type": "list_item",
+                        "content": [
+                            { "type": "paragraph", "content": [{ "type": "text", "text": "bullet_list item" }] },
+                            {
+                                "type": "bullet_list",
+                                "content": [
+                                    {
+                                        "type": "list_item",
+                                        "content": [
+                                            { "type": "paragraph", "content": [{ "type": "text", "text": "nested ul depth-2 item" }] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "ordered_list",
+                "attrs": { "order": 1 },
+                "content": [
+                    {
+                        "type": "list_item",
+                        "content": [
+                            { "type": "paragraph", "content": [{ "type": "text", "text": "ordered_list item" }] }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "variable: " },
+                    { "type": "variable", "attrs": { "name": "VAR_TEST" } },
+                    { "type": "text", "text": ", variable2=" },
+                    { "type": "variable", "attrs": { "name": "VAR_TEST_2" } }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "emoji text 😀 👨‍👩‍👧‍👦 (unicode) is supported." }
+                ]
+            }
+            ,
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "sanitize check: <script>alert(1)</script>" }
+                ]
+            }
+        ]
+    }
+}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('nodeRenderers smoke: descriptionHtml renders expected fragments', () => {
+        equal(data.description?.type, 'doc', 'Description should still be a rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
+
+        const html = data.descriptionHtml;
+        equal(html.includes('<p>'), true, 'Should render paragraph');
+        equal(html.includes('<blockquote'), true, 'Should render blockquote');
+        equal(html.includes('<hr'), true, 'Should render horizontal_rule');
+        equal(html.includes('<h1'), true, 'Should render heading level 1');
+        equal(html.includes('<h2'), true, 'Should render heading level 2');
+        equal(html.includes('<h3'), true, 'Should render heading level 3');
+        equal(html.includes('<h4'), true, 'Should render heading level 4');
+        equal(html.includes('<h5'), true, 'Should render heading level 5');
+        equal(html.includes('<h6'), true, 'Should render heading level 6');
+        equal(html.includes('<pre'), true, 'Should render code_block (pre)');
+        equal(html.includes('<code'), true, 'Should render code_block (code)');
+        equal(html.includes('<br'), true, 'Should render hard_break');
+        equal(html.includes('<ol'), true, 'Should render ordered_list');
+        equal(html.includes('<ul'), true, 'Should render bullet_list');
+        equal(html.includes('<li'), true, 'Should render list_item');
+        equal(html.includes('<strong>'), true, 'Should render strong');
+        equal(html.includes('<em>'), true, 'Should render em');
+        equal(html.includes('<a'), true, 'Should render link');
+        equal(html.includes('https://example.com'), true, 'Link href should be present');
+        equal(html.includes('VAR_TEST'), true, 'Should include variable name');
+        equal(html.includes('VAR_TEST_2'), true, 'Should include second variable name');
+
+        equal(html.includes('<u>') || html.includes('text-decoration'), true, 'Should render underline');
+        equal(html.includes('inline_code'), true, 'Should include inline_code text');
+        equal(html.includes('bold+italic+relative_link'), true, 'Should include mixed marks text');
+        equal(html.includes('https://example.com/relative/path'), true, 'Should include link href (relative path variant)');
+        equal(html.includes('mailto:test@example.com'), true, 'Should include mailto link href');
+        equal(html.includes('#hash'), true, 'Should include pure hash link href');
+        equal(html.includes('https://example.com/#hash'), true, 'Should include hash link href');
+
+        equal(html.includes('nested bullet item'), true, 'Should render nested list inside blockquote');
+        equal(html.includes('nested ul depth-2 item'), true, 'Should render nested list depth-2');
+        equal(html.includes('😀'), true, 'Should include emoji unicode text');
+
+        // Sanitization: ensure script tags are not rendered as HTML elements.
+        equal(html.includes('<script'), false, 'Should not render script tag');
+        equal(html.includes('alert(1)'), true, 'Should preserve text content for sanitize check');
+    });
+}}
+
+###
+
+# ============================================
 # Get Updated Form
 # ============================================
 # @name getUpdatedForm
-# @ref updateForm
+# @ref updateFormDescriptionNodeRenderers
 GET {{BASE_URL}}/forms/{{formId}}
 
 {{

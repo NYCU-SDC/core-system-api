@@ -31,7 +31,17 @@ Content-Type: application/json
     "required": true,
     "type": "DETAILED_MULTIPLE_CHOICE",
     "title": "Choose Team B / C",
-    "description": "Select one to choose which section to go to",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select one to choose which section to go to" }
+                ]
+            }
+        ]
+    },
     "order": 1,
     "choices": [
         { "name": "Team B", "description": "Go to Section B" },
@@ -53,6 +63,8 @@ Content-Type: application/json
         equal(data.choices.length, 2, 'Should have 2 choices (Team B, Team C)');
         const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
         equal(hasDescriptions, true, 'All choices should have descriptions');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
     });
 
     const data = JSON.parse(response.body);
@@ -390,7 +402,17 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Temp question for condition rule",
-    "description": "Will be referenced by condition then deleted",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Will be referenced by condition then deleted" }
+                ]
+            }
+        ]
+    },
     "order": 1
 }
 
@@ -402,6 +424,8 @@ Content-Type: application/json
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
     });
     const data = JSON.parse(response.body);
     exports.tempQuestionId = data.id;

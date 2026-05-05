@@ -65,6 +65,8 @@ Content-Type: application/json
         equal(data.required, true, 'Required should be true');
         equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
+        equal(data.descriptionHtml.includes('<p>'), true, 'descriptionHtml should contain <p>');
         deepStrictEqual(
             data.description?.content?.[0],
             {
@@ -1303,7 +1305,13 @@ Content-Type: application/json
             {
                 "type": "paragraph",
                 "content": [
-                    { "type": "text", "text": "Please enter your first and last name - this field is now optional" }
+                    { "type": "text", "text": "Please enter your " },
+                    { "type": "text", "marks": [{ "type": "bold" }], "text": "first and last name" },
+                    { "type": "text", "text": " - this field is now " },
+                    { "type": "text", "marks": [{ "type": "italic" }], "text": "optional" },
+                    { "type": "text", "text": ". See " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://example.com/profile" } }], "text": "profile" },
+                    { "type": "text", "text": "." }
                 ]
             }
         ]
@@ -1325,6 +1333,13 @@ Content-Type: application/json
         equal(data.required, false, 'Required should be updated to false');
         equal(data.sectionId, sectionNodeId, 'Section ID should match');
         equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
+
+        const html = data.descriptionHtml;
+        equal(html.includes('<strong>'), true, 'descriptionHtml should render strong');
+        equal(html.includes('<em>'), true, 'descriptionHtml should render em');
+        equal(html.includes('<a'), true, 'descriptionHtml should render link');
+        equal(html.includes('https://example.com/profile'), true, 'descriptionHtml should include link href');
         deepStrictEqual(
             data.description?.content?.[0],
             {
@@ -1332,7 +1347,34 @@ Content-Type: application/json
                 content: [
                     {
                         type: 'text',
-                        text: 'Please enter your first and last name - this field is now optional',
+                        text: 'Please enter your ',
+                    },
+                    {
+                        type: 'text',
+                        marks: [{ type: 'bold' }],
+                        text: 'first and last name',
+                    },
+                    {
+                        type: 'text',
+                        text: ' - this field is now ',
+                    },
+                    {
+                        type: 'text',
+                        marks: [{ type: 'italic' }],
+                        text: 'optional',
+                    },
+                    {
+                        type: 'text',
+                        text: '. See ',
+                    },
+                    {
+                        type: 'text',
+                        marks: [{ type: 'link', attrs: { href: 'https://example.com/profile' } }],
+                        text: 'profile',
+                    },
+                    {
+                        type: 'text',
+                        text: '.',
                     },
                 ],
             },
@@ -1364,7 +1406,13 @@ Content-Type: application/json
             {
                 "type": "paragraph",
                 "content": [
-                    { "type": "text", "text": "Please enter your first and last name - this field is now optional" }
+                    { "type": "text", "text": "Please enter your " },
+                    { "type": "text", "marks": [{ "type": "bold" }], "text": "first and last name" },
+                    { "type": "text", "text": " - this field is now " },
+                    { "type": "text", "marks": [{ "type": "italic" }], "text": "optional" },
+                    { "type": "text", "text": ". See " },
+                    { "type": "text", "marks": [{ "type": "link", "attrs": { "href": "https://example.com/profile" } }], "text": "profile" },
+                    { "type": "text", "text": "." }
                 ]
             }
         ]
@@ -1388,7 +1436,34 @@ Content-Type: application/json
                 content: [
                     {
                         type: 'text',
-                        text: 'Please enter your first and last name - this field is now optional',
+                        text: 'Please enter your ',
+                    },
+                    {
+                        type: 'text',
+                        marks: [{ type: 'bold' }],
+                        text: 'first and last name',
+                    },
+                    {
+                        type: 'text',
+                        text: ' - this field is now ',
+                    },
+                    {
+                        type: 'text',
+                        marks: [{ type: 'italic' }],
+                        text: 'optional',
+                    },
+                    {
+                        type: 'text',
+                        text: '. See ',
+                    },
+                    {
+                        type: 'text',
+                        marks: [{ type: 'link', attrs: { href: 'https://example.com/profile' } }],
+                        text: 'profile',
+                    },
+                    {
+                        type: 'text',
+                        text: '.',
                     },
                 ],
             },
