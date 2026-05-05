@@ -265,7 +265,7 @@ GET {{BASE_URL}}/forms/{{formId}}
         console.log('Form visibility:', data.visibility);
         console.log('Publish Time:', data.publishTime);
         console.log('Deadline:', data.deadline);
-        console.log('Cover Image:', data.coverImageUrl || '(none)');
+        console.log('Cover Image:', data.coverImage || '(none)');
         console.log('Google Sheet URL:', data.googleSheetUrl || '(none)');
         console.log('Created At:', data.createdAt);
         console.log('Updated At:', data.updatedAt);
