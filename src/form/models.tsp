@@ -15,12 +15,20 @@ namespace CoreSystem.Forms {
 
 	@doc("The request body for creating/updating a form.")
 	@example(#{
+		creator: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		lastEditor: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
 		title: "Enter SDC Form",
 		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] },
 		messageAfterSubmission: "Thank you for your submission!",
 		visibility: FormVisibility.public,
 	})
 	model FormRequest {
+		@doc("The user who created the form. Required on create; should be omitted on update.")
+		creator?: uuid;
+
+		@doc("The user who last edited the form. Required on create and should be updated on update.")
+		lastEditor?: uuid;
+
 		@doc("The title of the form.")
 		title: string;
 
@@ -52,7 +60,7 @@ namespace CoreSystem.Forms {
 		visibility: FormVisibility;
 	}
 
-	@doc("The structure of a form.")
+	@doc("Response model for a form with creator and last editor user details.")
 	@example(#{
 		id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 		title: "SDC 2025 Recruitment Form",
@@ -69,7 +77,20 @@ namespace CoreSystem.Forms {
 		previewMessage: "Join us for an exciting journey",
 		status: FormStatus.published,
 		unitId: "d26e9c90-4747-496b-9953-7e7c4f97643f",
-		lastEditor: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		creator: #{
+			id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+			name: "John Doe",
+			username: "john_doe",
+			avatarUrl: "https://avatars.githubusercontent.com/u/12345678",
+			emails: #["john.doe@example.com", "john@gmail.com"],
+		},
+		lastEditor: #{
+			id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+			name: "John Doe",
+			username: "john_doe",
+			avatarUrl: "https://avatars.githubusercontent.com/u/12345678",
+			emails: #["john.doe@example.com", "john@gmail.com"],
+		},
 		deadline: utcDateTime.fromISO("2025-03-31T23:59:59Z"),
 		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
 		messageAfterSubmission: "Thank you for your application! We'll get back to you soon.",
@@ -80,7 +101,7 @@ namespace CoreSystem.Forms {
 		createdAt: utcDateTime.fromISO("2025-01-15T10:00:00Z"),
 		updatedAt: utcDateTime.fromISO("2025-02-10T14:30:00Z"),
 	})
-	model Form {
+	model FormResponse {
 		@doc("The form's unique identifier.")
 		id: uuid;
 
@@ -102,11 +123,14 @@ namespace CoreSystem.Forms {
 		@doc("The unit this form belongs to.")
 		unitId: uuid;
 
-		@doc("The user who last editted the form.")
-		lastEditor: uuid;
+		@doc("The user who created the form.")
+		creator: CoreSystem.User.ProfileResponse;
 
-		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
-		deadline?: utcDateTime;
+		@doc("The user who last edited the form.")
+		lastEditor: CoreSystem.User.ProfileResponse;
+
+		@doc("Deadline for form completion.")
+		deadline: utcDateTime;
 
 		@doc("When the form is available to be filled.")
 		publishTime?: utcDateTime;
