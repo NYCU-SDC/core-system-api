@@ -15,20 +15,12 @@ namespace CoreSystem.Forms {
 
 	@doc("The request body for creating/updating a form.")
 	@example(#{
-		creator: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
-		lastEditor: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
 		title: "Enter SDC Form",
 		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] },
 		messageAfterSubmission: "Thank you for your submission!",
 		visibility: FormVisibility.public,
 	})
 	model FormRequest {
-		@doc("The user who created the form. Required on create; should be omitted on update.")
-		creator?: uuid;
-
-		@doc("The user who last edited the form. Required on create and should be updated on update.")
-		lastEditor?: uuid;
-
 		@doc("The title of the form.")
 		title: string;
 
@@ -129,8 +121,8 @@ namespace CoreSystem.Forms {
 		@doc("The user who last edited the form.")
 		lastEditor: CoreSystem.User.ProfileResponse;
 
-		@doc("Deadline for form completion.")
-		deadline: utcDateTime;
+		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
+		deadline?: utcDateTime;
 
 		@doc("When the form is available to be filled.")
 		publishTime?: utcDateTime;
