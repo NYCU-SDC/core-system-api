@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-04'
+  version: '2026-05-06'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -2529,14 +2529,6 @@ components:
         - title
         - visibility
       properties:
-        creator:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who created the form. Required on create; should be omitted on update.
-        lastEditor:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who last edited the form. Required on create and should be updated on update.
         title:
           type: string
           description: The title of the form.
@@ -2574,9 +2566,7 @@ components:
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
       description: The request body for creating/updating a form.
       examples:
-        - creator: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-          title: Enter SDC Form
+        - title: Enter SDC Form
           description:
             type: doc
             content:
@@ -2589,14 +2579,6 @@ components:
     Forms.FormRequestUpdate:
       type: object
       properties:
-        creator:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who created the form. Required on create; should be omitted on update.
-        lastEditor:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who last edited the form. Required on create and should be updated on update.
         title:
           type: string
           description: The title of the form.
@@ -2634,9 +2616,7 @@ components:
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
       description: The request body for creating/updating a form.
       examples:
-        - creator: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-          title: Enter SDC Form
+        - title: Enter SDC Form
           description:
             type: doc
             content:
@@ -2657,7 +2637,6 @@ components:
         - unitId
         - creator
         - lastEditor
-        - deadline
         - messageAfterSubmission
         - visibility
         - createdAt
@@ -2700,7 +2679,7 @@ components:
         deadline:
           type: string
           format: date-time
-          description: Deadline for form completion.
+          description: (Optional) Deadline for form completion. If not specified, returns null.
         publishTime:
           type: string
           format: date-time
