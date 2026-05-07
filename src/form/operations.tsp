@@ -6,19 +6,19 @@ namespace CoreSystem.Forms {
 	@doc("List all existing forms.")
 	@route("/forms")
 	@get
-	op listForms(): Form[];
+	op listForms(): FormResponse[];
 
 	@summary("Get Form")
 	@doc("Get a specific form by its unique identifier. Description fields are returned as ProseMirror JSON for admin editing, with rendered HTML available in `descriptionHtml` for frontend display.")
 	@route("/forms/{formId}")
 	@get
-	op getFormById(@path formId: uuid): Form;
+	op getFormById(@path formId: uuid): FormResponse;
 
 	@summary("Update Form")
 	@doc("Update an existing form by its unique identifier. Description fields in the request body should be sent as ProseMirror JSON from the Tiptap editor.")
 	@route("/forms/{formId}")
 	@patch(#{ implicitOptionality: true })
-	op updateForm(@path formId: uuid, @body updateFormRequest: FormRequest): Form;
+	op updateForm(@path formId: uuid, @body updateFormRequest: FormRequest): FormResponse;
 
 	@summary("Delete Form")
 	@doc("Delete an existing form by its unique identifier.")
@@ -43,7 +43,7 @@ namespace CoreSystem.Forms {
 	@post
 	op archiveForm(@path formId: uuid): {
 		@statusCode statusCode: 200;
-		@body response: Form;
+		@body response: FormResponse;
 	};
 
 	@summary("Unarchive Form")
@@ -52,7 +52,7 @@ namespace CoreSystem.Forms {
 	@post
 	op unarchiveForm(@path formId: uuid): {
 		@statusCode statusCode: 200;
-		@body response: Form;
+		@body response: FormResponse;
 	};
 
 	// === Cover Image Operations ===
