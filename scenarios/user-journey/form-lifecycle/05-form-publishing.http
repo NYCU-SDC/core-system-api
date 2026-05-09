@@ -257,7 +257,7 @@ GET {{BASE_URL}}/forms/{{formId}}
         console.log('Status:', data.status);
         console.log('Title:', data.title);
         console.log('Description (ProseMirror doc):', data.description?.type);
-        console.log('DescriptionHtml:', data.descriptionHtml);
+        console.log('Description HTML:', data.descriptionHtml);
         console.log('Form visibility:', data.visibility);
         console.log('Publish Time:', data.publishTime);
         console.log('Deadline:', data.deadline);
