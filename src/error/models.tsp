@@ -26,6 +26,15 @@ namespace CoreSystem {
 	}
 
 	@error
+	@example(#{ title: "Conflict", status: 409, type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409", detail: "You do not have permission to access this resource" })
+	model Conflict {
+		title: "Conflict";
+		status: 409;
+		type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409";
+		detail: string;
+	}
+
+	@error
 	@example(#{ title: "Not Found", status: 404, type: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404", detail: "The requested resource was not found" })
 	model NotFound {
 		title: "Not Found";

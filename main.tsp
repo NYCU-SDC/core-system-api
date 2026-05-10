@@ -74,6 +74,10 @@ import "./src/form/response/operations.tsp";
 import "./src/form/answer/models.tsp";
 import "./src/form/answer/operations.tsp";
 
+// --- View ---
+import "./src/form/view/models.tsp";
+import "./src/form/view/operations.tsp";
+
 // ═════════════════════════════════════════════════
 // === File ===
 // ═════════════════════════════════════════════════
