@@ -919,7 +919,7 @@ paths:
     patch:
       operationId: Views_updateFormView
       summary: Update Form View
-      description: Partially update a view. Only the provided fields (name, locked, order) will be updated. Can be used to rename, lock/unlock, or update column visibility.
+      description: Partially update a view. Only the provided fields (name, order) will be updated. Can be used to rename, lock/unlock, or update column visibility.
       parameters:
         - name: formId
           in: path
@@ -1022,7 +1022,7 @@ paths:
       tags:
         - Views
   /api/forms/{formId}/views/{viewId}/lock:
-    patch:
+    post:
       operationId: Views_lockFormView
       summary: Lock Form View
       description: Lock a view to prevent further modifications (delete).
@@ -1059,7 +1059,7 @@ paths:
       tags:
         - Views
   /api/forms/{formId}/views/{viewId}/unlock:
-    patch:
+    post:
       operationId: Views_unlockFormView
       summary: Unlock Form View
       description: Unlock a view to allow modifications (delete).
