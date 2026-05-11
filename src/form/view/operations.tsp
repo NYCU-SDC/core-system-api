@@ -56,6 +56,36 @@ namespace CoreSystem.Views {
 		@body error: NotFound;
 	};
 
+	@summary("Lock Form View")
+	@doc("Lock a view to prevent further modifications (delete).")
+	@route("/forms/{formId}/views/{viewId}/lock")
+	@patch(#{ implicitOptionality: true })
+	op lockFormView(@path formId: uuid, @path viewId: uuid): {
+		@statusCode statusCode: 200;
+		@body response: ViewResponse;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
+	@summary("Unlock Form View")
+	@doc("Unlock a view to allow modifications (delete).")
+	@route("/forms/{formId}/views/{viewId}/unlock")
+	@patch(#{ implicitOptionality: true })
+	op unlockFormView(@path formId: uuid, @path viewId: uuid): {
+		@statusCode statusCode: 200;
+		@body response: ViewResponse;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
 	@summary("Delete Form View")
 	@doc("Delete a view by its unique identifier.")
 	@route("/forms/{formId}/views/{viewId}")
