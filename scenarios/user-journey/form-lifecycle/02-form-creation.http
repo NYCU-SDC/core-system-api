@@ -48,7 +48,29 @@ Content-Type: application/json
 GET {{BASE_URL}}/forms/me
 
 ?? status == 200
-?? js Array.isArray(response.body)
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    const data = JSON.parse(response.body);
+
+    test('GET /forms/me returns a JSON array (UserFormListResponse)', () => {
+        equal(Array.isArray(data), true, 'Response must be a bare array of user forms');
+    });
+
+    test('each entry matches UserForm shape when list is non-empty', () => {
+        const allowedStatus = new Set(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED']);
+        for (const row of data) {
+            equal(typeof row.id, 'string', 'id must be present');
+            equal(typeof row.title, 'string', 'title must be present');
+            equal(allowedStatus.has(row.status), true, `status must be a UserFormStatus value, got: ${row.status}`);
+            if (Object.prototype.hasOwnProperty.call(row, 'responseIds')) {
+                equal(Array.isArray(row.responseIds), true, 'responseIds when present must be an array');
+            }
+        }
+    });
+}}
 
 ###
 

@@ -74,8 +74,14 @@ namespace CoreSystem.Unit {
 
 	// --- Current User Forms ---
 	@summary("List Forms of Current User")
-	@doc("List all forms of current user")
+	@doc("List all forms assigned to the current user with per-user progress. Returns an empty array when the user has no forms. Requires authentication.")
 	@route("/forms/me")
 	@get
-	op listFormsOfCurrentUser(): UserFormListResponse;
+	op listFormsOfCurrentUser(): {
+		@statusCode statusCode: 200;
+		@body forms: UserFormListResponse;
+	} | {
+		@statusCode statusCode: 401;
+		@body error: Unauthorized;
+	};
 }
