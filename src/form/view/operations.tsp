@@ -10,12 +10,12 @@ namespace CoreSystem.Views {
 		@statusCode statusCode: 201;
 		@body response: ViewResponse;
 	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
-	} | {
-		@statusCode statusCode: 409;
-		@body error: Conflict;
-	} ;
+	};
 
 	@summary("List Form Views")
 	@doc("List all views for a specific form.")
@@ -49,12 +49,12 @@ namespace CoreSystem.Views {
 		@statusCode statusCode: 200;
 		@body response: ViewResponse;
 	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
-	} | {
-		@statusCode statusCode: 409;
-		@body error: Conflict;
-	} ;
+	};
 
 	@summary("Delete Form View")
 	@doc("Delete a view by its unique identifier.")
