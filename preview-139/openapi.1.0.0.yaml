@@ -1021,6 +1021,80 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Views
+  /api/forms/{formId}/views/{viewId}/lock:
+    patch:
+      operationId: Views_lockFormView
+      summary: Lock Form View
+      description: Lock a view to prevent further modifications (delete).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/unlock:
+    patch:
+      operationId: Views_unlockFormView
+      summary: Unlock Form View
+      description: Unlock a view to allow modifications (delete).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
   /api/forms/{formId}/workflow:
     get:
       operationId: FormWorkflow_getWorkflow
