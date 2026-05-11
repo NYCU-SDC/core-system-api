@@ -42,7 +42,7 @@ namespace CoreSystem.Views {
 	};
 
 	@summary("Update Form View")
-	@doc("Partially update a view. Only the provided fields (name, locked, order) will be updated. Can be used to rename, lock/unlock, or update column visibility.")
+	@doc("Partially update a view. Only the provided fields (name, order) will be updated. Can be used to rename, or update column visibility.")
 	@route("/forms/{formId}/views/{viewId}")
 	@patch(#{ implicitOptionality: true })
 	op updateFormView(@path formId: uuid, @path viewId: uuid, @body req: UpdateViewRequest): {
@@ -59,7 +59,7 @@ namespace CoreSystem.Views {
 	@summary("Lock Form View")
 	@doc("Lock a view to prevent further modifications (delete).")
 	@route("/forms/{formId}/views/{viewId}/lock")
-	@patch(#{ implicitOptionality: true })
+	@post()
 	op lockFormView(@path formId: uuid, @path viewId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: ViewResponse;
@@ -74,7 +74,7 @@ namespace CoreSystem.Views {
 	@summary("Unlock Form View")
 	@doc("Unlock a view to allow modifications (delete).")
 	@route("/forms/{formId}/views/{viewId}/unlock")
-	@patch(#{ implicitOptionality: true })
+	@post()
 	op unlockFormView(@path formId: uuid, @path viewId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: ViewResponse;
