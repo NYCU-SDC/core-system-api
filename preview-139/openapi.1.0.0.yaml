@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-10'
+  version: '2026-05-11'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -844,18 +844,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '404':
           description: The server cannot find the requested resource.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
-        '409':
-          description: The request conflicts with the current state of the server.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Conflict'
       tags:
         - Views
     get:
@@ -938,18 +938,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '404':
           description: The server cannot find the requested resource.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
-        '409':
-          description: The request conflicts with the current state of the server.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Conflict'
       tags:
         - Views
       requestBody:
