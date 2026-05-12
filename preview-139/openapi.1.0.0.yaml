@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-11'
+  version: '2026-05-12'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -5819,23 +5819,20 @@ components:
     Views.UpdateViewRequest:
       type: object
       properties:
-        name:
+        title:
           type: string
-          description: The new display name of the view.
-        locked:
-          type: boolean
-          description: The locked state of the view.
+          description: The new display title of the view.
         order:
           type: integer
           description: The new order of the current view among all views.
       description: Request model for updating a view. Only provided fields will be updated.
       examples:
-        - name: React
+        - title: React
     Views.ViewResponse:
       type: object
       required:
         - id
-        - name
+        - title
         - locked
         - order
         - createdAt
@@ -5845,9 +5842,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The view's unique identifier.
-        name:
+        title:
           type: string
-          description: The display name of the view.
+          description: The display title of the view.
         locked:
           type: boolean
           description: Whether this view is locked from editing.
@@ -5865,7 +5862,7 @@ components:
       description: Response model for a single form view.
       examples:
         - id: f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
-          name: Core System
+          title: Core System
           locked: false
           order: 0
           createdAt: '2025-01-15T10:00:00Z'
