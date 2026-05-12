@@ -4,7 +4,7 @@ namespace CoreSystem.Views {
 	@doc("Response model for a single form view.")
 	@example(#{
 		id: "f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c",
-		name: "Core System",
+		title: "Core System",
 		locked: false,
         order: 0,
 		createdAt: utcDateTime.fromISO("2025-01-15T10:00:00Z"),
@@ -14,8 +14,8 @@ namespace CoreSystem.Views {
 		@doc("The view's unique identifier.")
 		id: uuid;
 
-		@doc("The display name of the view.")
-		name: string;
+		@doc("The display title of the view.")
+		title: string;
 
 		@doc("Whether this view is locked from editing.")
 		locked: boolean;
@@ -31,13 +31,10 @@ namespace CoreSystem.Views {
 	}
 
 	@doc("Request model for updating a view. Only provided fields will be updated.")
-	@example(#{ name: "React" })
+	@example(#{ title: "React" })
 	model UpdateViewRequest {
-		@doc("The new display name of the view.")
-		name?: string;
-
-		@doc("The locked state of the view.")
-		locked?: boolean;
+		@doc("The new display title of the view.")
+		title?: string;
 
         @doc("The new order of the current view among all views.")
         order?: integer;
