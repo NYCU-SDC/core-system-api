@@ -65,8 +65,9 @@ GET {{BASE_URL}}/forms/me
             equal(typeof row.id, 'string', 'id must be present');
             equal(typeof row.title, 'string', 'title must be present');
             equal(allowedStatus.has(row.status), true, `status must be a UserFormStatus value, got: ${row.status}`);
-            if (Object.prototype.hasOwnProperty.call(row, 'responseIds')) {
-                equal(Array.isArray(row.responseIds), true, 'responseIds when present must be an array');
+            equal(Array.isArray(row.responseIds), true, 'responseIds must always be an array');
+            for (const rid of row.responseIds) {
+                equal(typeof rid, 'string', 'each responseIds entry must be a string UUID');
             }
         }
     });
