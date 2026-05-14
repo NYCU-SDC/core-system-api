@@ -13,6 +13,7 @@ namespace CoreSystem.Unit {
 		deadline: utcDateTime.fromISO("2026-03-31T23:59:59Z"),
 		status: UserFormStatus.not_started,
 		allowEditResponse: false,
+		responseIds: #[],
 	})
 	@example(#{
 		id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
@@ -46,13 +47,13 @@ namespace CoreSystem.Unit {
 		@doc("Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.")
 		allowEditResponse: boolean;
 
-		@doc("The unique identifiers of the user's responses to the form, if they exist")
-		responseIds?: uuid[];
+		@doc("The user's response IDs for this form. Always present; empty when there are no responses. Order matches the backend list when aggregating the caller's responses (append order per form).")
+		responseIds: uuid[];
 	}
 
 	@doc("Response model for listing all forms of current user")
 	@example(#[
-		#{ id: "5a1b2c3d-4e5f-6789-0abc-def123456789", title: "Annual Survey 2026", deadline: utcDateTime.fromISO("2026-03-31T23:59:59Z"), allowEditResponse: false, status: UserFormStatus.not_started },
+		#{ id: "5a1b2c3d-4e5f-6789-0abc-def123456789", title: "Annual Survey 2026", deadline: utcDateTime.fromISO("2026-03-31T23:59:59Z"), allowEditResponse: false, status: UserFormStatus.not_started, responseIds: #[] },
 		#{
 			id: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
 			title: "SDC 2025 Recruitment Form",
