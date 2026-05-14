@@ -336,7 +336,7 @@ GET {{BASE_URL}}/forms/{{formId}}/views
 DELETE {{BASE_URL}}/forms/{{formId}}/views/{{thirdViewId}}
 
 {{
-    test.status(204);
+    test.status(200);
 
     console.log('Deleted view:', thirdViewId);
 }}
