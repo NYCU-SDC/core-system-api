@@ -6,6 +6,7 @@
 # - Get form by ID
 # - Update form metadata
 # - List forms
+# - List current user's forms (GET /forms/me, UserForm.responseIds always an array)
 # - Get available fonts
 # - Upload cover image (optional)
 
@@ -59,7 +60,7 @@ GET {{BASE_URL}}/forms/me
         equal(Array.isArray(data), true, 'Response must be a bare array of user forms');
     });
 
-    test('each entry matches UserForm shape when list is non-empty', () => {
+    test('each UserForm row has required shape (responseIds always present as array)', () => {
         const allowedStatus = new Set(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED']);
         for (const row of data) {
             equal(typeof row.id, 'string', 'id must be present');
