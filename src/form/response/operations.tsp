@@ -25,6 +25,20 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Cancel Form Response Submission")
+	@doc("Cancel a submitted response and revert it to draft. Only submitted responses can be canceled.")
+	@route("/responses/{responseId}/cancel")
+	@post
+	op cancelFormResponseSubmission(@path responseId: uuid): {
+		@statusCode statusCode: 200;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	};
+
 	@summary("List Form Responses")
 	@doc("List all responses for a specific form.")
 	@route("/forms/{formId}/responses")

@@ -1155,3 +1155,48 @@ GET {{BASE_URL}}/forms/{{formId}}/responses
 }}
 
 ###
+
+# ============================================
+# Cancel Submitted Response
+# ============================================
+# @name cancelSubmittedResponse
+# @ref listFormResponses
+POST {{BASE_URL}}/responses/{{responseId}}/cancel
+
+{{
+    test.status(200);
+
+    test('Response submission canceled successfully', () => {
+        console.log('Response submission canceled successfully');
+    });
+}}
+
+###
+
+# ============================================
+# Get Response After Cancel
+# ============================================
+# @name getResponseAfterCancel
+# @ref cancelSubmittedResponse
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Response status changed back to DRAFT', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id, responseId, 'Response ID should match');
+        equal(data.formId, formId, 'Form ID should match');
+        equal(data.progress, 'DRAFT', 'Progress should be DRAFT after cancellation');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+
+        console.log('Response ID:', data.id);
+        console.log('Progress:', data.progress);
+        console.log('Form ID:', data.formId);
+    });
+}}
+
+###
