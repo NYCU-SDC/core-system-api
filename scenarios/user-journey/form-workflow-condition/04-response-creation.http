@@ -441,6 +441,11 @@ GET {{BASE_URL}}/forms/{{formId}}/responses
     test('Form responses listed', () => {
         const data = JSON.parse(response.body);
         equal(data.formId, formId, 'Form ID should match');
+        equal(typeof data.totalCount, 'number', 'totalCount should be a number');
+        equal(typeof data.draftCount, 'number', 'draftCount should be a number');
+        equal(typeof data.submittedCount, 'number', 'submittedCount should be a number');
+        equal(data.totalCount, data.draftCount + data.submittedCount, 'totalCount should equal draftCount + submittedCount');
+        equal(data.submittedCount >= 1, true, 'Should have at least one submitted response');
         equal(Array.isArray(data.responses), true, 'Responses should be an array');
         equal(data.responses.length >= 1, true, 'Should have at least one response');
         
