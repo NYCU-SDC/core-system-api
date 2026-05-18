@@ -9,6 +9,7 @@ Negative tests cover:
 - **404** – Not Found (invalid slugs, non-existent form/section/question/response IDs)
 - **400** – Validation / Bad Request (missing required fields, invalid types, invalid values)
 - **403** – Forbidden (e.g. creating a form under an org the user is not a member of)
+- Highlight error paths for invalid question types and missing highlight resources
 
 These scenarios **depend on the positive form lifecycle** (`../form-lifecycle/`). Each negative file imports the corresponding positive flow to get auth, org, form, section, question, and response variables, then runs only the negative cases.
 
@@ -50,6 +51,11 @@ Execute tests in the following order:
    - Imports `../form-lifecycle/06-response-creation.http`
    - Wrong questionType for question, invalid value type, value out of range → 400
    - Non-existent response/question IDs, invalid answer payloads → 404 / 400
+
+8. **`07-highlight-negative.http`** – Highlight Error Paths
+   - Imports `../form-lifecycle/06a-form-highlight.http`
+   - Non-choice highlight question → 400
+   - Non-existent form and missing highlight configuration → 404
 
 ## Setup
 

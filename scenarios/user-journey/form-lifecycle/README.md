@@ -11,6 +11,7 @@ These tests cover the full journey of a form from creation to archival, includin
 - Basic workflow setup
 - Form publishing
 - Response submission and management
+- Highlight configuration and statistics
 - Form archival
 
 ## Test Files
@@ -51,31 +52,16 @@ Execute tests in the following order:
    - Final response submission
    - Verify response status transitions
 
-7. **`07-optional-google-sheet.http`** - Google Sheet Integration _(Coming soon)_
-   - Non-blocking tests for Google Sheet features
-   - Service account email retrieval
-   - Failures logged as warnings only
+7. **`06a-form-highlight.http`** - Form Highlight Lifecycle
+   - Verify unconfigured highlight state
+   - Set a choice-based highlight question
+   - Verify per-choice response counts
+   - Patch and clear highlight configuration
 
-8. **`08-response-management.http`** - Response Management _(Coming soon)_
-   - List and view responses
-   - Response deletion
-
-9. **`09-form-archival.http`** - Form Archival & Cleanup _(Coming soon)_
-   - Non-blocking tests for Google Sheet features
-   - Service account email retrieval
-   - Failures logged as warnings only
-
-10. **`07-response-submission.http`** - Form Submission _(Coming soon)_
-    - Response creation
-    - Answer submission for all question types
-
-11. **`08-response-management.http`** - Response Management _(Coming soon)_
-    - List and view responses
-    - Response deletion
-
-12. **`09-form-archival.http`** - Form Archival & Cleanup _(Coming soon)_
-    - Archive form
-    - Verify archived state
+8. **`07-form-archiving.http`** - Form Archival & Cleanup
+   - Archive form
+   - Verify archived state in listings
+   - Unarchive and re-publish form
 
 ## Setup
 
