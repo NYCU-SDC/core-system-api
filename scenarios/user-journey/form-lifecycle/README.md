@@ -27,6 +27,7 @@ Execute tests in the following order:
    - Creates new form
    - Tests form metadata updates
    - Tests form dressing (fonts, colors)
+   - **`GET /forms/me`** — asserts each `UserForm` has required fields and **`responseIds` is always an array** (possibly empty before any responses exist)
    - Lists forms and sections
 
 3. **`03-workflow-basic.http`** - Minimal Workflow Setup
@@ -46,6 +47,7 @@ Execute tests in the following order:
 
 6. **`06-response-creation.http`** - Response Creation & Answer Submission
    - Create form response
+   - **`GET /forms/me`** — after creating a response, asserts the form row’s **`responseIds`** contains that response id (`IN_PROGRESS`)
    - Submit answers for all question types
    - Test draft saving (auto-save) functionality
    - File upload and auto-answer creation
