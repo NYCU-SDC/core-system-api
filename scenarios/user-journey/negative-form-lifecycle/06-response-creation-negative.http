@@ -555,10 +555,32 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Cancel submission with non-existent response ID (expect 404)
+# ============================================
+# @name cancelNonExistentResponse
+# @ref submitNonExistentResponse
+POST {{BASE_URL}}/responses/00000000-0000-0000-0000-000000000000/cancel
+
+?? status == 404
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Not Found', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Not Found', 'Response title should be Not Found');
+        equal(data.status, 404, 'Status in body should be 404');
+    });
+}}
+
+###
+
+# ============================================
 # List responses for non-existent form ID (expect 404)
 # ============================================
 # @name listResponsesNonExistentForm
-# @ref submitNonExistentResponse
+# @ref cancelNonExistentResponse
 GET {{BASE_URL}}/forms/00000000-0000-0000-0000-000000000000/responses
 
 ?? status == 404
@@ -571,6 +593,53 @@ GET {{BASE_URL}}/forms/00000000-0000-0000-0000-000000000000/responses
         const data = JSON.parse(response.body);
         equal(data.title, 'Not Found', 'Response title should be Not Found');
         equal(data.status, 404, 'Status in body should be 404');
+    });
+}}
+
+###
+
+# ============================================
+# Create draft response for cancel validation
+# ============================================
+# @name createDraftResponseForCancel
+# @ref listResponsesNonExistentForm
+POST {{BASE_URL}}/forms/{{formId}}/responses
+
+?? status == 201
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Draft response created successfully', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Response ID should exist');
+        console.log('Created draft response:', data.id);
+    });
+
+    const data = JSON.parse(response.body);
+    exports.draftResponseId = data.id;
+}}
+
+###
+
+# ============================================
+# Cancel draft response submission (expect 400)
+# ============================================
+# @name cancelDraftResponseSubmission
+# @ref createDraftResponseForCancel
+POST {{BASE_URL}}/responses/{{draftResponseId}}/cancel
+
+?? status == 400
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Error body indicates Bad Request', () => {
+        const data = JSON.parse(response.body);
+        equal(data.title, 'Bad Request', 'Response title should be Bad Request');
+        equal(data.status, 400, 'Status in body should be 400');
     });
 }}
 

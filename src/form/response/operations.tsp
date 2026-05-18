@@ -34,6 +34,9 @@ namespace CoreSystem.Responses {
 	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
 	};
 
 	@summary("List Form Responses")
