@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-11'
+  version: '2026-05-18'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -384,7 +384,7 @@ paths:
     get:
       operationId: Unit_listFormsOfCurrentUser
       summary: List Forms of Current User
-      description: List all forms of current user
+      description: List all forms assigned to the current user with per-user progress. Returns an empty array when the user has no forms. Requires authentication.
       parameters: []
       responses:
         '200':
@@ -393,6 +393,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unit.UserFormListResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
       tags:
         - Unit
   /api/forms/{formId}:
@@ -523,6 +529,127 @@ paths:
             encoding:
               coverImage:
                 contentType: application/json
+  /api/forms/{formId}/highlight:
+    get:
+      operationId: Forms_getFormHighlight
+      summary: Get Form Highlight
+      description: Get the highlight question and its response statistics for a specific form. Returns 200 with questionId=null when no highlight is configured.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.HighlightResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+    put:
+      operationId: Forms_setFormHighlight
+      summary: Set Form Highlight
+      description: Set or update the highlight question for a specific form. Returns 400 if the question is not a choice-based type (singleChoice, multipleChoice, dropdown, detailedMultipleChoice).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.HighlightResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.HighlightRequest'
+    patch:
+      operationId: Forms_updateFormHighlight
+      summary: Update Form Highlight
+      description: 'Partially update the configured highlight for a specific form. Currently supports updating displayTitle only. Send displayTitle: null to fall back to the question''s current title.'
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.HighlightResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.HighlightPatchRequest'
+    delete:
+      operationId: Forms_clearFormHighlight
+      summary: Clear Form Highlight
+      description: Clear the highlight question for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
   /api/forms/{formId}/publish:
     post:
       operationId: Forms_publishForm
@@ -1660,6 +1787,12 @@ paths:
       responses:
         '200':
           description: The request has succeeded.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -2550,6 +2683,7 @@ components:
       required:
         - title
         - visibility
+        - allowEditResponse
       properties:
         title:
           type: string
@@ -2586,6 +2720,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
@@ -2598,6 +2735,7 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+          allowEditResponse: true
     Forms.FormRequestUpdate:
       type: object
       properties:
@@ -2636,6 +2774,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
@@ -2648,6 +2789,7 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+          allowEditResponse: true
     Forms.FormResponse:
       type: object
       required:
@@ -2659,8 +2801,10 @@ components:
         - unitId
         - creator
         - lastEditor
+        - deadline
         - messageAfterSubmission
         - visibility
+        - allowEditResponse
         - createdAt
         - updatedAt
       properties:
@@ -2701,7 +2845,7 @@ components:
         deadline:
           type: string
           format: date-time
-          description: (Optional) Deadline for form completion. If not specified, returns null.
+          description: The deadline of the form
         publishTime:
           type: string
           format: date-time
@@ -2723,6 +2867,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the current user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
         createdAt:
           type: string
           format: date-time
@@ -2779,6 +2926,7 @@ components:
           coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
           googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
           visibility: PUBLIC
+          allowEditResponse: true
           createdAt: '2025-01-15T10:00:00Z'
           updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormStatus:
@@ -2827,6 +2975,98 @@ components:
       description: Verification result for the given Google Sheet URL.
       examples:
         - isValid: true
+    Forms.HighlightChoice:
+      type: object
+      required:
+        - choiceId
+        - name
+        - count
+      properties:
+        choiceId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the choice.
+        name:
+          type: string
+          description: The name/text of the choice.
+        count:
+          type: integer
+          format: int32
+          description: Number of responses (draft + submitted) that selected this choice.
+      description: A choice with its response count for highlight statistics.
+      examples:
+        - choiceId: f421cfc2-2b84-4da9-9629-011af609935a
+          name: 大一
+          count: 42
+    Forms.HighlightPatchRequest:
+      type: object
+      properties:
+        displayTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: Custom display title for the highlight. Send null to fall back to the question's current title.
+      description: Request body for partially updating a form's highlight.
+      examples:
+        - displayTitle: Updated highlight title
+    Forms.HighlightRequest:
+      type: object
+      required:
+        - questionId
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID to highlight. Must be a choice-based question (singleChoice, multipleChoice, dropdown, detailedMultipleChoice).
+        displayTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: Custom display title for the highlight. If omitted or null, the backend falls back to the question's current title.
+      description: Request body for setting a form's highlight question.
+      examples:
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          displayTitle: 年級分佈統計
+    Forms.HighlightResponse:
+      type: object
+      required:
+        - questionId
+        - questionTitle
+        - displayTitle
+        - choices
+      properties:
+        questionId:
+          anyOf:
+            - $ref: '#/components/schemas/uuid'
+            - type: 'null'
+          description: The highlighted question's unique identifier. Null if no highlight is configured.
+        questionTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: The current title of the highlighted question, fetched from the question. Null if no highlight is configured.
+        displayTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: The display title shown on the dashboard. Equals stored custom title if set, otherwise falls back to questionTitle. Null if no highlight is configured.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.HighlightChoice'
+          description: Response counts per choice option. Empty array if no highlight is configured.
+      description: Response model for a form's highlight question statistics. When no highlight is configured, questionId is null and all other fields are null or empty.
+      examples:
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          questionTitle: 你的年級是？
+          displayTitle: 年級分佈統計
+          choices:
+            - choiceId: f421cfc2-2b84-4da9-9629-011af609935a
+              name: 大一
+              count: 42
+            - choiceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              name: 大二
+              count: 30
     Forms.ListSectionsResponse:
       type: object
       required:
@@ -4605,12 +4845,27 @@ components:
       type: object
       required:
         - formId
+        - totalCount
+        - draftCount
+        - submittedCount
         - responses
       properties:
         formId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form ID.
+        totalCount:
+          type: integer
+          format: int32
+          description: Total number of responses for this form.
+        draftCount:
+          type: integer
+          format: int32
+          description: Number of responses in draft state.
+        submittedCount:
+          type: integer
+          format: int32
+          description: Number of submitted responses.
         responses:
           type: array
           items:
@@ -4619,6 +4874,9 @@ components:
       description: Response model for listing all responses of a form
       examples:
         - formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          totalCount: 150
+          draftCount: 30
+          submittedCount: 120
           responses: []
     Responses.OauthAnswer:
       type: object
@@ -5350,6 +5608,7 @@ components:
         - title
         - deadline
         - status
+        - allowEditResponse
       properties:
         id:
           allOf:
@@ -5366,6 +5625,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Unit.UserFormStatus'
           description: The completion status of the form for the current user
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
         responseIds:
           type: array
           items:
@@ -5377,6 +5639,7 @@ components:
           title: Member Information Update 2025
           deadline: '2025-02-15T23:59:59Z'
           status: COMPLETED
+          allowEditResponse: true
           responseIds:
             - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
             - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
@@ -5384,12 +5647,14 @@ components:
           title: SDC 2025 Recruitment Form
           deadline: '2025-03-31T23:59:59Z'
           status: IN_PROGRESS
+          allowEditResponse: true
           responseIds:
             - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
         - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
           title: Annual Survey 2026
           deadline: '2026-03-31T23:59:59Z'
           status: NOT_STARTED
+          allowEditResponse: false
     Unit.UserFormListResponse:
       type: array
       items:
@@ -5399,17 +5664,20 @@ components:
         - - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
             title: Annual Survey 2026
             deadline: '2026-03-31T23:59:59Z'
+            allowEditResponse: false
             status: NOT_STARTED
           - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
             title: SDC 2025 Recruitment Form
             deadline: '2025-03-31T23:59:59Z'
             status: IN_PROGRESS
+            allowEditResponse: true
             responseIds:
               - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
             title: Member Information Update 2025
             deadline: '2025-02-15T23:59:59Z'
             status: COMPLETED
+            allowEditResponse: true
             responseIds:
               - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
               - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
