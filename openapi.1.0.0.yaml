@@ -1773,6 +1773,34 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Responses.AnswersRequestUpdate'
+  /api/responses/{responseId}/cancel:
+    post:
+      operationId: Responses_cancelFormResponseSubmission
+      summary: Cancel Form Response Submission
+      description: Cancel a submitted response and revert it to draft. Only submitted responses can be canceled.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
   /api/responses/{responseId}/questions/{questionId}:
     get:
       operationId: Responses_getQuestionResponse
