@@ -36,13 +36,13 @@ namespace CoreSystem.Forms {
 		choices: HighlightChoice[];
 	}
 
-	@doc("Request body for setting or clearing a form's highlight question.")
+	@doc("Request body for setting a form's highlight question.")
 	@example(#{ questionId: "ee894524-4bd8-4a64-8fd2-a53b39ca94cd", displayTitle: "年級分佈統計" })
 	model HighlightRequest {
-		@doc("The question ID to highlight. Must be a choice-based question (singleChoice, multipleChoice, dropdown, detailedMultipleChoice). Set to null to clear the entire highlight.")
-		questionId: uuid | null;
+		@doc("The question ID to highlight. Must be a choice-based question (singleChoice, multipleChoice, dropdown, detailedMultipleChoice).")
+		questionId: uuid;
 
-		@doc("Custom display title for the highlight. If omitted or null, the backend falls back to the question's current title. Ignored when questionId is null.")
+		@doc("Custom display title for the highlight. If omitted or null, the backend falls back to the question's current title.")
 		displayTitle?: string | null;
 	}
 }
