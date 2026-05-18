@@ -45,4 +45,11 @@ namespace CoreSystem.Forms {
 		@doc("Custom display title for the highlight. If omitted or null, the backend falls back to the question's current title.")
 		displayTitle?: string | null;
 	}
+
+	@doc("Request body for partially updating a form's highlight.")
+	@example(#{ displayTitle: "Updated highlight title" })
+	model HighlightPatchRequest {
+		@doc("Custom display title for the highlight. Send null to fall back to the question's current title.")
+		displayTitle?: string | null;
+	}
 }

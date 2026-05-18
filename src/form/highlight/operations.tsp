@@ -29,6 +29,21 @@ namespace CoreSystem.Forms {
 		@body error: NotFound;
 	};
 
+	@summary("Update Form Highlight")
+	@doc("Partially update the configured highlight for a specific form. Currently supports updating displayTitle only. Send displayTitle: null to fall back to the question's current title.")
+	@route("/forms/{formId}/highlight")
+	@patch(#{ implicitOptionality: false })
+	op updateFormHighlight(@path formId: uuid, @body req: HighlightPatchRequest): {
+		@statusCode statusCode: 200;
+		@body response: HighlightResponse;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
 	@summary("Clear Form Highlight")
 	@doc("Clear the highlight question for a specific form.")
 	@route("/forms/{formId}/highlight")
