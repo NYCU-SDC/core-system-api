@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-11'
+  version: '2026-05-18'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -2534,6 +2534,7 @@ components:
       required:
         - title
         - visibility
+        - allowEditResponse
       properties:
         title:
           type: string
@@ -2570,6 +2571,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
@@ -2582,6 +2586,7 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+          allowEditResponse: true
     Forms.FormRequestUpdate:
       type: object
       properties:
@@ -2620,6 +2625,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
@@ -2632,6 +2640,7 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+          allowEditResponse: true
     Forms.FormResponse:
       type: object
       required:
@@ -2646,6 +2655,7 @@ components:
         - deadline
         - messageAfterSubmission
         - visibility
+        - allowEditResponse
         - createdAt
         - updatedAt
       properties:
@@ -2708,6 +2718,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the current user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
         createdAt:
           type: string
           format: date-time
@@ -2764,6 +2777,7 @@ components:
           coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
           googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
           visibility: PUBLIC
+          allowEditResponse: true
           createdAt: '2025-01-15T10:00:00Z'
           updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormStatus:
@@ -5335,6 +5349,7 @@ components:
         - title
         - deadline
         - status
+        - allowEditResponse
       properties:
         id:
           allOf:
@@ -5351,6 +5366,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Unit.UserFormStatus'
           description: The completion status of the form for the current user
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
         responseIds:
           type: array
           items:
@@ -5362,6 +5380,7 @@ components:
           title: Member Information Update 2025
           deadline: '2025-02-15T23:59:59Z'
           status: COMPLETED
+          allowEditResponse: true
           responseIds:
             - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
             - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
@@ -5369,12 +5388,14 @@ components:
           title: SDC 2025 Recruitment Form
           deadline: '2025-03-31T23:59:59Z'
           status: IN_PROGRESS
+          allowEditResponse: true
           responseIds:
             - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
         - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
           title: Annual Survey 2026
           deadline: '2026-03-31T23:59:59Z'
           status: NOT_STARTED
+          allowEditResponse: false
     Unit.UserFormListResponse:
       type: array
       items:
@@ -5384,17 +5405,20 @@ components:
         - - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
             title: Annual Survey 2026
             deadline: '2026-03-31T23:59:59Z'
+            allowEditResponse: false
             status: NOT_STARTED
           - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
             title: SDC 2025 Recruitment Form
             deadline: '2025-03-31T23:59:59Z'
             status: IN_PROGRESS
+            allowEditResponse: true
             responseIds:
               - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
             title: Member Information Update 2025
             deadline: '2025-02-15T23:59:59Z'
             status: COMPLETED
+            allowEditResponse: true
             responseIds:
               - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
               - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
