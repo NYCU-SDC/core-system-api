@@ -5609,6 +5609,7 @@ components:
         - deadline
         - status
         - allowEditResponse
+        - responseIds
       properties:
         id:
           allOf:
@@ -5632,7 +5633,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/uuid'
-          description: The unique identifiers of the user's responses to the form, if they exist
+          description: The user's response IDs for this form. Always present; empty when there are no responses. Order matches the backend list when aggregating the caller's responses (append order per form).
       description: Response model for listing user forms with status
       examples:
         - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
@@ -5655,6 +5656,7 @@ components:
           deadline: '2026-03-31T23:59:59Z'
           status: NOT_STARTED
           allowEditResponse: false
+          responseIds: []
     Unit.UserFormListResponse:
       type: array
       items:
@@ -5666,6 +5668,7 @@ components:
             deadline: '2026-03-31T23:59:59Z'
             allowEditResponse: false
             status: NOT_STARTED
+            responseIds: []
           - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
             title: SDC 2025 Recruitment Form
             deadline: '2025-03-31T23:59:59Z'
