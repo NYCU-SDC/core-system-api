@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-04-06'
+  version: '2026-05-20'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -23,9 +23,10 @@ tags:
   - name: Forms
   - name: Form Workflow
   - name: Responses
+  - name: Views
   - name: Files
 paths:
-  /api/auth/link:
+  /api/auth/link-account:
     post:
       operationId: Auth_link
       summary: Link different OAuth accounts to the same user
@@ -58,7 +59,7 @@ paths:
           description: Access is unauthorized.
       tags:
         - Auth
-  /api/auth/link/abort:
+  /api/auth/link-account/abort:
     post:
       operationId: Auth_abortLink
       summary: Abort the account linking process
@@ -314,7 +315,7 @@ paths:
     get:
       operationId: Forms_listForms
       summary: List Forms
-      description: List all existing forms. Archived forms are excluded by default.
+      description: List all existing forms.
       parameters: []
       responses:
         '200':
@@ -324,7 +325,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.Form'
+                  $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
   /api/forms/fonts:
@@ -384,7 +385,7 @@ paths:
     get:
       operationId: Unit_listFormsOfCurrentUser
       summary: List Forms of Current User
-      description: List all forms of current user
+      description: List all forms assigned to the current user with per-user progress. Returns an empty array when the user has no forms. Requires authentication.
       parameters: []
       responses:
         '200':
@@ -393,6 +394,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unit.UserFormListResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
       tags:
         - Unit
   /api/forms/{formId}:
@@ -412,7 +419,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
     patch:
@@ -431,7 +438,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
       requestBody:
@@ -459,7 +466,7 @@ paths:
     post:
       operationId: Forms_archiveForm
       summary: Archive Form
-      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists but can still be accessed directly by ID.
+      description: Archive a form. Set status to 'ARCHIVED'. Archived forms are hidden from default lists.
       parameters:
         - name: formId
           in: path
@@ -472,7 +479,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
   /api/forms/{formId}/cover:
@@ -523,6 +530,127 @@ paths:
             encoding:
               coverImage:
                 contentType: application/json
+  /api/forms/{formId}/highlight:
+    get:
+      operationId: Forms_getFormHighlight
+      summary: Get Form Highlight
+      description: Get the highlight question and its response statistics for a specific form. Returns 200 with questionId=null when no highlight is configured.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.HighlightResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+    put:
+      operationId: Forms_setFormHighlight
+      summary: Set Form Highlight
+      description: Set or update the highlight question for a specific form. Returns 400 if the question is not a choice-based type (singleChoice, multipleChoice, dropdown, detailedMultipleChoice).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.HighlightResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.HighlightRequest'
+    patch:
+      operationId: Forms_updateFormHighlight
+      summary: Update Form Highlight
+      description: 'Partially update the configured highlight for a specific form. Currently supports updating displayTitle only. Send displayTitle: null to fall back to the question''s current title.'
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.HighlightResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Forms.HighlightPatchRequest'
+    delete:
+      operationId: Forms_clearFormHighlight
+      summary: Clear Form Highlight
+      description: Clear the highlight question for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
   /api/forms/{formId}/publish:
     post:
       operationId: Forms_publishForm
@@ -594,6 +722,75 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/responses/export/download:
+    post:
+      operationId: Responses_exportFormResponses
+      summary: Export Form Responses
+      description: Download form responses in XLSX format.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          headers:
+            Content-Disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                contentMediaType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportDownloadRequest'
+  /api/forms/{formId}/responses/export/preview:
+    post:
+      operationId: Responses_previewFormResponseExport
+      summary: Preview Form Response Export
+      description: Get a preview of the form responses based on selected question IDs.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.ExportPreviewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.ExportPreviewRequest'
   /api/forms/{formId}/responses/me:
     get:
       operationId: Responses_getMyFormResponses
@@ -702,7 +899,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.ListSectionsResponse'
+                  $ref: '#/components/schemas/Forms.SectionBundle'
       tags:
         - Forms
   /api/forms/{formId}/sections/{sectionId}:
@@ -736,6 +933,295 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Forms.SectionRequest'
+  /api/forms/{formId}/unarchive:
+    post:
+      operationId: Forms_unarchiveForm
+      summary: Unarchive Form
+      description: Unarchive a form. Set status to 'DRAFT'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.FormResponse'
+      tags:
+        - Forms
+  /api/forms/{formId}/views:
+    post:
+      operationId: Views_createFormView
+      summary: Create Form View
+      description: Create a new view for a form with default settings. Conflict when the name is already in use.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+    get:
+      operationId: Views_listFormViews
+      summary: List Form Views
+      description: List all views for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Views.ViewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}:
+    get:
+      operationId: Views_getFormView
+      summary: Get Form View
+      description: Get a specific view by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+    patch:
+      operationId: Views_updateFormView
+      summary: Update Form View
+      description: Partially update a view. Only the provided fields (name, order) will be updated. Can be used to rename, or update column visibility.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Views.UpdateViewRequest'
+    delete:
+      operationId: Views_deleteFormView
+      summary: Delete Form View
+      description: Delete a view by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conflict'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/duplicate:
+    post:
+      operationId: Views_duplicateFormView
+      summary: Duplicate Form View
+      description: Create a duplicate of an existing view. The new view's name defaults to the original name suffixed with '的副本'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/lock:
+    post:
+      operationId: Views_lockFormView
+      summary: Lock Form View
+      description: Lock a view to prevent further modifications (delete).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/unlock:
+    post:
+      operationId: Views_unlockFormView
+      summary: Unlock Form View
+      description: Unlock a view to allow modifications (delete).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
   /api/forms/{formId}/workflow:
     get:
       operationId: FormWorkflow_getWorkflow
@@ -1114,7 +1600,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Forms.Form'
+                $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Unit
       requestBody:
@@ -1133,6 +1619,18 @@ paths:
           required: true
           schema:
             type: string
+        - name: status
+          in: query
+          required: false
+          description: Filter forms by status. If omitted, [DRAFT, PUBLISHED] are returned. Providing any status will override this default.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Forms.FormStatus'
+            default:
+              - DRAFT
+              - PUBLISHED
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -1141,7 +1639,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Forms.Form'
+                  $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Unit
   /api/orgs/{slug}/history:
@@ -1545,6 +2043,34 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Responses.AnswersRequestUpdate'
+  /api/responses/{responseId}/cancel:
+    post:
+      operationId: Responses_cancelFormResponseSubmission
+      summary: Cancel Form Response Submission
+      description: Cancel a submitted response and revert it to draft. Only submitted responses can be canceled.
+      parameters:
+        - name: responseId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
   /api/responses/{responseId}/questions/{questionId}:
     get:
       operationId: Responses_getQuestionResponse
@@ -1895,6 +2421,33 @@ components:
           status: 400
           type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
           detail: The request body contains invalid data
+    Conflict:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          enum:
+            - Conflict
+        status:
+          type: number
+          enum:
+            - 409
+        type:
+          type: string
+          enum:
+            - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409
+        detail:
+          type: string
+      examples:
+        - title: Conflict
+          status: 409
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409
+          detail: You do not have permission to access this resource
     Files.FileResponse:
       type: object
       required:
@@ -2064,14 +2617,14 @@ components:
         - 'y'
       properties:
         x:
-          type: integer
-          format: int32
+          type: number
+          format: double
           description: The x position of the node.
           examples:
             - 1
         'y':
-          type: integer
-          format: int32
+          type: number
+          format: double
           description: The y position of the node.
           examples:
             - 2
@@ -2370,119 +2923,6 @@ components:
       examples:
         - id: LINESeedTW
           name: LINE Seed TW
-    Forms.Form:
-      type: object
-      required:
-        - id
-        - title
-        - description
-        - previewMessage
-        - status
-        - unitId
-        - lastEditor
-        - messageAfterSubmission
-        - visibility
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The form's unique identifier.
-        title:
-          type: string
-          description: The title of the form.
-        description:
-          allOf:
-            - $ref: '#/components/schemas/ProseMirrorDocument'
-          description: The form description as ProseMirror JSON, for admin editing in Tiptap.
-        descriptionHtml:
-          allOf:
-            - $ref: '#/components/schemas/HtmlContent'
-          description: The form description rendered as HTML for frontend form display and preview.
-        previewMessage:
-          type: string
-          description: Preview text. If not provided, fallback to first 25 characters of description.
-        status:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FormStatus'
-          description: The status of this form.
-        unitId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The unit this form belongs to.
-        lastEditor:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The user who last editted the form.
-        deadline:
-          type: string
-          format: date-time
-          description: (Optional) Deadline for form completion. If not specified, returns null.
-        publishTime:
-          type: string
-          format: date-time
-          description: When the form is available to be filled.
-        messageAfterSubmission:
-          type: string
-          description: The message to show after user's submission.
-        dressing:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FormDressing'
-          description: The dressing of the form.
-        coverImage:
-          type: string
-          description: The full URL to access the cover image.
-        googleSheetUrl:
-          type: string
-          description: The google sheet url this form's responses will be sent to.
-        visibility:
-          allOf:
-            - $ref: '#/components/schemas/Forms.FormVisibility'
-          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
-        createdAt:
-          type: string
-          format: date-time
-          description: The creation timestamp of the form.
-        updatedAt:
-          type: string
-          format: date-time
-          description: The last updated timestamp of the form
-      description: The structure of a form.
-      examples:
-        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
-          title: SDC 2025 Recruitment Form
-          description:
-            type: doc
-            content:
-              - type: paragraph
-                content:
-                  - type: text
-                    text: 'Join us for an exciting journey in '
-                  - type: text
-                    marks:
-                      - type: bold
-                    text: software development
-                  - type: text
-                    text: '!'
-          descriptionHtml: <p>Join us for an exciting journey in <strong>software development</strong>!</p>
-          previewMessage: Join us for an exciting journey
-          status: PUBLISHED
-          unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
-          lastEditor: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
-          deadline: '2025-03-31T23:59:59Z'
-          publishTime: '2025-02-01T00:00:00Z'
-          messageAfterSubmission: Thank you for your application! We'll get back to you soon.
-          dressing:
-            color: '#0066cc'
-            headerFont: LINESeedTW
-            questionFont: LINESeedTW
-            textFont: LINESeedTW
-          coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
-          googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
-          visibility: PUBLIC
-          createdAt: '2025-01-15T10:00:00Z'
-          updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormCoverUploadRequest:
       type: object
       properties:
@@ -2540,6 +2980,7 @@ components:
       required:
         - title
         - visibility
+        - allowEditResponse
       properties:
         title:
           type: string
@@ -2576,6 +3017,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
@@ -2588,6 +3032,7 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+          allowEditResponse: true
     Forms.FormRequestUpdate:
       type: object
       properties:
@@ -2626,6 +3071,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Forms.FormVisibility'
           description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
       description: The request body for creating/updating a form.
       examples:
         - title: Enter SDC Form
@@ -2638,6 +3086,146 @@ components:
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
           visibility: PUBLIC
+          allowEditResponse: true
+    Forms.FormResponse:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - previewMessage
+        - status
+        - unitId
+        - creator
+        - lastEditor
+        - deadline
+        - messageAfterSubmission
+        - visibility
+        - allowEditResponse
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form's unique identifier.
+        title:
+          type: string
+          description: The title of the form.
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The form description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The form description rendered as HTML for frontend form display and preview.
+        previewMessage:
+          type: string
+          description: Preview text. If not provided, fallback to first 25 characters of description.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormStatus'
+          description: The status of this form.
+        unitId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unit this form belongs to.
+        creator:
+          allOf:
+            - $ref: '#/components/schemas/User.ProfileResponse'
+          description: The user who created the form.
+        lastEditor:
+          allOf:
+            - $ref: '#/components/schemas/User.ProfileResponse'
+          description: The user who last edited the form.
+        deadline:
+          type: string
+          format: date-time
+          description: The deadline of the form
+        publishTime:
+          type: string
+          format: date-time
+          description: When the form is available to be filled.
+        messageAfterSubmission:
+          type: string
+          description: The message to show after user's submission.
+        dressing:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormDressing'
+          description: The dressing of the form.
+        coverImage:
+          type: string
+          description: The full URL to access the cover image.
+        googleSheetUrl:
+          type: string
+          description: The google sheet url this form's responses will be sent to.
+        visibility:
+          allOf:
+            - $ref: '#/components/schemas/Forms.FormVisibility'
+          description: The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.
+        allowEditResponse:
+          type: boolean
+          description: Whether the current user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the form.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the form
+      description: Response model for a form with creator and last editor user details.
+      examples:
+        - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: SDC 2025 Recruitment Form
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content:
+                  - type: text
+                    text: 'Join us for an exciting journey in '
+                  - type: text
+                    marks:
+                      - type: bold
+                    text: software development
+                  - type: text
+                    text: '!'
+          descriptionHtml: <p>Join us for an exciting journey in <strong>software development</strong>!</p>
+          previewMessage: Join us for an exciting journey
+          status: PUBLISHED
+          unitId: d26e9c90-4747-496b-9953-7e7c4f97643f
+          creator:
+            id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+            name: John Doe
+            username: john_doe
+            avatarUrl: https://avatars.githubusercontent.com/u/12345678
+            emails:
+              - john.doe@example.com
+              - john@gmail.com
+          lastEditor:
+            id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+            name: John Doe
+            username: john_doe
+            avatarUrl: https://avatars.githubusercontent.com/u/12345678
+            emails:
+              - john.doe@example.com
+              - john@gmail.com
+          deadline: '2025-03-31T23:59:59Z'
+          publishTime: '2025-02-01T00:00:00Z'
+          messageAfterSubmission: Thank you for your application! We'll get back to you soon.
+          dressing:
+            color: '#0066cc'
+            headerFont: LINESeedTW
+            questionFont: LINESeedTW
+            textFont: LINESeedTW
+          coverImage: https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment
+          googleSheetUrl: https://docs.google.com/spreadsheets/d/1ABC123/edit
+          visibility: PUBLIC
+          allowEditResponse: true
+          createdAt: '2025-01-15T10:00:00Z'
+          updatedAt: '2025-02-10T14:30:00Z'
     Forms.FormStatus:
       type: string
       enum:
@@ -2684,6 +3272,98 @@ components:
       description: Verification result for the given Google Sheet URL.
       examples:
         - isValid: true
+    Forms.HighlightChoice:
+      type: object
+      required:
+        - choiceId
+        - name
+        - count
+      properties:
+        choiceId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the choice.
+        name:
+          type: string
+          description: The name/text of the choice.
+        count:
+          type: integer
+          format: int32
+          description: Number of responses (draft + submitted) that selected this choice.
+      description: A choice with its response count for highlight statistics.
+      examples:
+        - choiceId: f421cfc2-2b84-4da9-9629-011af609935a
+          name: 大一
+          count: 42
+    Forms.HighlightPatchRequest:
+      type: object
+      properties:
+        displayTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: Custom display title for the highlight. Send null to fall back to the question's current title.
+      description: Request body for partially updating a form's highlight.
+      examples:
+        - displayTitle: Updated highlight title
+    Forms.HighlightRequest:
+      type: object
+      required:
+        - questionId
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID to highlight. Must be a choice-based question (singleChoice, multipleChoice, dropdown, detailedMultipleChoice).
+        displayTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: Custom display title for the highlight. If omitted or null, the backend falls back to the question's current title.
+      description: Request body for setting a form's highlight question.
+      examples:
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          displayTitle: 年級分佈統計
+    Forms.HighlightResponse:
+      type: object
+      required:
+        - questionId
+        - questionTitle
+        - displayTitle
+        - choices
+      properties:
+        questionId:
+          anyOf:
+            - $ref: '#/components/schemas/uuid'
+            - type: 'null'
+          description: The highlighted question's unique identifier. Null if no highlight is configured.
+        questionTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: The current title of the highlighted question, fetched from the question. Null if no highlight is configured.
+        displayTitle:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: The display title shown on the dashboard. Equals stored custom title if set, otherwise falls back to questionTitle. Null if no highlight is configured.
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.HighlightChoice'
+          description: Response counts per choice option. Empty array if no highlight is configured.
+      description: Response model for a form's highlight question statistics. When no highlight is configured, questionId is null and all other fields are null or empty.
+      examples:
+        - questionId: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+          questionTitle: 你的年級是？
+          displayTitle: 年級分佈統計
+          choices:
+            - choiceId: f421cfc2-2b84-4da9-9629-011af609935a
+              name: 大一
+              count: 42
+            - choiceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              name: 大二
+              count: 30
     Forms.ListSectionsResponse:
       type: object
       required:
@@ -2719,6 +3399,7 @@ components:
                         content:
                           - type: text
                             text: Please enter your full name (in English)
+                  descriptionHtml: <p>Please enter your full name (in English)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: f2a1b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
@@ -2733,6 +3414,7 @@ components:
                         content:
                           - type: text
                             text: Enter your student ID number
+                  descriptionHtml: <p>Enter your student ID number</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: a3b4c5d6-7e8f-9a0b-1c2d-3e4f5a6b7c8d
@@ -2747,6 +3429,7 @@ components:
                         content:
                           - type: text
                             text: Please provide your email address
+                  descriptionHtml: <p>Please provide your email address</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a
@@ -2761,6 +3444,7 @@ components:
                         content:
                           - type: text
                             text: Your contact phone number
+                  descriptionHtml: <p>Your contact phone number</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: e5f6a7b8-9c0d-1e2f-3a4b-5c6d7e8f9a0b
@@ -2775,6 +3459,7 @@ components:
                         content:
                           - type: text
                             text: Select your date of birth
+                  descriptionHtml: <p>Select your date of birth</p>
                   date:
                     hasYear: true
                     hasMonth: true
@@ -2795,6 +3480,7 @@ components:
                         content:
                           - type: text
                             text: Tell us about yourself (200-500 words)
+                  descriptionHtml: <p>Tell us about yourself (200-500 words)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
             - id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
@@ -2820,6 +3506,7 @@ components:
                         content:
                           - type: text
                             text: Select your current education level
+                  descriptionHtml: <p>Select your current education level</p>
                   choices:
                     - id: ch1-1
                       name: Freshman
@@ -2845,6 +3532,7 @@ components:
                         content:
                           - type: text
                             text: Select your department or major
+                  descriptionHtml: <p>Select your department or major</p>
                   choices:
                     - id: ch2-1
                       name: Computer Science
@@ -2870,6 +3558,7 @@ components:
                         content:
                           - type: text
                             text: When do you expect to graduate?
+                  descriptionHtml: <p>When do you expect to graduate?</p>
                   date:
                     hasYear: true
                     hasMonth: true
@@ -2890,6 +3579,7 @@ components:
                         content:
                           - type: text
                             text: Select all that apply
+                  descriptionHtml: <p>Select all that apply</p>
                   choices:
                     - id: ch3-1
                       name: Participated in hackathons
@@ -2928,6 +3618,7 @@ components:
                         content:
                           - type: text
                             text: Select all programming languages you are familiar with
+                  descriptionHtml: <p>Select all programming languages you are familiar with</p>
                   choices:
                     - id: ch4-1
                       name: TypeScript/JavaScript
@@ -2961,6 +3652,7 @@ components:
                         content:
                           - type: text
                             text: Rate your backend development experience level
+                  descriptionHtml: <p>Rate your backend development experience level</p>
                   scale:
                     minVal: 0
                     maxVal: 10
@@ -2980,6 +3672,7 @@ components:
                         content:
                           - type: text
                             text: Rate your frontend development experience level
+                  descriptionHtml: <p>Rate your frontend development experience level</p>
                   scale:
                     minVal: 0
                     maxVal: 10
@@ -2999,6 +3692,7 @@ components:
                         content:
                           - type: text
                             text: Rate your familiarity with DevOps practices and infrastructure
+                  descriptionHtml: <p>Rate your familiarity with DevOps practices and infrastructure</p>
                   scale:
                     icon: star
                     minVal: 1
@@ -3019,6 +3713,7 @@ components:
                         content:
                           - type: text
                             text: Select all technologies you have experience with
+                  descriptionHtml: <p>Select all technologies you have experience with</p>
                   choices:
                     - id: ch5-1
                       name: Docker
@@ -3065,6 +3760,7 @@ components:
                         content:
                           - type: text
                             text: Rank the following teams in order of your preference (1 = most preferred)
+                  descriptionHtml: <p>Rank the following teams in order of your preference (1 = most preferred)</p>
                   choices:
                     - id: team-1
                       name: Core System Team
@@ -3092,6 +3788,7 @@ components:
                         content:
                           - type: text
                             text: Which role are you most interested in?
+                  descriptionHtml: <p>Which role are you most interested in?</p>
                   choices:
                     - id: role-1
                       name: Backend Developer
@@ -3119,6 +3816,7 @@ components:
                         content:
                           - type: text
                             text: Why do you want to join SDC? What are your expectations?
+                  descriptionHtml: <p>Why do you want to join SDC? What are your expectations?</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: a9b0c1d2-3e4f-5a6b-7c8d-9e0f1a2b3c4d
@@ -3133,6 +3831,7 @@ components:
                         content:
                           - type: text
                             text: How comfortable are you working in a team environment?
+                  descriptionHtml: <p>How comfortable are you working in a team environment?</p>
                   scale:
                     icon: heart
                     minVal: 1
@@ -3164,6 +3863,7 @@ components:
                         content:
                           - type: text
                             text: Which days are you available each week? (Select all that apply)
+                  descriptionHtml: <p>Which days are you available each week? (Select all that apply)</p>
                   choices:
                     - id: day-1
                       name: Monday
@@ -3193,6 +3893,7 @@ components:
                         content:
                           - type: text
                             text: How many hours per week can you commit to SDC activities?
+                  descriptionHtml: <p>How many hours per week can you commit to SDC activities?</p>
                   scale:
                     minVal: 0
                     maxVal: 10
@@ -3212,6 +3913,7 @@ components:
                         content:
                           - type: text
                             text: Please upload your resume or CV
+                  descriptionHtml: <p>Please upload your resume or CV</p>
                   uploadFile:
                     allowedFileTypes:
                       - PDF
@@ -3233,6 +3935,7 @@ components:
                         content:
                           - type: text
                             text: Upload any relevant portfolio materials or project documentation (optional)
+                  descriptionHtml: <p>Upload any relevant portfolio materials or project documentation (optional)</p>
                   uploadFile:
                     allowedFileTypes:
                       - PDF
@@ -3253,6 +3956,7 @@ components:
                         content:
                           - type: text
                             text: Link to your GitHub profile (if available)
+                  descriptionHtml: <p>Link to your GitHub profile (if available)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: a5b6c7d8-9e0f-1a2b-3c4d-5e6f7a8b9c0d
@@ -3267,6 +3971,7 @@ components:
                         content:
                           - type: text
                             text: Link to your LinkedIn profile (optional)
+                  descriptionHtml: <p>Link to your LinkedIn profile (optional)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: b6c7d8e9-0f1a-2b3c-4d5e-6f7a8b9c0d1e
@@ -3281,6 +3986,7 @@ components:
                         content:
                           - type: text
                             text: Link to your personal website or blog (if any)
+                  descriptionHtml: <p>Link to your personal website or blog (if any)</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
                 - id: c7d8e9f0-1a2b-3c4d-5e6f-7a8b9c0d1e2f
@@ -3295,6 +4001,7 @@ components:
                         content:
                           - type: text
                             text: Is there anything else you'd like us to know?
+                  descriptionHtml: <p>Is there anything else you'd like us to know?</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
     Forms.QuestionRequest:
@@ -3572,6 +4279,7 @@ components:
         - type
         - title
         - description
+        - descriptionHtml
         - createdAt
         - updatedAt
       properties:
@@ -3796,6 +4504,124 @@ components:
                     text: basic information
           descriptionHtml: <p>Please provide your <strong>basic information</strong></p>
           questions: []
+    Forms.SectionBundle:
+      type: object
+      required:
+        - section
+        - questions
+      properties:
+        section:
+          allOf:
+            - $ref: '#/components/schemas/Forms.SectionForListSections'
+          description: The section metadata.
+        questions:
+          anyOf:
+            - type: array
+              items:
+                $ref: '#/components/schemas/Forms.QuestionResponse'
+            - type: 'null'
+          description: Questions in this section. Null when the section has no questions yet.
+      description: Response model for listing sections in a form (backend shape).
+      examples:
+        - section:
+            id: c34d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+            formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: Empty Section
+            progress: ''
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content: []
+            descriptionHtml: <p></p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          questions: null
+        - section:
+            id: b23f2668-c2dc-4213-88fe-eceedff46398
+            formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+            title: Personal Information
+            progress: ''
+            description:
+              type: doc
+              content:
+                - type: paragraph
+                  content: []
+            descriptionHtml: <p></p>
+            createdAt: '2025-01-20T10:00:00Z'
+            updatedAt: '2025-02-01T15:30:00Z'
+          questions:
+            - id: ee894524-4bd8-4a64-8fd2-a53b39ca94cd
+              sectionId: b23f2668-c2dc-4213-88fe-eceedff46398
+              required: true
+              type: SHORT_TEXT
+              title: Full Name
+              description:
+                type: doc
+                content:
+                  - type: paragraph
+                    content:
+                      - type: text
+                        text: Please enter your full name (in English)
+              descriptionHtml: <p>Please enter your full name (in English)</p>
+              createdAt: '2025-01-20T10:00:00Z'
+              updatedAt: '2025-02-01T15:30:00Z'
+    Forms.SectionForListSections:
+      type: object
+      required:
+        - id
+        - formId
+        - title
+        - progress
+        - description
+        - descriptionHtml
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: Unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form this section belongs to.
+        title:
+          type: string
+          description: Section title (e.g., 'Group Info').
+        progress:
+          type: string
+          description: Section progress status (backend field; may be empty string).
+        description:
+          allOf:
+            - $ref: '#/components/schemas/ProseMirrorDocument'
+          description: The section description as ProseMirror JSON, for admin editing in Tiptap.
+        descriptionHtml:
+          allOf:
+            - $ref: '#/components/schemas/HtmlContent'
+          description: The section description rendered as HTML for frontend form display and preview.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the section.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the section.
+      description: A minimal section shape for list-sections API responses.
+      examples:
+        - id: b23f2668-c2dc-4213-88fe-eceedff46398
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          title: Personal Information
+          progress: ''
+          description:
+            type: doc
+            content:
+              - type: paragraph
+                content: []
+          descriptionHtml: <p></p>
+          createdAt: '2025-01-20T10:00:00Z'
+          updatedAt: '2025-02-01T15:30:00Z'
     Forms.SectionProgress:
       type: string
       enum:
@@ -4097,6 +4923,7 @@ components:
                   content:
                     - type: text
                       text: Please enter your full name
+            descriptionHtml: <p>Please enter your full name</p>
             createdAt: '2025-01-20T10:00:00Z'
             updatedAt: '2025-02-01T15:30:00Z'
           payload:
@@ -4188,6 +5015,75 @@ components:
         - questionId: 2b2bc4f4-71c1-478b-9e36-516eac6b36c3
           questionType: DATE
           value: 2024-05-06T12:20-12Z
+    Responses.ExportDownloadRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for downloading form response export
+    Responses.ExportHeader:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question ID.
+        title:
+          type: string
+          description: The question title.
+      description: Represents a header in the export table.
+    Responses.ExportPreviewRequest:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/uuid'
+          description: The list of question IDs to include in the export.
+      description: Request model for previewing form response export
+    Responses.ExportPreviewResponse:
+      type: object
+      required:
+        - headers
+        - rows
+      properties:
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportHeader'
+          description: The table headers, representing the selected questions.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportRow'
+          description: The table rows, representing the form responses.
+      description: Response model for previewing form response export
+    Responses.ExportRow:
+      type: object
+      required:
+        - id
+        - answers
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response unique identifier.
+        answers:
+          type: object
+          unevaluatedProperties:
+            $ref: '#/components/schemas/Responses.AnswerPayload'
+          description: The answers for each selected question, keyed by question ID.
+      description: Represents a row in the export table.
     Responses.GetFormResponse:
       type: object
       required:
@@ -4246,12 +5142,27 @@ components:
       type: object
       required:
         - formId
+        - totalCount
+        - draftCount
+        - submittedCount
         - responses
       properties:
         formId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The form ID.
+        totalCount:
+          type: integer
+          format: int32
+          description: Total number of responses for this form.
+        draftCount:
+          type: integer
+          format: int32
+          description: Number of responses in draft state.
+        submittedCount:
+          type: integer
+          format: int32
+          description: Number of submitted responses.
         responses:
           type: array
           items:
@@ -4260,6 +5171,9 @@ components:
       description: Response model for listing all responses of a form
       examples:
         - formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          totalCount: 150
+          draftCount: 30
+          submittedCount: 120
           responses: []
     Responses.OauthAnswer:
       type: object
@@ -4991,6 +5905,8 @@ components:
         - title
         - deadline
         - status
+        - allowEditResponse
+        - responseIds
       properties:
         id:
           allOf:
@@ -5007,17 +5923,21 @@ components:
           allOf:
             - $ref: '#/components/schemas/Unit.UserFormStatus'
           description: The completion status of the form for the current user
+        allowEditResponse:
+          type: boolean
+          description: Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.
         responseIds:
           type: array
           items:
             $ref: '#/components/schemas/uuid'
-          description: The unique identifiers of the user's responses to the form, if they exist
+          description: The user's response IDs for this form. Always present; empty when there are no responses. Order matches the backend list when aggregating the caller's responses (append order per form).
       description: Response model for listing user forms with status
       examples:
         - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
           title: Member Information Update 2025
           deadline: '2025-02-15T23:59:59Z'
           status: COMPLETED
+          allowEditResponse: true
           responseIds:
             - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
             - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
@@ -5025,12 +5945,15 @@ components:
           title: SDC 2025 Recruitment Form
           deadline: '2025-03-31T23:59:59Z'
           status: IN_PROGRESS
+          allowEditResponse: true
           responseIds:
             - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
         - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
           title: Annual Survey 2026
           deadline: '2026-03-31T23:59:59Z'
           status: NOT_STARTED
+          allowEditResponse: false
+          responseIds: []
     Unit.UserFormListResponse:
       type: array
       items:
@@ -5040,17 +5963,21 @@ components:
         - - id: 5a1b2c3d-4e5f-6789-0abc-def123456789
             title: Annual Survey 2026
             deadline: '2026-03-31T23:59:59Z'
+            allowEditResponse: false
             status: NOT_STARTED
+            responseIds: []
           - id: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
             title: SDC 2025 Recruitment Form
             deadline: '2025-03-31T23:59:59Z'
             status: IN_PROGRESS
+            allowEditResponse: true
             responseIds:
               - a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
           - id: 7f6e5d4c-3b2a-1098-7654-321fedcba098
             title: Member Information Update 2025
             deadline: '2025-02-15T23:59:59Z'
             status: COMPLETED
+            allowEditResponse: true
             responseIds:
               - b23c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7
               - c34d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8
@@ -5079,6 +6006,42 @@ components:
       examples:
         - username: jane_smith
           name: Jane Smith
+    User.ProfileResponse:
+      type: object
+      required:
+        - id
+        - name
+        - username
+        - avatarUrl
+        - emails
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The user's unique identifier.
+        name:
+          type: string
+          description: The user's nickname.
+        username:
+          type: string
+          description: The user's username, can change, but must be unique across the system.
+        avatarUrl:
+          type: string
+          description: Avatar URL of the user.
+        emails:
+          type: array
+          items:
+            type: string
+          description: Email addresses associated with the user.
+      description: Profile shape returned when embedding a user in other resources.
+      examples:
+        - id: 3c5fa073-7b97-43a3-bc44-ddc98f390a08
+          name: John Doe
+          username: john_doe
+          avatarUrl: https://avatars.githubusercontent.com/u/12345678
+          emails:
+            - john.doe@example.com
+            - john@gmail.com
     User.Role:
       type: string
       enum:
@@ -5139,6 +6102,57 @@ components:
       type: string
       enum:
         - 1.0.0
+    Views.UpdateViewRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The new display title of the view.
+        order:
+          type: integer
+          description: The new order of the current view among all views.
+      description: Request model for updating a view. Only provided fields will be updated.
+      examples:
+        - title: React
+    Views.ViewResponse:
+      type: object
+      required:
+        - id
+        - title
+        - locked
+        - order
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The view's unique identifier.
+        title:
+          type: string
+          description: The display title of the view.
+        locked:
+          type: boolean
+          description: Whether this view is locked from editing.
+        order:
+          type: integer
+          description: The order of the current view among all views. Views are ordered in ascending order based on this field.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the view.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the view.
+      description: Response model for a single form view.
+      examples:
+        - id: f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
+          title: Core System
+          locked: false
+          order: 0
+          createdAt: '2025-01-15T10:00:00Z'
+          updatedAt: '2025-02-10T14:30:00Z'
     uuid:
       type: string
       format: uuid
