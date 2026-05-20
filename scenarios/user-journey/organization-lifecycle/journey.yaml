@@ -1,6 +1,7 @@
 name: "Organization Lifecycle"
+description: "Positive coverage for creating a temporary organization, restoring membership, and deleting it cleanly."
 cases:
-  - name: "Happy Path: Delete Organization"
-    description: "Verify that an organization can be deleted through the user journey flow."
+  - name: "Create And Delete Organization"
+    description: "Create the temporary organization used by negative tests, restore user membership, and delete it."
     path: "02-organization-deletion.http"
     test: "deleteOrg"

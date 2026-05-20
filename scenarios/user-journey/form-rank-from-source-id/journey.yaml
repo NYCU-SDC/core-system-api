@@ -1,6 +1,12 @@
-name: "Form Rank From Source Id"
+name: "Form Ranking From Source ID"
+description: "Positive coverage for ranking questions whose available choices are resolved dynamically from a source question."
 cases:
-  - name: "Happy Path: Get Ranked Response"
-    description: "Verify that a response can be retrieved by source ID and rank."
+  - name: "Same-Batch Resolution"
+    description: "Verify ranking choice resolution and persisted order when source and ranking answers are submitted in one batch."
+    path: "04-verify-response.http"
+    test: "getResponseA"
+
+  - name: "Stored-Answer Resolution"
+    description: "Verify ranking choice resolution and persisted order when ranking choices are resolved from a previously saved source answer."
     path: "04-verify-response.http"
     test: "getResponseB"
