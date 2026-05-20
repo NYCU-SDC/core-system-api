@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-18'
+  version: '2026-05-20'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -23,6 +23,7 @@ tags:
   - name: Forms
   - name: Form Workflow
   - name: Responses
+  - name: Views
   - name: Files
 paths:
   /api/auth/link-account:
@@ -952,6 +953,275 @@ paths:
                 $ref: '#/components/schemas/Forms.FormResponse'
       tags:
         - Forms
+  /api/forms/{formId}/views:
+    post:
+      operationId: Views_createFormView
+      summary: Create Form View
+      description: Create a new view for a form with default settings. Conflict when the name is already in use.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+    get:
+      operationId: Views_listFormViews
+      summary: List Form Views
+      description: List all views for a specific form.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Views.ViewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}:
+    get:
+      operationId: Views_getFormView
+      summary: Get Form View
+      description: Get a specific view by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+    patch:
+      operationId: Views_updateFormView
+      summary: Update Form View
+      description: Partially update a view. Only the provided fields (name, order) will be updated. Can be used to rename, or update column visibility.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Views.UpdateViewRequest'
+    delete:
+      operationId: Views_deleteFormView
+      summary: Delete Form View
+      description: Delete a view by its unique identifier.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conflict'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/duplicate:
+    post:
+      operationId: Views_duplicateFormView
+      summary: Duplicate Form View
+      description: Create a duplicate of an existing view. The new view's name defaults to the original name suffixed with '的副本'.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/lock:
+    post:
+      operationId: Views_lockFormView
+      summary: Lock Form View
+      description: Lock a view to prevent further modifications (delete).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
+  /api/forms/{formId}/views/{viewId}/unlock:
+    post:
+      operationId: Views_unlockFormView
+      summary: Unlock Form View
+      description: Unlock a view to allow modifications (delete).
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Views.ViewResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Views
   /api/forms/{formId}/workflow:
     get:
       operationId: FormWorkflow_getWorkflow
@@ -2151,6 +2421,33 @@ components:
           status: 400
           type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
           detail: The request body contains invalid data
+    Conflict:
+      type: object
+      required:
+        - title
+        - status
+        - type
+        - detail
+      properties:
+        title:
+          type: string
+          enum:
+            - Conflict
+        status:
+          type: number
+          enum:
+            - 409
+        type:
+          type: string
+          enum:
+            - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409
+        detail:
+          type: string
+      examples:
+        - title: Conflict
+          status: 409
+          type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409
+          detail: You do not have permission to access this resource
     Files.FileResponse:
       type: object
       required:
@@ -5805,6 +6102,57 @@ components:
       type: string
       enum:
         - 1.0.0
+    Views.UpdateViewRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The new display title of the view.
+        order:
+          type: integer
+          description: The new order of the current view among all views.
+      description: Request model for updating a view. Only provided fields will be updated.
+      examples:
+        - title: React
+    Views.ViewResponse:
+      type: object
+      required:
+        - id
+        - title
+        - locked
+        - order
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The view's unique identifier.
+        title:
+          type: string
+          description: The display title of the view.
+        locked:
+          type: boolean
+          description: Whether this view is locked from editing.
+        order:
+          type: integer
+          description: The order of the current view among all views. Views are ordered in ascending order based on this field.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the view.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last updated timestamp of the view.
+      description: Response model for a single form view.
+      examples:
+        - id: f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
+          title: Core System
+          locked: false
+          order: 0
+          createdAt: '2025-01-15T10:00:00Z'
+          updatedAt: '2025-02-10T14:30:00Z'
     uuid:
       type: string
       format: uuid
