@@ -5,7 +5,7 @@
 # - Verify form status before publishing (should be DRAFT)
 # - Publish the form (status changes from DRAFT to PUBLISHED)
 # - Verify form is published and accessible
-# - Test that published form appears in listings
+# - Test that published form appears in listing
 
 # Import setup from Phase 4
 # @import ./04-question-management.http
@@ -181,7 +181,7 @@ GET {{BASE_URL}}/forms
 ###
 
 # ============================================
-# Verify Published Form in Organization Listing
+# Verify Published Form in Default View of Organization Listing
 # ============================================
 # @name verifyFormInOrgListing
 # @ref verifyFormInListing
@@ -256,11 +256,12 @@ GET {{BASE_URL}}/forms/{{formId}}
         console.log('Form ID:', data.id);
         console.log('Status:', data.status);
         console.log('Title:', data.title);
-        console.log('Description:', data.description);
+        console.log('Description (ProseMirror doc):', data.description?.type);
+        console.log('Description HTML:', data.descriptionHtml);
         console.log('Form visibility:', data.visibility);
         console.log('Publish Time:', data.publishTime);
         console.log('Deadline:', data.deadline);
-        console.log('Cover Image:', data.coverImageUrl || '(none)');
+        console.log('Cover Image:', data.coverImage || '(none)');
         console.log('Google Sheet URL:', data.googleSheetUrl || '(none)');
         console.log('Created At:', data.createdAt);
         console.log('Updated At:', data.updatedAt);

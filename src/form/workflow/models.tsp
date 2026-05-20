@@ -65,18 +65,38 @@ namespace CoreSystem.FormWorkflow {
 	}
 
 	@doc("Request body for creating a new node for a workflow")
-	@example(#{ type: CreateNodeRequestType.section })
+	@example(#{ type: CreateNodeRequestType.section, payload: #{ x: 1.0, y: 2.0 } })
 	model CreateNodeRequest {
 		@doc("Type of the node")
 		@example(CreateNodeRequestType.section)
 		type: CreateNodeRequestType;
+
+		@doc("Payload for node layout/UI settings.")
+		@example(#{ x: 1.0, y: 2.0 })
+		payload: NodePayload;
+	}
+
+	@doc("Payload for a node. Used for layout and UI settings.")
+	@example(#{ x: 1.0, y: 2.0 })
+	model NodePayload {
+		@doc("The x position of the node.")
+		@example(1.0)
+		x: float64;
+
+		@doc("The y position of the node.")
+		@example(2.0)
+		y: float64;
 	}
 
 	@doc("Workflow node request model with linked list connections")
 	@example(#{
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		label: "Personal Information Section",
+		payload: #{ x: 1.0, y: 2.0 },
+		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
 		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
+		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
+		nextFalse: "e56i5991-f5gf-7e46-11ih-hfhggii79621",
 	})
 	model NodeRequest {
 		@doc("Unique identifier for the node.")
@@ -85,6 +105,10 @@ namespace CoreSystem.FormWorkflow {
 		@doc("The label for the node")
 		@example("開始表單")
 		label: string;
+
+		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
+		@example(#{ x: 1.0, y: 2.0 })
+		payload: NodePayload;
 
 		@doc("The condition rule for the node, only for condition nodes")
 		conditionRule?: ConditionRule;
@@ -104,6 +128,7 @@ namespace CoreSystem.FormWorkflow {
 		id: "b23f2668-c2dc-4213-88fe-eceedff46398",
 		type: NodeType.section,
 		label: "Personal Information",
+		payload: #{ x: 1.0, y: 2.0 },
 		conditionRule: #{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" },
 		next: "c34g3779-d3ed-5c24-99gf-fdffegg57409",
 		nextTrue: "d45h4880-e4fe-6d35-00hg-gegffhh68510",
@@ -112,16 +137,24 @@ namespace CoreSystem.FormWorkflow {
 	model NodeResponse {
 		...NodeStructure;
 
+		@doc("Arbitrary frontend-specific configuration payload for this node, stored as JSON (e.g., layout, UI settings).")
+		@example(#{ x: 1.0, y: 2.0 })
+		payload: NodePayload;
+
 		@doc("The condition rule for the node, only for condition nodes")
+		@example(#{ source: ConditionSource.nonChoice, question: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", pattern: "^([6-9]|[1-9][0-9]+)$" })
 		conditionRule: ConditionRule;
 
 		@doc("Next node id for sequential flow (for start and section nodes)")
+		@example("c34g3779-d3ed-5c24-99gf-fdffegg57409")
 		next: uuid;
 
 		@doc("Next node id when condition is true (for condition nodes)")
+		@example("d45h4880-e4fe-6d35-00hg-gegffhh68510")
 		nextTrue: uuid;
 
 		@doc("Next node id when condition is false (for condition nodes)")
+		@example("e56i5991-f5gf-7e46-11ih-hfhggii79621")
 		nextFalse: uuid;
 	}
 

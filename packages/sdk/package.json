@@ -1,6 +1,6 @@
 {
 	"name": "@nycu-sdc/core-system-sdk",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": false,
 	"description": "Auto-generated SDK from TypeSpec / OpenAPI",
 	"repository": {

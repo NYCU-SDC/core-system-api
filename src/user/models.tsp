@@ -3,6 +3,31 @@ namespace CoreSystem.User {
 		user: "USER",
 	}
 
+	@doc("Profile shape returned when embedding a user in other resources.")
+	@example(#{
+		id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
+		name: "John Doe",
+		username: "john_doe",
+		avatarUrl: "https://avatars.githubusercontent.com/u/12345678",
+		emails: #["john.doe@example.com", "john@gmail.com"],
+	})
+	model ProfileResponse {
+		@doc("The user's unique identifier.")
+		id: uuid;
+
+		@doc("The user's nickname.")
+		name: string;
+
+		@doc("The user's username, can change, but must be unique across the system.")
+		username: string;
+
+		@doc("Avatar URL of the user.")
+		avatarUrl: string;
+
+		@doc("Email addresses associated with the user.")
+		emails: string[];
+	}
+
 	@example(#{
 		id: "3c5fa073-7b97-43a3-bc44-ddc98f390a08",
 		username: "john_doe",

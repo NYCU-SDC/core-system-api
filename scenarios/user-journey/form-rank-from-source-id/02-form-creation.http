@@ -21,7 +21,20 @@ Content-Type: application/json
 
 {
     "title": "Ranking from Source ID Test Form",
-    "description": "Tests that a RANKING question resolves its choices dynamically from a DETAILED_MULTIPLE_CHOICE answer.",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Tests that a RANKING question resolves its choices dynamically from a DETAILED_MULTIPLE_CHOICE answer."
+                    }
+                ]
+            }
+        ]
+    },
     "previewMessage": "Please answer both questions.",
     "messageAfterSubmission": "Thank you for your response!",
     "visibility": "PUBLIC"
@@ -74,7 +87,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 0.0, "y": 0.0 }
 }
 
 {{
@@ -108,16 +122,19 @@ Content-Type: application/json
     {
         "id": "{{startNodeId}}",
         "label": "開始",
+        "payload": { "x": 0.0, "y": 0.0 },
         "next": "{{sectionNodeId}}"
     },
     {
         "id": "{{sectionNodeId}}",
         "label": "{{sectionNodeLabel}}",
+        "payload": { "x": 1.0, "y": 2.0 },
         "next": "{{endNodeId}}"
     },
     {
         "id": "{{endNodeId}}",
-        "label": "確認/送出"
+        "label": "確認/送出",
+        "payload": { "x": 0.0, "y": 1.0 }
     }
 ]
 

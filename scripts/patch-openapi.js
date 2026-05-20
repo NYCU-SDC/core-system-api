@@ -2,12 +2,14 @@ import { readFileSync, writeFileSync } from "fs";
 import yaml from "js-yaml";
 
 const OPENAPI_PATH = "./tsp-output/schema/openapi.1.0.0.yaml";
+const BUILD_DATE = new Date().toISOString().slice(0, 10);
 
 const spec = yaml.load(readFileSync(OPENAPI_PATH, "utf8"));
 
 // Patch OpenAPI spec
 spec.info = {
 	...spec.info,
+	version: BUILD_DATE,
 	description: `
 ## Pages
 - [API Documentation (Redocly)](redocly/)

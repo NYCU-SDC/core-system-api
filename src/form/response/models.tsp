@@ -47,10 +47,25 @@ namespace CoreSystem.Responses {
 	}
 
 	@doc("Response model for listing all responses of a form")
-	@example(#{ formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040", responses: #[] })
+	@example(#{
+		formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+		totalCount: 150,
+		draftCount: 30,
+		submittedCount: 120,
+		responses: #[],
+	})
 	model ListResponse {
 		@doc("The form ID.")
 		formId: uuid;
+
+		@doc("Total number of responses for this form.")
+		totalCount: int32;
+
+		@doc("Number of responses in draft state.")
+		draftCount: int32;
+
+		@doc("Number of submitted responses.")
+		submittedCount: int32;
 
 		@doc("All responses for this form.")
 		responses: Response[];
@@ -121,4 +136,44 @@ namespace CoreSystem.Responses {
 		@doc("User has passed all validations in this section.")
 		completed: "COMPLETED",
 	}
+
+	@doc("Request model for previewing form response export")
+	model ExportPreviewRequest {
+		@doc("The list of question IDs to include in the export.")
+		questionIds: uuid[];
+	}
+
+	@doc("Response model for previewing form response export")
+	model ExportPreviewResponse {
+		@doc("The table headers, representing the selected questions.")
+		headers: ExportHeader[];
+
+		@doc("The table rows, representing the form responses.")
+		rows: ExportRow[];
+	}
+
+	@doc("Represents a header in the export table.")
+	model ExportHeader {
+		@doc("The question ID.")
+		id: uuid;
+
+		@doc("The question title.")
+		title: string;
+	}
+
+	@doc("Represents a row in the export table.")
+	model ExportRow {
+		@doc("The response unique identifier.")
+		id: uuid;
+
+		@doc("The answers for each selected question, keyed by question ID.")
+		answers: Record<AnswerPayload>;
+	}
+
+	@doc("Request model for downloading form response export")
+	model ExportDownloadRequest {
+		@doc("The list of question IDs to include in the export.")
+		questionIds: uuid[];
+	}
+
 }

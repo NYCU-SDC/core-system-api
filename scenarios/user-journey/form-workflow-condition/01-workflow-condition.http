@@ -1,6 +1,7 @@
 # ============================================
 # Workflow Condition Node with Branches
 # ============================================
+# Choice-option UUID validation in condition patterns is enforced on activation validation (see GET workflow `info` / publish), not necessarily on every draft PUT.
 # Builds on form-lifecycle Phase 3 (03-workflow-basic). Tests condition nodes with branching:
 # START -> Section A -> Condition1 (ref Section A question)
 #   - choose B -> nextTrue  -> Section B -> END
@@ -30,7 +31,17 @@ Content-Type: application/json
     "required": true,
     "type": "DETAILED_MULTIPLE_CHOICE",
     "title": "Choose Team B / C",
-    "description": "Select one to choose which section to go to",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Select one to choose which section to go to" }
+                ]
+            }
+        ]
+    },
     "order": 1,
     "choices": [
         { "name": "Team B", "description": "Go to Section B" },
@@ -52,6 +63,8 @@ Content-Type: application/json
         equal(data.choices.length, 2, 'Should have 2 choices (Team B, Team C)');
         const hasDescriptions = data.choices.every(c => c.description !== undefined && c.description !== '');
         equal(hasDescriptions, true, 'All choices should have descriptions');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
     });
 
     const data = JSON.parse(response.body);
@@ -71,7 +84,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -96,7 +110,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -124,7 +139,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "CONDITION"
+    "type": "CONDITION",
+    "payload": { "x": 2.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -152,7 +168,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "CONDITION"
+    "type": "CONDITION",
+    "payload": { "x": 3.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -186,16 +203,19 @@ Content-Type: application/json
     {
         "id": "{{startNodeId}}",
         "label": "開始表單",
+        "payload": { "x": 0.0, "y": 0.0 },
         "next": "{{sectionNodeId}}"
     },
     {
         "id": "{{sectionNodeId}}",
         "label": "{{sectionNodeLabel}}",
+        "payload": { "x": 1.0, "y": 2.0 },
         "next": "{{conditionNodeId}}"
     },
     {
         "id": "{{conditionNodeId}}",
         "label": "If choose Team B",
+        "payload": { "x": 2.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -207,6 +227,7 @@ Content-Type: application/json
     {
         "id": "{{condition2NodeId}}",
         "label": "If choose Team C",
+        "payload": { "x": 3.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -218,16 +239,19 @@ Content-Type: application/json
     {
         "id": "{{sectionBNodeId}}",
         "label": "Section B",
+        "payload": { "x": 2.0, "y": 3.0 },
         "next": "{{condition2NodeId}}"
     },
     {
         "id": "{{sectionCNodeId}}",
         "label": "Section C",
+        "payload": { "x": 3.0, "y": 3.0 },
         "next": "{{endNodeId}}"
     },
     {
         "id": "{{endNodeId}}",
-        "label": "確認/送出"
+        "label": "確認/送出",
+        "payload": { "x": 0.0, "y": 1.0 }
     }
 ]
 
@@ -273,6 +297,19 @@ Content-Type: application/json
         equal(condition2Node.conditionRule !== undefined, true, 'Condition 2 should have conditionRule');
         equal(condition2Node.conditionRule.question, sectionAQuestionId, 'Condition 2 rule should reference Section A question');
         equal(condition2Node.conditionRule.pattern.includes(sectionAChoiceSectionCId), true, 'Condition 2 pattern should match choice C');
+
+        // GET/PUT responses enrich condition labels from question title + pattern
+        const sectionAQuestionTitle = 'Choose Team B / C';
+        equal(
+            conditionNode.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionBId}`,
+            'Condition 1 label should be enriched',
+        );
+        equal(
+            condition2Node.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionCId}`,
+            'Condition 2 label should be enriched',
+        );
     });
 }}
 
@@ -307,6 +344,18 @@ GET {{BASE_URL}}/forms/{{formId}}/workflow
         equal(condition2Node.nextFalse, endNodeId, 'Condition 2 nextFalse -> END');
         equal(conditionNode.conditionRule.question, sectionAQuestionId, 'Condition 1 references Section A question');
         equal(condition2Node.conditionRule.question, sectionAQuestionId, 'Condition 2 references Section A question');
+
+        const sectionAQuestionTitle = 'Choose Team B / C';
+        equal(
+            conditionNode.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionBId}`,
+            'GET workflow: Condition 1 label should be enriched',
+        );
+        equal(
+            condition2Node.label,
+            `When ${sectionAQuestionTitle} matches ${sectionAChoiceSectionCId}`,
+            'GET workflow: Condition 2 label should be enriched',
+        );
     });
 }}
 
@@ -324,7 +373,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "SECTION"
+    "type": "SECTION",
+    "payload": { "x": 1.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -352,7 +402,17 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Temp question for condition rule",
-    "description": "Will be referenced by condition then deleted",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Will be referenced by condition then deleted" }
+                ]
+            }
+        ]
+    },
     "order": 1
 }
 
@@ -364,6 +424,8 @@ Content-Type: application/json
         const data = JSON.parse(response.body);
         equal(data.id !== undefined, true, 'Question ID should exist');
         equal(data.type, 'SHORT_TEXT', 'Type should be SHORT_TEXT');
+        equal(data.description?.type, 'doc', 'Description should be rich text doc');
+        equal(typeof data.descriptionHtml, 'string', 'descriptionHtml should be a string');
     });
     const data = JSON.parse(response.body);
     exports.tempQuestionId = data.id;
@@ -378,7 +440,8 @@ POST {{BASE_URL}}/forms/{{formId}}/workflow/nodes
 Content-Type: application/json
 
 {
-    "type": "CONDITION"
+    "type": "CONDITION",
+    "payload": { "x": 5.0, "y": 2.0 }
 }
 
 ?? status == 201
@@ -406,16 +469,19 @@ Content-Type: application/json
     {
         "id": "{{startNodeId}}",
         "label": "開始表單",
+        "payload": { "x": 0.0, "y": 0.0 },
         "next": "{{sectionNodeId}}"
     },
     {
         "id": "{{sectionNodeId}}",
         "label": "{{sectionNodeLabel}}",
+        "payload": { "x": 1.0, "y": 2.0 },
         "next": "{{conditionNodeId}}"
     },
     {
         "id": "{{conditionNodeId}}",
         "label": "If choose Team B",
+        "payload": { "x": 2.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -428,6 +494,7 @@ Content-Type: application/json
     {
         "id": "{{condition2NodeId}}",
         "label": "If choose Team C",
+        "payload": { "x": 3.0, "y": 2.0 },
         "conditionRule": {
             "source": "CHOICE",
             "question": "{{sectionAQuestionId}}",
@@ -440,25 +507,30 @@ Content-Type: application/json
     {
         "id": "{{sectionBNodeId}}",
         "label": "Section B",
+        "payload": { "x": 2.0, "y": 3.0 },
         "next": "{{condition2NodeId}}"
     },
     {
         "id": "{{sectionCNodeId}}",
         "label": "Section C",
+        "payload": { "x": 3.0, "y": 3.0 },
         "next": "{{endNodeId}}"
     },
     {
         "id": "{{endNodeId}}",
-        "label": "確認/送出"
+        "label": "確認/送出",
+        "payload": { "x": 0.0, "y": 1.0 }
     },
     {
         "id": "{{tempSectionNodeId}}",
         "label": "Temp Section (to delete)",
+        "payload": { "x": 4.0, "y": 2.0 },
         "next": "{{tempConditionNodeId}}"
     },
     {
         "id": "{{tempConditionNodeId}}",
         "label": "Temp Condition (to delete)",
+        "payload": { "x": 5.0, "y": 2.0 },
         "conditionRule": {
             "source": "NON_CHOICE",
             "question": "{{tempQuestionId}}",

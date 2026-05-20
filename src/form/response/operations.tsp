@@ -25,6 +25,20 @@ namespace CoreSystem.Responses {
 		@body error: NotFound;
 	};
 
+	@summary("Cancel Form Response Submission")
+	@doc("Cancel a submitted response and revert it to draft. Only submitted responses can be canceled.")
+	@route("/responses/{responseId}/cancel")
+	@post
+	op cancelFormResponseSubmission(@path responseId: uuid): {
+		@statusCode statusCode: 200;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	};
+
 	@summary("List Form Responses")
 	@doc("List all responses for a specific form.")
 	@route("/forms/{formId}/responses")
@@ -32,6 +46,21 @@ namespace CoreSystem.Responses {
 	op listFormResponses(@path formId: uuid): {
 		@statusCode statusCode: 200;
 		@body response: ListResponse;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
+	@summary("Get My Form Responses")
+	@doc("Get all responses submitted by the currently logged-in user for a specific form.")
+	@route("/forms/{formId}/responses/me")
+	@get
+	op getMyFormResponses(@path formId: uuid): {
+		@statusCode statusCode: 200;
+		@body response: ListResponse;
+	} | {
+		@statusCode statusCode: 401;
+		@body error: Unauthorized;
 	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
@@ -55,6 +84,32 @@ namespace CoreSystem.Responses {
 	@delete
 	op deleteFormResponse(@path formId: uuid, @path responseId: uuid): {
 		@statusCode statusCode: 204;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
+	@summary("Preview Form Response Export")
+	@doc("Get a preview of the form responses based on selected question IDs.")
+	@route("/forms/{formId}/responses/export/preview")
+	@post
+	op previewFormResponseExport(@path formId: uuid, @body req: ExportPreviewRequest): {
+		@statusCode statusCode: 200;
+		@body response: ExportPreviewResponse;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
+
+	@summary("Export Form Responses")
+	@doc("Download form responses in XLSX format.")
+	@route("/forms/{formId}/responses/export/download")
+	@post
+	op exportFormResponses(@path formId: uuid, @body req: ExportDownloadRequest): {
+		@statusCode statusCode: 200;
+		@header ("Content-Type")contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		@header ("Content-Disposition")contentDisposition: string;
+		@body response: bytes;
 	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;

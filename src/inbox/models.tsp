@@ -21,7 +21,7 @@ namespace CoreSystem.Inbox {
 		message: InboxFormMessage;
 
 		@doc("The full content of inbox_message.")
-		content?: CoreSystem.Forms.Form;
+		content?: CoreSystem.Forms.FormResponse;
 
 		...UserInboxMessageFilters;
 	}

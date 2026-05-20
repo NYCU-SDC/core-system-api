@@ -91,12 +91,37 @@ POST {{BASE_URL}}/forms/{{formId}}/responses
 ###
 
 # ============================================
+# GET /forms/me after response A — responseIds tracks this response
+# ============================================
+# @name listUserFormsAfterResponseA
+# @ref createResponseA
+GET {{BASE_URL}}/forms/me
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('GET /forms/me includes form with responseIds containing response A', () => {
+        equal(Array.isArray(data), true, 'Response must be a bare array');
+        const row = data.find((r) => r.id === formId);
+        equal(row !== undefined, true, 'User form list should include this form');
+        equal(Array.isArray(row.responseIds), true, 'responseIds must always be an array');
+        equal(row.responseIds.includes(responseIdA), true, 'responseIds should include response A');
+    });
+}}
+
+###
+
+# ============================================
 # [A] Submit DMC + Ranking in the same PATCH batch
 # User selects: Frontend (index 0) and DevOps (index 2)
 # Ranking order: DevOps > Frontend  (i.e. [2] then [0])
 # ============================================
 # @name submitBatchA
-# @ref createResponseA
+# @ref listUserFormsAfterResponseA
 PATCH {{BASE_URL}}/responses/{{responseIdA}}/answers
 Content-Type: application/json
 
@@ -177,11 +202,38 @@ POST {{BASE_URL}}/forms/{{formId}}/responses
 ###
 
 # ============================================
+# GET /forms/me after response B — responseIds lists both responses for this form
+# ============================================
+# @name listUserFormsAfterResponseB
+# @ref createResponseB
+GET {{BASE_URL}}/forms/me
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('GET /forms/me includes both response ids for this form', () => {
+        equal(Array.isArray(data), true, 'Response must be a bare array');
+        const row = data.find((r) => r.id === formId);
+        equal(row !== undefined, true, 'User form list should include this form');
+        equal(Array.isArray(row.responseIds), true, 'responseIds must always be an array');
+        equal(row.responseIds.includes(responseIdA), true, 'responseIds should include response A');
+        equal(row.responseIds.includes(responseIdB), true, 'responseIds should include response B');
+        equal(row.responseIds.length >= 2, true, 'responseIds should list at least both responses');
+    });
+}}
+
+###
+
+# ============================================
 # [B] Verify - GET response for Scenario B, before submitting any answers
 # Expected: Ranking choices should be empty (no DMC answer submitted yet)
 # ============================================
 # @name getResponseBBefore
-# @ref createResponseB
+# @ref listUserFormsAfterResponseB
 GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseIdB}}
 
 {{
