@@ -18,6 +18,7 @@ namespace CoreSystem.Forms {
 		title: "Enter SDC Form",
 		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] },
 		messageAfterSubmission: "Thank you for your submission!",
+		sendResponseEmail: true,
 		visibility: FormVisibility.public,
 		allowEditResponse: true,
 	})
@@ -39,6 +40,9 @@ namespace CoreSystem.Forms {
 
 		@doc("The message to show after user's submission.")
 		messageAfterSubmission?: string;
+
+		@doc("Whether to send a copy of the submitted response to the respondent by email. If omitted, the backend defaults to false.")
+		sendResponseEmail?: boolean;
 
 		@doc("The dressing of the form.")
 		dressing?: FormDressing;
@@ -90,6 +94,7 @@ namespace CoreSystem.Forms {
 		deadline: utcDateTime.fromISO("2025-03-31T23:59:59Z"),
 		publishTime: utcDateTime.fromISO("2025-02-01T00:00:00Z"),
 		messageAfterSubmission: "Thank you for your application! We'll get back to you soon.",
+		sendResponseEmail: true,
 		dressing: #{ color: "#0066cc", headerFont: "LINESeedTW", questionFont: "LINESeedTW", textFont: "LINESeedTW" },
 		coverImage: "https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment",
 		googleSheetUrl: "https://docs.google.com/spreadsheets/d/1ABC123/edit",
@@ -134,6 +139,9 @@ namespace CoreSystem.Forms {
 
 		@doc("The message to show after user's submission.")
 		messageAfterSubmission: string;
+
+		@doc("Whether this form sends a copy of the submitted response to the respondent by email.")
+		sendResponseEmail: boolean;
 
 		@doc("The dressing of the form.")
 		dressing?: FormDressing;
