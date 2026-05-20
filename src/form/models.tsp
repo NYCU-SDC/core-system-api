@@ -19,6 +19,7 @@ namespace CoreSystem.Forms {
 		description: #{ type: "doc", content: #[#{ type: "paragraph", content: #[#{ type: "text", text: "If you want to join us, just fill in this form!" }] }] },
 		messageAfterSubmission: "Thank you for your submission!",
 		visibility: FormVisibility.public,
+		allowEditResponse: true,
 	})
 	model FormRequest {
 		@doc("The title of the form.")
@@ -50,6 +51,9 @@ namespace CoreSystem.Forms {
 
 		@doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
 		visibility: FormVisibility;
+
+		@doc("Whether the user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.")
+		allowEditResponse: boolean;
 	}
 
 	@doc("Response model for a form with creator and last editor user details.")
@@ -90,6 +94,7 @@ namespace CoreSystem.Forms {
 		coverImage: "https://placehold.co/1800x600/0066cc/white.webp?text=SDC+2025+Recruitment",
 		googleSheetUrl: "https://docs.google.com/spreadsheets/d/1ABC123/edit",
 		visibility: FormVisibility.public,
+		allowEditResponse: true,
 		createdAt: utcDateTime.fromISO("2025-01-15T10:00:00Z"),
 		updatedAt: utcDateTime.fromISO("2025-02-10T14:30:00Z"),
 	})
@@ -121,8 +126,8 @@ namespace CoreSystem.Forms {
 		@doc("The user who last edited the form.")
 		lastEditor: CoreSystem.User.ProfileResponse;
 
-		@doc("(Optional) Deadline for form completion. If not specified, returns null.")
-		deadline?: utcDateTime;
+		@doc("The deadline of the form")
+		deadline: utcDateTime;
 
 		@doc("When the form is available to be filled.")
 		publishTime?: utcDateTime;
@@ -141,6 +146,9 @@ namespace CoreSystem.Forms {
 
 		@doc("The visibility setting of the form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
 		visibility: FormVisibility;
+
+		@doc("Whether the current user can edit their responses to the form. This is true if the form is still open and the user has already started a response, allowing them to continue editing until the deadline.")
+		allowEditResponse: boolean;
 
 		@doc("The creation timestamp of the form.")
 		createdAt: utcDateTime;

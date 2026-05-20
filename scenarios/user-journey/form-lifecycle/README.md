@@ -11,6 +11,7 @@ These tests cover the full journey of a form from creation to archival, includin
 - Basic workflow setup
 - Form publishing
 - Response submission and management
+- Highlight configuration and statistics
 - Form archival
 
 ## Test Files
@@ -26,6 +27,7 @@ Execute tests in the following order:
    - Creates new form
    - Tests form metadata updates
    - Tests form dressing (fonts, colors)
+   - **`GET /forms/me`** — asserts each `UserForm` has required fields and **`responseIds` is always an array** (possibly empty before any responses exist)
    - Lists forms and sections
 
 3. **`03-workflow-basic.http`** - Minimal Workflow Setup
@@ -45,37 +47,23 @@ Execute tests in the following order:
 
 6. **`06-response-creation.http`** - Response Creation & Answer Submission
    - Create form response
+   - **`GET /forms/me`** — after creating a response, asserts the form row’s **`responseIds`** contains that response id (`IN_PROGRESS`)
    - Submit answers for all question types
    - Test draft saving (auto-save) functionality
    - File upload and auto-answer creation
    - Final response submission
    - Verify response status transitions
 
-7. **`07-optional-google-sheet.http`** - Google Sheet Integration _(Coming soon)_
-   - Non-blocking tests for Google Sheet features
-   - Service account email retrieval
-   - Failures logged as warnings only
+7. **`06a-form-highlight.http`** - Form Highlight Lifecycle
+   - Verify unconfigured highlight state
+   - Set a choice-based highlight question
+   - Verify per-choice response counts
+   - Patch and clear highlight configuration
 
-8. **`08-response-management.http`** - Response Management _(Coming soon)_
-   - List and view responses
-   - Response deletion
-
-9. **`09-form-archival.http`** - Form Archival & Cleanup _(Coming soon)_
-   - Non-blocking tests for Google Sheet features
-   - Service account email retrieval
-   - Failures logged as warnings only
-
-10. **`07-response-submission.http`** - Form Submission _(Coming soon)_
-    - Response creation
-    - Answer submission for all question types
-
-11. **`08-response-management.http`** - Response Management _(Coming soon)_
-    - List and view responses
-    - Response deletion
-
-12. **`09-form-archival.http`** - Form Archival & Cleanup _(Coming soon)_
-    - Archive form
-    - Verify archived state
+8. **`07-form-archiving.http`** - Form Archival & Cleanup
+   - Archive form
+   - Verify archived state in listings
+   - Unarchive and re-publish form
 
 ## Setup
 
@@ -113,6 +101,52 @@ httpyac send scenarios/user-journey/form-lifecycle/01-setup.http
 ```bash
 httpyac send scenarios/user-journey/form-lifecycle/*.http --env dev
 ```
+
+## Rich text / Tiptap support
+
+### Supported Tiptap / ProseMirror types (backend-validated)
+
+This section documents which ProseMirror node/mark types are **currently accepted by the backend validator** and observed to render via `descriptionHtml`.
+
+Source of truth for this list is the scenario step `updateFormDescriptionNodeRenderers` in `02-form-creation.http`, validated end-to-end by running:
+
+```bash
+httpyac send -a --bail 06-response-creation.http
+```
+
+#### Nodes
+
+- **`doc`**: ProseMirror document root (`type: "doc"`).
+- **`heading`**: `attrs.level` supported (observed: 1, 2, 3, 4, 5, 6).
+- **`paragraph`**
+- **`text`**
+- **`hard_break`**
+- **`horizontal_rule`**
+- **`blockquote`**: supports multiple paragraphs and nested lists.
+- **`code_block`**: supports multi-line text.
+- **`bullet_list`**
+- **`ordered_list`**: supports `attrs.order`.
+- **`list_item`**: supports nesting lists within list items.
+- **`variable`**: supports `attrs.name` (rendered as `{{NAME}}` in `descriptionHtml`).
+
+#### Marks
+
+- **`bold`** (renders as `<strong>…</strong>`)
+- **`italic`** (renders as `<em>…</em>`)
+- **`underline`** (renders as `<u>…</u>` or equivalent styling)
+- **`code`** (inline code mark)
+- **`link`**: observed-supported href forms:
+  - **HTTP(S)** absolute URLs (e.g. `https://example.com`)
+  - **Relative-path style** accepted when represented as `https://example.com/relative/path` in the test
+  - **`mailto:`** (e.g. `mailto:test@example.com`)
+  - **Pure hash** (e.g. `#hash`)
+
+#### Rendering / sanitization notes
+
+- **`descriptionHtml`** is expected to be safe for frontend rendering; the smoke test includes a string `"<script>alert(1)</script>"` and asserts:
+  - `<script` is **not** present in `descriptionHtml`
+  - `alert(1)` text **is** still visible
+- **Emoji**: unicode emoji characters embedded as plain text are preserved (e.g. `😀`, `👨‍👩‍👧‍👦`).
 
 ## Known Limitations
 

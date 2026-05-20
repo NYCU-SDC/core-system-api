@@ -64,12 +64,39 @@ POST {{BASE_URL}}/forms/{{formId}}/responses
 ###
 
 # ============================================
+# GET /forms/me — UserForm.responseIds includes new draft response
+# ============================================
+# @name listUserFormsAfterResponseCreate
+# @ref createFormResponse
+GET {{BASE_URL}}/forms/me
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('GET /forms/me lists this form with responseIds containing the new response', () => {
+        equal(Array.isArray(data), true, 'Response must be a bare array');
+        const row = data.find((r) => r.id === formId);
+        equal(row !== undefined, true, 'Current user form list should include this form');
+        equal(Array.isArray(row.responseIds), true, 'responseIds must always be an array');
+        equal(row.responseIds.includes(responseId), true, 'responseIds should include the created response id');
+        equal(row.status, 'IN_PROGRESS', 'UserForm status should be IN_PROGRESS while response is draft');
+    });
+}}
+
+###
+
+# ============================================
 # Verify progress before patching answers
 # ============================================
 # @name verifyProgressBeforePatching
-# @ref createFormResponse
+# @ref listUserFormsAfterResponseCreate
 GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
 
+?? status == 200
 {{
     test.status(200);
     test.hasResponseBody();
@@ -1131,6 +1158,11 @@ GET {{BASE_URL}}/forms/{{formId}}/responses
     test('Form responses listed', () => {
         const data = JSON.parse(response.body);
         equal(data.formId, formId, 'Form ID should match');
+        equal(typeof data.totalCount, 'number', 'totalCount should be a number');
+        equal(typeof data.draftCount, 'number', 'draftCount should be a number');
+        equal(typeof data.submittedCount, 'number', 'submittedCount should be a number');
+        equal(data.totalCount, data.draftCount + data.submittedCount, 'totalCount should equal draftCount + submittedCount');
+        equal(data.submittedCount >= 1, true, 'Should have at least one submitted response');
         equal(Array.isArray(data.responses), true, 'Responses should be an array');
         equal(data.responses.length >= 1, true, 'Should have at least one response');
         
@@ -1146,6 +1178,51 @@ GET {{BASE_URL}}/forms/{{formId}}/responses
         console.log('Submitted by:', submittedResponse.submittedBy);
         console.log('Created at:', submittedResponse.createdAt);
         console.log('Updated at:', submittedResponse.updatedAt);
+    });
+}}
+
+###
+
+# ============================================
+# Cancel Submitted Response
+# ============================================
+# @name cancelSubmittedResponse
+# @ref listFormResponses
+POST {{BASE_URL}}/responses/{{responseId}}/cancel
+
+{{
+    test.status(200);
+
+    test('Response submission canceled successfully', () => {
+        console.log('Response submission canceled successfully');
+    });
+}}
+
+###
+
+# ============================================
+# Get Response After Cancel
+# ============================================
+# @name getResponseAfterCancel
+# @ref cancelSubmittedResponse
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Response status changed back to DRAFT', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id, responseId, 'Response ID should match');
+        equal(data.formId, formId, 'Form ID should match');
+        equal(data.progress, 'DRAFT', 'Progress should be DRAFT after cancellation');
+        equal(Array.isArray(data.sections), true, 'Sections should be an array');
+
+        console.log('Response ID:', data.id);
+        console.log('Progress:', data.progress);
+        console.log('Form ID:', data.formId);
     });
 }}
 

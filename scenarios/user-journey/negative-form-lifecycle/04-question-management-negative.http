@@ -778,7 +778,15 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Jump order",
-    "description": "Order 100",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{ "type": "text", "text": "Order 100" }]
+            }
+        ]
+    },
     "order": 100
 }
 
@@ -807,7 +815,15 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Correct order",
-    "description": "Order 50",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{ "type": "text", "text": "Order 50" }]
+            }
+        ]
+    },
     "order": 50
 }
 
@@ -860,7 +876,17 @@ Content-Type: application/json
     "required": true,
     "type": "SHORT_TEXT",
     "title": "Duplicate order",
-    "description": "Same order as existing question - API pushes others to 2..N+1",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    { "type": "text", "text": "Same order as existing question - API pushes others to 2..N+1" }
+                ]
+            }
+        ]
+    },
     "order": 1
 }
 
