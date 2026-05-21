@@ -41,23 +41,16 @@ cases:
 
 ### Top-level fields
 
-- `name`
-  Human-readable journey name shown in reports.
-- `description`
-  Short summary of what the whole journey covers.
-- `cases`
-  A required array of executable test cases.
+- `name`: Human-readable journey name shown in reports.
+- `description`: Short summary of what the whole journey covers.
+- `cases`: A required array of executable test cases.
 
 ### Case fields
 
-- `name`
-  Human-readable case title shown in reports.
-- `description`
-  Short summary of what this case verifies.
-- `path`
-  Relative path to the target `.http` file inside the same scenario folder.
-- `test`
-  The exact `# @name` value in that `.http` file.
+- `name`: Human-readable case title shown in reports.
+- `description`: Short summary of what this case verifies.
+- `path`: Relative path to the target `.http` file inside the same scenario folder.
+- `test`: The exact `# @name` value in that `.http` file.
 
 ## How Execution Works
 
