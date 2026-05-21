@@ -1,7 +1,6 @@
 # User Journey `journey.yaml` Guide
 
-This directory contains API end-to-end scenarios executed by `httpyac-action`.
-Each scenario folder should contain:
+This directory contains API end-to-end scenarios executed by `httpyac-action`. Each scenario folder should contain:
 
 - one `journey.yaml`
 - one or more `.http` files
@@ -63,8 +62,7 @@ In practice, the selected testcase usually depends on previous requests in the s
 
 Because of that, a single case often covers much more than one request.
 
-However, `# @import` alone does not mean every testcase in the imported file will be executed.
-Actual coverage is determined by the selected testcase and the `# @ref` chain required to reach it.
+However, `# @import` alone does not mean every testcase in the imported file will be executed. Actual coverage is determined by the selected testcase and the `# @ref` chain required to reach it.
 
 For example:
 
@@ -79,8 +77,7 @@ So running that one case already covers:
 - unarchive flow
 - re-publish verification
 
-But it does not automatically cover later branches in `06-response-creation.http`.
-For example, `cancelSubmittedResponse` is only exercised when the selected target reaches `getResponseAfterCancel`.
+But it does not automatically cover later branches in `06-response-creation.http`. For example, `cancelSubmittedResponse` is only exercised when the selected target reaches `getResponseAfterCancel`.
 
 ## Minimal Template
 
