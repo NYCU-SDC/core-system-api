@@ -10,3 +10,8 @@ cases:
     description: "Verify archiving, listing visibility changes, unarchive behavior, and successful re-publication."
     path: "07-form-archiving.http"
     test: "verifyFormRepublished"
+
+  - name: "View Management"
+    description: "Verify view CRUD, title/order updates, lock/unlock, duplicate with conflict resolution, and deletion."
+    path: "08-view-management.http"
+    test: "verifyViewDeletion"

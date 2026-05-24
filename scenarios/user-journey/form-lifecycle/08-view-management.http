@@ -329,6 +329,63 @@ GET {{BASE_URL}}/forms/{{formId}}/views
 ###
 
 # ============================================
+# Duplicate First View Again (should generate incremented copy title)
+# ============================================
+# @name duplicateFirstViewAgain
+# @ref verifyListAfterDuplicate
+POST {{BASE_URL}}/forms/{{formId}}/views/{{firstViewId}}/duplicate
+
+{{
+    test.status(201);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Second duplicate of same view gets incremented title', () => {
+        const data = JSON.parse(response.body);
+        equal(data.id !== undefined, true, 'Duplicated view ID should exist');
+        equal(data.id !== firstViewId, true, 'Duplicated view should have a new ID');
+        equal(data.id !== duplicatedViewId, true, 'Should be a different view from first duplicate');
+        equal(data.title, '「Core System」的副本（1）', 'Second duplicate title should have numeric suffix');
+        equal(data.locked, false, 'Duplicated view should not be locked');
+        equal(data.formId, formId, 'Form ID should match');
+    });
+
+    const data = JSON.parse(response.body);
+    exports.duplicatedViewId2 = data.id;
+}}
+
+###
+
+# ============================================
+# Verify list after second duplicate
+# ============================================
+# @name verifyListAfterSecondDuplicate
+# @ref duplicateFirstViewAgain
+GET {{BASE_URL}}/forms/{{formId}}/views
+
+{{
+    test.status(200);
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+
+    test('Both duplicates are present and placed after original', () => {
+        const data = JSON.parse(response.body);
+        equal(data.length, 5, 'Should now have 5 views');
+
+        const views = data.slice().sort((a, b) => a.order - b.order);
+        const originalIndex = views.findIndex(v => v.id === firstViewId);
+        const dup1Index = views.findIndex(v => v.id === duplicatedViewId);
+        const dup2Index = views.findIndex(v => v.id === duplicatedViewId2);
+        equal(dup1Index > originalIndex, true, 'First duplicate should be after original');
+        equal(dup2Index > originalIndex, true, 'Second duplicate should be after original');
+    });
+}}
+
+###
+
+# ============================================
 # Delete View
 # ============================================
 # @name deleteThirdView
