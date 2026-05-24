@@ -77,6 +77,9 @@ import "./src/form/answer/operations.tsp";
 // --- View ---
 import "./src/form/view/models.tsp";
 import "./src/form/view/operations.tsp";
+// --- Highlight ---
+import "./src/form/highlight/models.tsp";
+import "./src/form/highlight/operations.tsp";
 
 // ═════════════════════════════════════════════════
 // === File ===
