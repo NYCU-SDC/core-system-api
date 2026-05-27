@@ -222,6 +222,10 @@ GET {{BASE_URL}}/forms/{{formId}}/views
     test('View order correctly shifted after update', () => {
         const data = JSON.parse(response.body);
         const views = data.slice().sort((a, b) => a.order - b.order);
+        equal(views[0].id, secondViewId, 'Second view order should be 0');
+        equal(views[0].order, 0, 'Second view order should be 0');
+        equal(views[1].id, thirdViewId, 'Third view order should be 1');
+        equal(views[1].order, 1, 'Third view order should be 1');
         equal(views[2].id, firstViewId, 'First view should now be last');
         equal(views[2].order, 2, 'First view order should be 2');
     });
@@ -389,11 +393,11 @@ GET {{BASE_URL}}/forms/{{formId}}/views
 # Delete View
 # ============================================
 # @name deleteThirdView
-# @ref verifyListAfterDuplicate
+# @ref verifyListAfterSecondDuplicate
 DELETE {{BASE_URL}}/forms/{{formId}}/views/{{thirdViewId}}
 
 {{
-    test.status(200);
+    test.status(204);
 
     console.log('Deleted view:', thirdViewId);
 }}
@@ -415,7 +419,7 @@ GET {{BASE_URL}}/forms/{{formId}}/views
 
     test('Deleted view is no longer in list', () => {
         const data = JSON.parse(response.body);
-        equal(data.length, 3, 'Should now have 3 views');
+        equal(data.length, 4, 'Should now have 4 views');
         equal(data.some(v => v.id === thirdViewId), false, 'Deleted view should not appear in list');
     });
 }}
