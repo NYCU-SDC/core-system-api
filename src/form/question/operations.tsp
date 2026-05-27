@@ -37,4 +37,15 @@ namespace CoreSystem.Forms {
 	op deleteQuestion(@path sectionId: uuid, @path questionId: uuid): {
 		@statusCode statusCode: 204;
 	};
+
+	@summary("Get Filters")
+	@doc("Get distinct answers of the question for filtering.")
+	@route("/forms/{formId}/views/{viewId}/questions/{questionId}/filters")
+	@get
+	op getFilters(@path formId: uuid, @path viewId: uuid, @path questionId: uuid): {
+	    @statusCode statusCode: 200;
+	    @body filters: QuestionFiltersResponse;
+	} | {
+	    @statusCode statusCode: 404;
+	};
 }

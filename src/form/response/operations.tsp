@@ -114,4 +114,17 @@ namespace CoreSystem.Responses {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
 	};
+
+	@summary("Filter And Query Form Responses")
+	@doc("Query and filter form responses based on a list of selected question answers.")
+    @route("/forms/{formId}/responses/query")
+    @post
+    op filterAndQueryFormResponses(@path formId: uuid, @body req: AnswerFilterRequest): {
+        @statusCode statusCode: 200;
+        @body response: AnswerFilterResponse;
+    } | {
+        @statusCode statusCode: 400;
+    } | {
+        @statusCode statueCode: 404;
+    };
 }
