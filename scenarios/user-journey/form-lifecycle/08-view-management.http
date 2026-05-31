@@ -378,12 +378,17 @@ GET {{BASE_URL}}/forms/{{formId}}/views
         const data = JSON.parse(response.body);
         equal(data.length, 5, 'Should now have 5 views');
 
-        const views = data.slice().sort((a, b) => a.order - b.order);
-        const originalIndex = views.findIndex(v => v.id === firstViewId);
-        const dup1Index = views.findIndex(v => v.id === duplicatedViewId);
-        const dup2Index = views.findIndex(v => v.id === duplicatedViewId2);
-        equal(dup1Index > originalIndex, true, 'First duplicate should be after original');
-        equal(dup2Index > originalIndex, true, 'Second duplicate should be after original');
+        // Verify exact order values for each view
+        const secondView = views.find(v => v.id === secondViewId);
+        const thirdView = views.find(v => v.id === thirdViewId);
+        const firstView = views.find(v => v.id === firstViewId);
+        const dup2View = views.find(v => v.id === duplicatedViewId2);
+        const dup1View = views.find(v => v.id === duplicatedViewId);
+        equal(secondView.order, 0, 'Second view should have order 0');
+        equal(thirdView.order, 1, 'Third view should have order 1');
+        equal(firstView.order, 2, 'First view should have order 2');
+        equal(dup2View.order, 3, 'Second duplicate should have order 3 (inserted right after original)');
+        equal(dup1View.order, 4, 'First duplicate should have order 4 (pushed up by second duplicate)');
     });
 }}
 
