@@ -55,6 +55,15 @@ namespace CoreSystem.Forms {
 		@body response: FormResponse;
 	};
 
+    @summary("Close Form")
+    @doc("Close a form. Set status to 'CLOSED'. Closed forms are no longer accepting responses.")
+    @route("/forms/{formId}/close")
+    @post
+    op closeForm(@path formId: uuid): {
+    	@statusCode statusCode: 200;
+    	@body response: FormResponse;
+    };
+
 	// === Cover Image Operations ===
 	@summary("Get Form Cover Image")
 	@doc("Get the cover image binary data. Returns the image in WebP format.")

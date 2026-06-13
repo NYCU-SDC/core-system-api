@@ -240,6 +240,9 @@ namespace CoreSystem.Forms {
 
 		@doc("Archived: form is hidden from default listings but is still stored and can be accessed directly.")
 		archived: "ARCHIVED",
+
+		@doc("Closed: form is no longer accepting responses, but remains visible or accessible depending on visibility.")
+        closed: "CLOSED",
 	}
 
 	@doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
