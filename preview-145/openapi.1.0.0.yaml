@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-27'
+  version: '2026-06-22'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -4959,13 +4959,8 @@ components:
     Responses.AnswerFilterRequest:
       type: object
       required:
-        - formId
         - filters
       properties:
-        formId:
-          allOf:
-            - $ref: '#/components/schemas/uuid'
-          description: The unique identifier of the form.
         filters:
           type: array
           items:
@@ -4973,15 +4968,11 @@ components:
           description: The List of questions selected.
       description: Request model for filtering form responses
       examples:
-        - formId: 550e8400-e29b-41d4-a716-446655440000
-          filters:
+        - filters:
             - questionId: a1b2c3d4-1111-2222-3333-444455556666
               answers:
-                - matchValue: abc-123-def
-                - matchValue: ghi-456-jkl
-            - questionId: e5f6g7h8-5555-6666-7777-888899990000
-              answers:
-                - matchValue: 陳姝安
+                - option: abc-123-def
+                - option: ghi-456-jkl
     Responses.AnswerFilterResponse:
       type: object
       required:
@@ -5374,13 +5365,13 @@ components:
     Responses.QueryFilterAnswerItem:
       type: object
       required:
-        - matchValue
+        - option
       properties:
-        matchValue:
+        option:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The raw value used for backend querying and matching.
-      description: A single answers option selected by the user
+      description: A single answer option selected by the user
     Responses.QuestionFilesUploadRequest:
       type: object
       properties:
