@@ -424,8 +424,14 @@ namespace CoreSystem.Forms {
        ]
     })
     model QuestionFiltersResponse {
+       @doc("The unique identifier of the view.")
+       viewId: uuid;
+
        @doc("The unique identifier of the form.")
        formId: uuid;
+
+       @doc("The unique identifier of the question.")
+       questionId: uuid;
 
        @doc("The list of available unique answers for this question.")
        answers: FilterAnswerItem[];
