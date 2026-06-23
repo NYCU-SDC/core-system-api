@@ -417,7 +417,9 @@ namespace CoreSystem.Forms {
 
     @doc("Response model for getting question filters.")
     @example(#{
+       viewId: "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
        formId: "550e8400-e29b-41d4-a716-446655440000",
+       questionId: "74723192-bc11-412e-a576-928b76c8c9e0",
        answers: #[
           #{ displayValue: "開發部", matchValue: "abc-123-def", selected: false },
           #{ displayValue: "品牌部", matchValue: "ghi-456-jkl", selected: false }
