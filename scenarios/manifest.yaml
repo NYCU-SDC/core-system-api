@@ -1,0 +1,114 @@
+version: 1
+
+defaults:
+  always_run:
+    - smoke
+  unknown_change_policy: full
+  selector_error_policy: full
+  large_change_threshold: 100
+
+labels:
+  qa:full:
+    group: full
+  qa:form:
+    group: form
+  qa:form-core:
+    journeys:
+      - form-lifecycle
+  qa:organization:
+    journeys:
+      - organization-lifecycle
+  qa:workflow:
+    journeys:
+      - form-workflow-condition
+  qa:negative:
+    journeys:
+      - negative-form-lifecycle
+  qa:ranking:
+    journeys:
+      - form-rank-from-source-id
+
+journey_groups:
+  form:
+    journeys:
+      - form-lifecycle
+      - form-workflow-condition
+      - negative-form-lifecycle
+      - form-rank-from-source-id
+
+  full:
+    journeys:
+      - smoke
+      - organization-lifecycle
+      - form-lifecycle
+      - form-workflow-condition
+      - negative-form-lifecycle
+      - form-rank-from-source-id
+
+rules:
+  - name: org-access
+    paths:
+      - internal/tenant/**
+      - internal/unit/**
+    journeys:
+      - organization-lifecycle
+      - negative-form-lifecycle
+
+  - name: user-profile
+    paths:
+      - internal/user/**
+    journeys:
+      - organization-lifecycle
+      - form-lifecycle
+
+  - name: identity-session-risk
+    paths:
+      - internal/auth/**
+      - internal/jwt/**
+    group: full
+
+  - name: form-core
+    paths:
+      - internal/form/*.go
+      - internal/form/font/**
+      - internal/publish/**
+      - internal/distribute/**
+      - internal/inbox/**
+    journeys:
+      - form-lifecycle
+
+  - name: form-question-answer
+    paths:
+      - internal/form/question/**
+      - internal/form/shared/**
+      - internal/form/answer/**
+      - internal/form/response/**
+      - internal/form/submit/**
+      - internal/file/**
+      - internal/markdown/**
+    journeys:
+      - form-lifecycle
+      - negative-form-lifecycle
+
+  - name: form-workflow-engine
+    paths:
+      - internal/form/workflow/**
+    journeys:
+      - form-lifecycle
+      - form-workflow-condition
+      - negative-form-lifecycle
+
+  - name: form-ranking-source-id
+    paths:
+      - internal/form/question/choice.go
+      - internal/form/question/choice_test.go
+      - internal/form/question/handler.go
+      - internal/form/question/queries.sql
+      - internal/form/question/queries.sql.go
+      - internal/form/question/schema.sql
+      - internal/form/shared/answer.go
+      - internal/form/answer/**
+      - internal/form/response/**
+    journeys:
+      - form-lifecycle
+      - form-rank-from-source-id
