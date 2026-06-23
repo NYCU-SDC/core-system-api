@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-06-22'
+  version: '2026-06-23'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -4086,13 +4086,23 @@ components:
     Forms.QuestionFiltersResponse:
       type: object
       required:
+        - viewId
         - formId
+        - questionId
         - answers
       properties:
+        viewId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the view.
         formId:
           allOf:
             - $ref: '#/components/schemas/uuid'
           description: The unique identifier of the form.
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the question.
         answers:
           type: array
           items:
@@ -4100,7 +4110,9 @@ components:
           description: The list of available unique answers for this question.
       description: Response model for getting question filters.
       examples:
-        - formId: 550e8400-e29b-41d4-a716-446655440000
+        - viewId: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
+          formId: 550e8400-e29b-41d4-a716-446655440000
+          questionId: 74723192-bc11-412e-a576-928b76c8c9e0
           answers:
             - displayValue: 開發部
               matchValue: abc-123-def
