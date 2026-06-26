@@ -176,4 +176,44 @@ namespace CoreSystem.Responses {
 		questionIds: uuid[];
 	}
 
+	@doc("A single answer option selected by the user")
+	model QueryFilterAnswerItem {
+	    @doc("The raw value used for backend querying and matching.")
+	    option: uuid;
+	}
+
+	@doc("Filter group for a specific question")
+	model ResponseQueryFilter {
+	    @doc("The unique identifier of the question.")
+	    questionId: uuid;
+
+	    @doc("The list of answers selected for this question.")
+	    answers: QueryFilterAnswerItem[];
+	}
+
+    @doc("Request model for filtering form responses")
+    @example(#{
+            filters: #[
+                #{
+                    questionId: "a1b2c3d4-1111-2222-3333-444455556666",
+                    answers: #[
+                        #{ option: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040" },
+                        #{ option: "00000000-0000-0000-0000-000000000001" }
+                    ]
+                }
+            ]
+        })
+    model AnswerFilterRequest {
+        @doc("The List of questions selected.")
+        filters: ResponseQueryFilter[];
+    }
+
+    @doc("Response model for filtering form responses")
+    model AnswerFilterResponse {
+        @doc("The form unique identifier.")
+        formId: uuid;
+
+        @doc("The form responses that match the selected answers.")
+        responses: ExportRow[];
+    }
 }

@@ -402,4 +402,40 @@ namespace CoreSystem.Forms {
 		@doc("If set, choices are dynamically generated from answers to this question.")
 		sourceId?: uuid;
 	}
+
+    @doc("A single answer option available for filtering.")
+    model FilterAnswerItem {
+       @doc("The text displayed to the user in the filter UI.")
+       displayValue: string;
+
+       @doc("The raw value used for backend querying and matching.")
+       matchValue: string;
+
+       @doc("Whether this filter option is selected. Defaults to false from server.")
+       selected: boolean;
+    }
+
+    @doc("Response model for getting question filters.")
+    @example(#{
+       viewId: "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+       formId: "550e8400-e29b-41d4-a716-446655440000",
+       questionId: "74723192-bc11-412e-a576-928b76c8c9e0",
+       answers: #[
+          #{ displayValue: "開發部", matchValue: "abc-123-def", selected: false },
+          #{ displayValue: "品牌部", matchValue: "ghi-456-jkl", selected: false }
+       ]
+    })
+    model QuestionFiltersResponse {
+       @doc("The unique identifier of the view.")
+       viewId: uuid;
+
+       @doc("The unique identifier of the form.")
+       formId: uuid;
+
+       @doc("The unique identifier of the question.")
+       questionId: uuid;
+
+       @doc("The list of available unique answers for this question.")
+       answers: FilterAnswerItem[];
+    }
 }
