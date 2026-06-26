@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-05-31'
+  version: '2026-06-26'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -21,8 +21,8 @@ tags:
   - name: Unit
   - name: Slug
   - name: Forms
-  - name: Form Workflow
   - name: Responses
+  - name: Form Workflow
   - name: Views
   - name: Files
 paths:
@@ -823,6 +823,44 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
+  /api/forms/{formId}/responses/query:
+    post:
+      operationId: Responses_filterAndQueryFormResponses
+      summary: Filter And Query Form Responses
+      description: Filter and query form responses based on a list of selected question answers.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.AnswerFilterResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswerFilterRequest'
   /api/forms/{formId}/responses/{responseId}:
     get:
       operationId: Responses_getFormResponse
@@ -1185,6 +1223,48 @@ paths:
                 $ref: '#/components/schemas/NotFound'
       tags:
         - Views
+  /api/forms/{formId}/views/{viewId}/questions/{questionId}/filters:
+    post:
+      operationId: Forms_filterAndQueryAnswers
+      summary: Get Filters
+      description: Filter and query distinct answers of the question for filtering.
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forms.QuestionFiltersResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+      tags:
+        - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswerFilterRequest'
   /api/forms/{formId}/views/{viewId}/unlock:
     post:
       operationId: Views_unlockFormView
@@ -2907,6 +2987,23 @@ components:
           hasDay: true
           minDate: '2025-01-01T00:00:00Z'
           maxDate: '2025-12-31T23:59:59Z'
+    Forms.FilterAnswerItem:
+      type: object
+      required:
+        - displayValue
+        - matchValue
+        - selected
+      properties:
+        displayValue:
+          type: string
+          description: The text displayed to the user in the filter UI.
+        matchValue:
+          type: string
+          description: The raw value used for backend querying and matching.
+        selected:
+          type: boolean
+          description: Whether this filter option is selected. Defaults to false from server.
+      description: A single answer option available for filtering.
     Forms.Font:
       type: object
       required:
@@ -4004,6 +4101,43 @@ components:
                   descriptionHtml: <p>Is there anything else you'd like us to know?</p>
                   createdAt: '2025-01-20T10:00:00Z'
                   updatedAt: '2025-02-01T15:30:00Z'
+    Forms.QuestionFiltersResponse:
+      type: object
+      required:
+        - viewId
+        - formId
+        - questionId
+        - answers
+      properties:
+        viewId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the view.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the form.
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the question.
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forms.FilterAnswerItem'
+          description: The list of available unique answers for this question.
+      description: Response model for getting question filters.
+      examples:
+        - viewId: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
+          formId: 550e8400-e29b-41d4-a716-446655440000
+          questionId: 74723192-bc11-412e-a576-928b76c8c9e0
+          answers:
+            - displayValue: 開發部
+              matchValue: abc-123-def
+              selected: false
+            - displayValue: 品牌部
+              matchValue: ghi-456-jkl
+              selected: false
     Forms.QuestionRequest:
       type: object
       required:
@@ -4852,6 +4986,39 @@ components:
             $ref: '#/components/schemas/ProseMirrorMark'
           description: Marks applied to this node, such as bold or italic.
       description: A ProseMirror node.
+    Responses.AnswerFilterRequest:
+      type: object
+      required:
+        - filters
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ResponseQueryFilter'
+          description: The List of questions selected.
+      description: Request model for filtering form responses
+      examples:
+        - filters:
+            - questionId: a1b2c3d4-1111-2222-3333-444455556666
+              answers:
+                - option: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+                - option: 00000000-0000-0000-0000-000000000001
+    Responses.AnswerFilterResponse:
+      type: object
+      required:
+        - formId
+        - responses
+      properties:
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form unique identifier.
+        responses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.ExportRow'
+          description: The form responses that match the selected answers.
+      description: Response model for filtering form responses
     Responses.AnswerPayload:
       type: object
       required:
@@ -5225,6 +5392,16 @@ components:
             avatarUrl: https://example.com/avatar.jpg
             provider: google
             providerId: '1234567890'
+    Responses.QueryFilterAnswerItem:
+      type: object
+      required:
+        - option
+      properties:
+        option:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The raw value used for backend querying and matching.
+      description: A single answer option selected by the user
     Responses.QuestionFilesUploadRequest:
       type: object
       properties:
@@ -5309,6 +5486,22 @@ components:
         - DRAFT
         - SUBMITTED
       description: The current progress of the response.
+    Responses.ResponseQueryFilter:
+      type: object
+      required:
+        - questionId
+        - answers
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The unique identifier of the question.
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Responses.QueryFilterAnswerItem'
+          description: The list of answers selected for this question.
+      description: Filter group for a specific question
     Responses.ResponseSections:
       type: object
       required:
@@ -6102,6 +6295,20 @@ components:
       type: string
       enum:
         - 1.0.0
+    Views.Column:
+      type: object
+      required:
+        - questionId
+        - questionTitle
+      properties:
+        questionId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The question's unique identifier.
+        questionTitle:
+          type: string
+          description: The text displayed to the user in the filter UI.
+      description: A single question option available for filtering.
     Views.UpdateViewRequest:
       type: object
       properties:
@@ -6123,6 +6330,7 @@ components:
         - order
         - createdAt
         - updatedAt
+        - columns
       properties:
         id:
           allOf:
@@ -6145,6 +6353,11 @@ components:
           type: string
           format: date-time
           description: The last updated timestamp of the view.
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/Views.Column'
+          description: The columns of the filters.
       description: Response model for a single form view.
       examples:
         - id: f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c
@@ -6153,6 +6366,11 @@ components:
           order: 0
           createdAt: '2025-01-15T10:00:00Z'
           updatedAt: '2025-02-10T14:30:00Z'
+          columns:
+            - questionId: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
+              questionTitle: 部門
+            - questionId: 6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
+              questionTitle: 姓名
     uuid:
       type: string
       format: uuid
