@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-06-23'
+  version: '2026-06-26'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -21,8 +21,8 @@ tags:
   - name: Unit
   - name: Slug
   - name: Forms
-  - name: Form Workflow
   - name: Responses
+  - name: Form Workflow
   - name: Views
   - name: Files
 paths:
@@ -827,7 +827,7 @@ paths:
     post:
       operationId: Responses_filterAndQueryFormResponses
       summary: Filter And Query Form Responses
-      description: Query and filter form responses based on a list of selected question answers.
+      description: Filter and query form responses based on a list of selected question answers.
       parameters:
         - name: formId
           in: path
@@ -843,8 +843,16 @@ paths:
                 $ref: '#/components/schemas/Responses.AnswerFilterResponse'
         '400':
           description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '404':
           description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
       tags:
         - Responses
       requestBody:
@@ -1216,10 +1224,10 @@ paths:
       tags:
         - Views
   /api/forms/{formId}/views/{viewId}/questions/{questionId}/filters:
-    get:
-      operationId: Forms_getFilters
+    post:
+      operationId: Forms_filterAndQueryAnswers
       summary: Get Filters
-      description: Get distinct answers of the question for filtering.
+      description: Filter and query distinct answers of the question for filtering.
       parameters:
         - name: formId
           in: path
@@ -1245,8 +1253,18 @@ paths:
                 $ref: '#/components/schemas/Forms.QuestionFiltersResponse'
         '404':
           description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
       tags:
         - Forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Responses.AnswerFilterRequest'
   /api/forms/{formId}/views/{viewId}/unlock:
     post:
       operationId: Views_unlockFormView
@@ -4983,8 +5001,8 @@ components:
         - filters:
             - questionId: a1b2c3d4-1111-2222-3333-444455556666
               answers:
-                - option: abc-123-def
-                - option: ghi-456-jkl
+                - option: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+                - option: 00000000-0000-0000-0000-000000000001
     Responses.AnswerFilterResponse:
       type: object
       required:
