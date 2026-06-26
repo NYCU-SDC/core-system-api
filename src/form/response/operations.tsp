@@ -116,7 +116,7 @@ namespace CoreSystem.Responses {
 	};
 
 	@summary("Filter And Query Form Responses")
-	@doc("Query and filter form responses based on a list of selected question answers.")
+	@doc("Filter and query form responses based on a list of selected question answers.")
     @route("/forms/{formId}/responses/query")
     @post
     op filterAndQueryFormResponses(@path formId: uuid, @body req: AnswerFilterRequest): {
@@ -124,7 +124,9 @@ namespace CoreSystem.Responses {
         @body response: AnswerFilterResponse;
     } | {
         @statusCode statusCode: 400;
+        @body error: BadRequest;
     } | {
-        @statusCode statueCode: 404;
+        @statusCode statusCode: 404;
+        @body error: NotFound;
     };
 }

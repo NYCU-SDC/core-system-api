@@ -197,8 +197,8 @@ namespace CoreSystem.Responses {
                 #{
                     questionId: "a1b2c3d4-1111-2222-3333-444455556666",
                     answers: #[
-                        #{ option: "abc-123-def" },
-                        #{ option: "ghi-456-jkl" }
+                        #{ option: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040" },
+                        #{ option: "00000000-0000-0000-0000-000000000001" }
                     ]
                 }
             ]

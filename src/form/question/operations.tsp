@@ -1,5 +1,7 @@
 using Http;
 
+import "../response/models.tsp";
+
 @tag("Forms")
 namespace CoreSystem.Forms {
 	// for form edit - question management
@@ -39,13 +41,19 @@ namespace CoreSystem.Forms {
 	};
 
 	@summary("Get Filters")
-	@doc("Get distinct answers of the question for filtering.")
+	@doc("Filter and query distinct answers of the question for filtering.")
 	@route("/forms/{formId}/views/{viewId}/questions/{questionId}/filters")
-	@get
-	op getFilters(@path formId: uuid, @path viewId: uuid, @path questionId: uuid): {
+	@post
+	op filterAndQueryAnswers(
+        @path formId: uuid,
+        @path viewId: uuid,
+        @path questionId: uuid,
+        @body req:  CoreSystem.Responses.AnswerFilterRequest
+    ): {
 	    @statusCode statusCode: 200;
-	    @body filters: QuestionFiltersResponse;
+	    @body response: QuestionFiltersResponse;
 	} | {
 	    @statusCode statusCode: 404;
+	    @body error: NotFound;
 	};
 }
