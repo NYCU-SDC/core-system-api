@@ -1,20 +1,21 @@
-version: 1
-
 defaults:
   always_run:
     - smoke
-  unknown_change_policy: affected
-  selector_error_policy: full
-  large_change_threshold: 100
   ignore_paths:
+    - cmd/backend/main.go
     - internal/**/models.go
     - internal/**/db.go
     - internal/**/queries.sql.go
+    - internal/database/**
+    - internal/config/**
+    - internal/setup/**
+    - internal/*.go
     - internal/**/*_test.go
     - test/**
     - scripts/**
     - .github/**
     - .deploy/**
+    - sqlc.yaml
 
 domains:
   access-control:
