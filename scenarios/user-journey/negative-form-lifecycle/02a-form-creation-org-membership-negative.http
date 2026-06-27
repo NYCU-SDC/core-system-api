@@ -21,7 +21,15 @@ Content-Type: application/json
 
 {
     "title": "Should Be Forbidden",
-    "description": "User not yet a member",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{ "type": "text", "text": "User not yet a member" }]
+            }
+        ]
+    },
     "visibility": "PUBLIC"
 }
 
