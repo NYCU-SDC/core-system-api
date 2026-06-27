@@ -11,11 +11,28 @@
 ###
 
 # ============================================
+# Login as non-member user (not in org-403-test)
+# ============================================
+# Org creation adds the global admin as org admin; use a separate user for the 403 test.
+# @name loginNonMember
+# @ref getOrgFor403Test
+POST {{BASE_URL}}/auth/login/internal
+Content-Type: application/json
+
+{
+    "uid": "{{NON_MEMBER_LOGIN_USER_ID}}"
+}
+
+?? status == 200
+
+###
+
+# ============================================
 # Create form under org before user is a member (expect 403)
 # ============================================
 # Uses org from organization-lifecycle: org exists but current user is not a member.
 # @name createFormBeforeMember
-# @ref createOrgFor403Test
+# @ref loginNonMember
 POST {{BASE_URL}}/orgs/{{orgSlugNotMember}}/forms
 Content-Type: application/json
 
@@ -50,10 +67,26 @@ Content-Type: application/json
 ###
 
 # ============================================
+# Re-login as global admin for cleanup
+# ============================================
+# @name adminLoginForCleanup
+# @ref createFormBeforeMember
+POST {{BASE_URL}}/auth/login/internal
+Content-Type: application/json
+
+{
+    "uid": "{{LOGIN_USER_ID}}"
+}
+
+?? status == 200
+
+###
+
+# ============================================
 # Get User Email
 # ============================================
 # @name getUserEmail
-# @ref createFormBeforeMember
+# @ref adminLoginForCleanup
 GET {{BASE_URL}}/users/me
 
 ?? status == 200
