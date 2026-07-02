@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-06-26'
+  version: '2026-07-02'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -3100,6 +3100,9 @@ components:
         messageAfterSubmission:
           type: string
           description: The message to show after user's submission.
+        sendResponseEmail:
+          type: boolean
+          description: Whether to send a copy of the submitted response to the respondent by email. If omitted, the backend defaults to false.
         dressing:
           allOf:
             - $ref: '#/components/schemas/Forms.FormDressing'
@@ -3128,6 +3131,7 @@ components:
                   - type: text
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
+          sendResponseEmail: true
           visibility: PUBLIC
           allowEditResponse: true
     Forms.FormRequestUpdate:
@@ -3154,6 +3158,9 @@ components:
         messageAfterSubmission:
           type: string
           description: The message to show after user's submission.
+        sendResponseEmail:
+          type: boolean
+          description: Whether to send a copy of the submitted response to the respondent by email. If omitted, the backend defaults to false.
         dressing:
           allOf:
             - $ref: '#/components/schemas/Forms.FormDressing'
@@ -3182,6 +3189,7 @@ components:
                   - type: text
                     text: If you want to join us, just fill in this form!
           messageAfterSubmission: Thank you for your submission!
+          sendResponseEmail: true
           visibility: PUBLIC
           allowEditResponse: true
     Forms.FormResponse:
@@ -3197,6 +3205,7 @@ components:
         - lastEditor
         - deadline
         - messageAfterSubmission
+        - sendResponseEmail
         - visibility
         - allowEditResponse
         - createdAt
@@ -3247,6 +3256,9 @@ components:
         messageAfterSubmission:
           type: string
           description: The message to show after user's submission.
+        sendResponseEmail:
+          type: boolean
+          description: Whether this form sends a copy of the submitted response to the respondent by email.
         dressing:
           allOf:
             - $ref: '#/components/schemas/Forms.FormDressing'
@@ -3312,6 +3324,7 @@ components:
           deadline: '2025-03-31T23:59:59Z'
           publishTime: '2025-02-01T00:00:00Z'
           messageAfterSubmission: Thank you for your application! We'll get back to you soon.
+          sendResponseEmail: true
           dressing:
             color: '#0066cc'
             headerFont: LINESeedTW
