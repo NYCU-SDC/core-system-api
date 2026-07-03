@@ -166,7 +166,20 @@ Content-Type: application/json
     "required": true,
     "type": "DETAILED_MULTIPLE_CHOICE",
     "title": "Which technology areas interest you?",
-    "description": "Select all areas that interest you. Your selections will define the options in the next ranking question.",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Select all areas that interest you. Your selections will define the options in the next ranking question."
+                    }
+                ]
+            }
+        ]
+    },
     "order": 1,
     "choices": [
         {
@@ -223,7 +236,20 @@ Content-Type: application/json
     "required": false,
     "type": "RANKING",
     "title": "Rank your selected technology areas by preference",
-    "description": "Order the areas you selected above from most to least preferred.",
+    "description": {
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Order the areas you selected above from most to least preferred."
+                    }
+                ]
+            }
+        ]
+    },
     "order": 2,
     "sourceId": "{{dmcQuestionId}}"
 }
