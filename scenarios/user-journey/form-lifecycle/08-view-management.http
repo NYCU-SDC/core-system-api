@@ -379,6 +379,7 @@ GET {{BASE_URL}}/forms/{{formId}}/views
         equal(data.length, 5, 'Should now have 5 views');
 
         // Verify exact order values for each view
+        const views = data.slice().sort((a, b) => a.order - b.order);
         const secondView = views.find(v => v.id === secondViewId);
         const thirdView = views.find(v => v.id === thirdViewId);
         const firstView = views.find(v => v.id === firstViewId);
