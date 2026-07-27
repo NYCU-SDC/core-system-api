@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-07-02'
+  version: '2026-07-27'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -675,7 +675,7 @@ paths:
     post:
       operationId: Responses_createFormResponse
       summary: Create Form Response
-      description: Create a new response of a form.
+      description: Create a new draft response for a form. Each user may have at most one response per form.
       parameters:
         - name: formId
           in: path
@@ -689,6 +689,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Responses.CreateResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '404':
           description: The server cannot find the requested resource.
           content:
