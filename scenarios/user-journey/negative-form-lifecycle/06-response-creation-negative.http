@@ -599,26 +599,46 @@ GET {{BASE_URL}}/forms/00000000-0000-0000-0000-000000000000/responses
 ###
 
 # ============================================
-# Create draft response for cancel validation
+# Reuse existing draft response for cancel validation (one response per user)
 # ============================================
-# @name createDraftResponseForCancel
+# @name prepareDraftResponseForCancel
 # @ref listResponsesNonExistentForm
+GET {{BASE_URL}}/forms/{{formId}}/responses/{{responseId}}
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('Positive flow left a single draft response to reuse', () => {
+        equal(data.progress, 'DRAFT', 'Existing response should still be draft');
+    });
+
+    exports.draftResponseId = responseId;
+}}
+
+###
+
+# ============================================
+# Create second response while draft exists (expect 400)
+# ============================================
+# @name createDuplicateResponse
+# @ref prepareDraftResponseForCancel
 POST {{BASE_URL}}/forms/{{formId}}/responses
 
-?? status == 201
+?? status == 400
 {{
     test.hasResponseBody();
 
     const { equal } = require('assert');
 
-    test('Draft response created successfully', () => {
+    test('Error body indicates duplicate response', () => {
         const data = JSON.parse(response.body);
-        equal(data.id !== undefined, true, 'Response ID should exist');
-        console.log('Created draft response:', data.id);
+        equal(data.title, 'Validation Problem', 'Response title should be Validation Problem');
+        equal(data.status, 400, 'Status in body should be 400');
     });
-
-    const data = JSON.parse(response.body);
-    exports.draftResponseId = data.id;
 }}
 
 ###
@@ -627,7 +647,7 @@ POST {{BASE_URL}}/forms/{{formId}}/responses
 # Cancel draft response submission (expect 400)
 # ============================================
 # @name cancelDraftResponseSubmission
-# @ref createDraftResponseForCancel
+# @ref createDuplicateResponse
 POST {{BASE_URL}}/responses/{{draftResponseId}}/cancel
 
 ?? status == 400

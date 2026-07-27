@@ -3,12 +3,15 @@ using Http;
 @tag("Responses")
 namespace CoreSystem.Responses {
 	@summary("Create Form Response")
-	@doc("Create a new response of a form.")
+	@doc("Create a new draft response for a form. Each user may have at most one response per form.")
 	@route("/forms/{formId}/responses")
 	@post
 	op createFormResponse(@path formId: uuid): {
 		@statusCode statusCode: 201;
 		@body response: CreateResponse;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
 	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
@@ -107,8 +110,8 @@ namespace CoreSystem.Responses {
 	@post
 	op exportFormResponses(@path formId: uuid, @body req: ExportDownloadRequest): {
 		@statusCode statusCode: 200;
-		@header ("Content-Type")contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-		@header ("Content-Disposition")contentDisposition: string;
+		@header("Content-Type") contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		@header("Content-Disposition") contentDisposition: string;
 		@body response: bytes;
 	} | {
 		@statusCode statusCode: 404;
@@ -117,16 +120,16 @@ namespace CoreSystem.Responses {
 
 	@summary("Filter And Query Form Responses")
 	@doc("Filter and query form responses based on a list of selected question answers.")
-    @route("/forms/{formId}/responses/query")
-    @post
-    op filterAndQueryFormResponses(@path formId: uuid, @body req: AnswerFilterRequest): {
-        @statusCode statusCode: 200;
-        @body response: AnswerFilterResponse;
-    } | {
-        @statusCode statusCode: 400;
-        @body error: BadRequest;
-    } | {
-        @statusCode statusCode: 404;
-        @body error: NotFound;
-    };
+	@route("/forms/{formId}/responses/query")
+	@post
+	op filterAndQueryFormResponses(@path formId: uuid, @body req: AnswerFilterRequest): {
+		@statusCode statusCode: 200;
+		@body response: AnswerFilterResponse;
+	} | {
+		@statusCode statusCode: 400;
+		@body error: BadRequest;
+	} | {
+		@statusCode statusCode: 404;
+		@body error: NotFound;
+	};
 }
