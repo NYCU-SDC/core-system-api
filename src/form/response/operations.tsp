@@ -20,6 +20,7 @@ namespace CoreSystem.Responses {
 	@post
 	op submitFormResponse(@path responseId: uuid, @body req: AnswersRequest): {
 		@statusCode statusCode: 200;
+        @body response: SubmitResponse;
 	} | {
 		@statusCode statusCode: 404;
 		@body error: NotFound;
