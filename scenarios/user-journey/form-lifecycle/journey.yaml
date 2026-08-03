@@ -1,6 +1,11 @@
 name: "Form Lifecycle"
 description: "Positive end-to-end coverage for the form lifecycle, including highlight management and archive recovery."
 cases:
+  - name: "Forms Me Deadline Filter"
+    description: "Verify GET /forms/me keeps null-deadline published forms and excludes expired ones (CORE-371)."
+    path: "05a-forms-me-deadline-filter.http"
+    test: "verifyFormsMeDeadlineFilter"
+
   - name: "Highlight Lifecycle"
     description: "Verify highlight configuration, statistics, title updates, and cleanup on a published form."
     path: "06a-form-highlight.http"

@@ -1,0 +1,255 @@
+# ============================================
+# GET /forms/me — deadline filter (CORE-371)
+# ============================================
+# Backend excludes expired published forms from the user list while keeping forms
+# with no deadline. This file publishes two auxiliary forms and asserts listing behavior.
+
+# @import ./05-form-publishing.http
+
+###
+
+# ============================================
+# Create published form with no deadline
+# ============================================
+# @name createNoDeadlineForm
+# @ref getFormFinalState
+POST {{BASE_URL}}/orgs/{{orgSlug}}/forms
+Content-Type: application/json
+
+{
+    "title": "No Deadline Me-List Test Form",
+    "visibility": "PUBLIC"
+}
+
+?? status <= 201
+{{
+    const data = JSON.parse(response.body);
+    exports.noDeadlineFormId = data.id;
+}}
+
+###
+
+# @name linkNoDeadlineWorkflow
+# @ref createNoDeadlineForm
+GET {{BASE_URL}}/forms/{{noDeadlineFormId}}/workflow
+
+{{
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+    const start = data.workflow.find((n) => n.type === 'START' || n.type === 'start');
+    const end = data.workflow.find((n) => n.type === 'END' || n.type === 'end');
+    equal(start !== undefined, true, 'START node should exist');
+    equal(end !== undefined, true, 'END node should exist');
+    exports.ndStartId = start.id;
+    exports.ndEndId = end.id;
+}}
+
+###
+
+# @name createNoDeadlineSectionNode
+# @ref linkNoDeadlineWorkflow
+POST {{BASE_URL}}/forms/{{noDeadlineFormId}}/workflow/nodes
+Content-Type: application/json
+
+{
+    "type": "SECTION",
+    "payload": { "x": 1.0, "y": 2.0 }
+}
+
+?? status == 201
+{{
+    exports.ndSectionNodeId = JSON.parse(response.body).id;
+    exports.ndSectionNodeLabel = JSON.parse(response.body).label;
+}}
+
+###
+
+# @name activateNoDeadlineWorkflow
+# @ref createNoDeadlineSectionNode
+PUT {{BASE_URL}}/forms/{{noDeadlineFormId}}/workflow
+Content-Type: application/json
+
+[
+    { "id": "{{ndStartId}}", "label": "開始表單", "payload": { "x": 0, "y": 0 }, "next": "{{ndSectionNodeId}}" },
+    { "id": "{{ndSectionNodeId}}", "label": "{{ndSectionNodeLabel}}", "payload": { "x": 1, "y": 2 }, "next": "{{ndEndId}}" },
+    { "id": "{{ndEndId}}", "label": "確認/送出", "payload": { "x": 0, "y": 1 } }
+]
+
+?? status == 200
+
+###
+
+# @name addNoDeadlineQuestion
+# @ref activateNoDeadlineWorkflow
+GET {{BASE_URL}}/forms/{{noDeadlineFormId}}/sections
+
+{{
+    exports.ndSectionId = JSON.parse(response.body)[0].section.id;
+}}
+
+###
+
+# @name publishNoDeadlineForm
+# @ref addNoDeadlineQuestion
+POST {{BASE_URL}}/sections/{{ndSectionId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Name",
+    "order": 1
+}
+
+?? status == 201
+
+###
+
+# @name publishNoDeadlineFormDone
+# @ref publishNoDeadlineForm
+POST {{BASE_URL}}/forms/{{noDeadlineFormId}}/publish
+
+?? status == 200
+
+###
+
+# ============================================
+# Create published form with an expired deadline
+# ============================================
+# @name createExpiredForm
+# @ref publishNoDeadlineFormDone
+POST {{BASE_URL}}/orgs/{{orgSlug}}/forms
+Content-Type: application/json
+
+{
+    "title": "Expired Me-List Test Form",
+    "visibility": "PUBLIC"
+}
+
+?? status <= 201
+{{
+    exports.expiredFormId = JSON.parse(response.body).id;
+}}
+
+###
+
+# @name setExpiredDeadline
+# @ref createExpiredForm
+PATCH {{BASE_URL}}/forms/{{expiredFormId}}
+Content-Type: application/json
+
+{
+    "deadline": "2020-01-01T00:00:00Z"
+}
+
+?? status == 200
+
+###
+
+# @name linkExpiredWorkflow
+# @ref setExpiredDeadline
+GET {{BASE_URL}}/forms/{{expiredFormId}}/workflow
+
+{{
+    const data = JSON.parse(response.body);
+    exports.exStartId = data.workflow.find((n) => n.type === 'START' || n.type === 'start').id;
+    exports.exEndId = data.workflow.find((n) => n.type === 'END' || n.type === 'end').id;
+}}
+
+###
+
+# @name createExpiredSectionNode
+# @ref linkExpiredWorkflow
+POST {{BASE_URL}}/forms/{{expiredFormId}}/workflow/nodes
+Content-Type: application/json
+
+{
+    "type": "SECTION",
+    "payload": { "x": 1.0, "y": 2.0 }
+}
+
+?? status == 201
+{{
+    const data = JSON.parse(response.body);
+    exports.exSectionNodeId = data.id;
+    exports.exSectionNodeLabel = data.label;
+}}
+
+###
+
+# @name activateExpiredWorkflow
+# @ref createExpiredSectionNode
+PUT {{BASE_URL}}/forms/{{expiredFormId}}/workflow
+Content-Type: application/json
+
+[
+    { "id": "{{exStartId}}", "label": "開始表單", "payload": { "x": 0, "y": 0 }, "next": "{{exSectionNodeId}}" },
+    { "id": "{{exSectionNodeId}}", "label": "{{exSectionNodeLabel}}", "payload": { "x": 1, "y": 2 }, "next": "{{exEndId}}" },
+    { "id": "{{exEndId}}", "label": "確認/送出", "payload": { "x": 0, "y": 1 } }
+]
+
+?? status == 200
+
+###
+
+# @name addExpiredQuestion
+# @ref activateExpiredWorkflow
+GET {{BASE_URL}}/forms/{{expiredFormId}}/sections
+
+{{
+    exports.exSectionId = JSON.parse(response.body)[0].section.id;
+}}
+
+###
+
+# @name publishExpiredForm
+# @ref addExpiredQuestion
+POST {{BASE_URL}}/sections/{{exSectionId}}/questions
+Content-Type: application/json
+
+{
+    "required": true,
+    "type": "SHORT_TEXT",
+    "title": "Name",
+    "order": 1
+}
+
+?? status == 201
+
+###
+
+# @name publishExpiredFormDone
+# @ref publishExpiredForm
+POST {{BASE_URL}}/forms/{{expiredFormId}}/publish
+
+?? status == 200
+
+###
+
+# ============================================
+# GET /forms/me — null-deadline visible, expired hidden
+# ============================================
+# @name verifyFormsMeDeadlineFilter
+# @ref publishExpiredFormDone
+GET {{BASE_URL}}/forms/me
+
+?? status == 200
+{{
+    test.hasResponseBody();
+
+    const { equal } = require('assert');
+    const data = JSON.parse(response.body);
+
+    test('GET /forms/me includes lifecycle and no-deadline forms, excludes expired', () => {
+        equal(Array.isArray(data), true, 'Response must be a bare array');
+
+        const lifecycle = data.find((r) => r.id === formId);
+        const noDeadline = data.find((r) => r.id === noDeadlineFormId);
+        const expired = data.find((r) => r.id === expiredFormId);
+
+        equal(lifecycle !== undefined, true, 'Published lifecycle form should remain listed');
+        equal(noDeadline !== undefined, true, 'Published form without a deadline should remain listed');
+        equal(noDeadline.deadline === null || noDeadline.deadline === undefined, true, 'No-deadline form should omit or null deadline');
+        equal(expired === undefined, true, 'Published form with a past deadline should be excluded');
+    });
+}}

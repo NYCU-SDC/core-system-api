@@ -1,3 +1,5 @@
+import "../response/models.tsp";
+
 using Http;
 
 @tag("Forms")
@@ -36,5 +38,22 @@ namespace CoreSystem.Forms {
 	@delete
 	op deleteQuestion(@path sectionId: uuid, @path questionId: uuid): {
 		@statusCode statusCode: 204;
+	};
+
+	@summary("Get Filters")
+	@doc("Filter and query distinct answers of the question for filtering.")
+	@route("/forms/{formId}/views/{viewId}/questions/{questionId}/filters")
+	@post
+	op filterAndQueryAnswers(
+        @path formId: uuid,
+        @path viewId: uuid,
+        @path questionId: uuid,
+        @body req:  CoreSystem.Responses.AnswerFilterRequest
+    ): {
+	    @statusCode statusCode: 200;
+	    @body response: QuestionFiltersResponse;
+	} | {
+	    @statusCode statusCode: 404;
+	    @body error: NotFound;
 	};
 }
