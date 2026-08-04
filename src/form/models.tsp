@@ -7,11 +7,11 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Response after uploading a cover image.")
-	@example(#{ imageUrl: "https://example.com/images/form-cover-123.webp" })
-	model FormCoverUploadResponse {
-		@doc("The temporary full URL of the uploaded image.")
-		imageUrl: string;
-	}
+    @example(#{ imageUrl: "https://example.com/images/form-cover-123.webp" })
+    model FormCoverUploadResponse {
+    	@doc("The temporary full URL of the uploaded image.")
+    	imageUrl: string;
+    }
 
 	@doc("The request body for creating/updating a form.")
 	@example(#{
@@ -248,9 +248,6 @@ namespace CoreSystem.Forms {
 
 		@doc("Archived: form is hidden from default listings but is still stored and can be accessed directly.")
 		archived: "ARCHIVED",
-
-		@doc("Closed: form is no longer accepting responses, but remains visible or accessible depending on visibility.")
-        closed: "CLOSED",
 	}
 
 	@doc("The visibility setting of a form. Public forms are visible to all logged-in users. Private forms require a direct link to access.")
