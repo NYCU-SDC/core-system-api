@@ -7,11 +7,11 @@ namespace CoreSystem.Forms {
 	}
 
 	@doc("Response after uploading a cover image.")
-	@example(#{ imageUrl: "https://example.com/images/form-cover-123.webp" })
-	model FormCoverUploadResponse {
-		@doc("The temporary full URL of the uploaded image.")
-		imageUrl: string;
-	}
+    @example(#{ imageUrl: "https://example.com/images/form-cover-123.webp" })
+    model FormCoverUploadResponse {
+    	@doc("The temporary full URL of the uploaded image.")
+    	imageUrl: string;
+    }
 
 	@doc("The request body for creating/updating a form.")
 	@example(#{

@@ -176,6 +176,31 @@ namespace CoreSystem.Responses {
 		questionIds: uuid[];
 	}
 
+	@doc("Response model after successfully submitting a form response.")
+    @example(#{
+    	id: "a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
+    	formId: "9a843aa0-8451-4e3b-b6a0-8c0e994e9040",
+    	createdAt: utcDateTime.fromISO("2026-08-03T10:00:00Z"),
+    	submittedAt: utcDateTime.fromISO("2026-08-03T10:30:00Z"),
+    	progress: ResponseProgress.submitted,
+    })
+    model SubmitResponse {
+    	@doc("The response's unique identifier.")
+    	id: uuid;
+
+    	@doc("The form that this response belongs to.")
+    	formId: uuid;
+
+    	@doc("The creation timestamp of the response.")
+    	createdAt: utcDateTime;
+
+    	@doc("The submission timestamp of the response.")
+    	submittedAt: utcDateTime;
+
+    	@doc("The current progress of the response.")
+    	progress: ResponseProgress;
+    }
+
 	@doc("A single answer option selected by the user")
 	model QueryFilterAnswerItem {
 	    @doc("The raw value used for backend querying and matching.")
