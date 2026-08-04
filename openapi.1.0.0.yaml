@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-07-27'
+  version: '2026-08-04'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -2274,6 +2274,10 @@ paths:
       responses:
         '200':
           description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Responses.SubmitResponse'
         '404':
           description: The server cannot find the requested resource.
           content:
@@ -5663,6 +5667,42 @@ components:
             - f421cfc2-2b84-4da9-9629-011af609935a
             - 2ca86a6d-7735-4f17-8676-29b4724b524f
           otherText: I also work with Rust
+    Responses.SubmitResponse:
+      type: object
+      required:
+        - id
+        - formId
+        - createdAt
+        - submittedAt
+        - progress
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The response's unique identifier.
+        formId:
+          allOf:
+            - $ref: '#/components/schemas/uuid'
+          description: The form that this response belongs to.
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the response.
+        submittedAt:
+          type: string
+          format: date-time
+          description: The submission timestamp of the response.
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/Responses.ResponseProgress'
+          description: The current progress of the response.
+      description: Response model after successfully submitting a form response.
+      examples:
+        - id: a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6
+          formId: 9a843aa0-8451-4e3b-b6a0-8c0e994e9040
+          createdAt: '2026-08-03T10:00:00Z'
+          submittedAt: '2026-08-03T10:30:00Z'
+          progress: SUBMITTED
     Responses.UpdateResponse:
       type: object
       required:
