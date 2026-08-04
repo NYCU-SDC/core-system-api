@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Core System API
-  version: '2026-08-03'
+  version: '2026-08-04'
   description: |-
     ## Pages
     - [API Documentation (Redocly)](redocly/)
@@ -3352,7 +3352,6 @@ components:
         - DRAFT
         - PUBLISHED
         - ARCHIVED
-        - CLOSED
       description: The current status of a form.
     Forms.FormVisibility:
       type: string
